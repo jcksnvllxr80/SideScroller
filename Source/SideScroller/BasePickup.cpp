@@ -42,7 +42,7 @@ void ABasePickup::OnBeginOverlapDelegate(
 	);
 	UGameplayStatics::SpawnSoundAttached(
 		this->PickupSound,
-		this->GetParentComponent(),
+		OverlappedComponent,
 		TEXT("BasePickupSound")
 	);
 	OverlappingActor->TakePickup();
