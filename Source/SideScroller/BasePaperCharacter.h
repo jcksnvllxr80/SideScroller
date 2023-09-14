@@ -37,6 +37,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void DestroyActor();
 
+	UFUNCTION(BlueprintCallable)
+	void TakePickup();
+
 	UPROPERTY(EditAnywhere)
 	USoundBase* DeathSound;
 

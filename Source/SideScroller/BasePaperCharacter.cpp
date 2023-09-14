@@ -62,7 +62,7 @@ float ABasePaperCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Da
 		UGameplayStatics::SpawnSoundAttached(
 			this->PainSound,
 			this->GetSprite(),
-			TEXT("BasePaperCharacterDeath")
+			TEXT("BasePaperCharacterPain")
 		);
 	}
 	
@@ -74,6 +74,11 @@ void ABasePaperCharacter::DestroyActor()
 	UE_LOG(LogTemp, Warning, TEXT("Destroying %s!"), *this->GetName());
 	this->Destroy();
 	GetWorld()->GetTimerManager().ClearTimer(this->TimerHandle);
+}
+
+void ABasePaperCharacter::TakePickup()
+{
+	// TODO: make player take the pickup
 }
 
 void ABasePaperCharacter::SetHealth(float HealthValue)

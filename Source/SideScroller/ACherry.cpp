@@ -3,28 +3,21 @@
 
 #include "ACherry.h"
 
-#include "PaperFlipbookComponent.h"
-
 // Sets default values
 AACherry::AACherry()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-    CherryFlipbook = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("CherryFlipbook"));
-	CherryFlipbook->SetupAttachment(RootComponent);
+	this->GetPickupBox()->SetRelativeScale3D(FVector(0.2,0.2,0.2));
+	this->GetPickupBox()->SetRelativeLocation(FVector(0.0,0.0,0.0));
 }
 
 // Called when the game starts or when spawned
 void AACherry::BeginPlay()
 {
 	Super::BeginPlay();
-	if (CherryFlipbook)
-	{
-		CherryFlipbook->SetFlipbook(IdleAnimation);
-	} else {
-		return;
-	}
+
 }
 
 // Called every frame
