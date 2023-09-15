@@ -41,8 +41,9 @@ void APC_PlayerFox::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	PlayerInputComponent->BindAxis("MoveRight", this, &APC_PlayerFox::MoveRight);
+	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &APC_PlayerFox::Crouch);
+	PlayerInputComponent->BindAction("Crouch", IE_Released, this, &APC_PlayerFox::Uncrouch);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &APC_PlayerFox::Jump);
-
 }
 
 void APC_PlayerFox::BeginPlay()
@@ -66,6 +67,16 @@ void APC_PlayerFox::Jump()
 	}
 }
 
+void APC_PlayerFox::Crouch()
+{
+	this->Crouching = true;
+}
+
+void APC_PlayerFox::Uncrouch()
+{
+	this->Crouching = false;
+}
+
 // Called every frame
 void APC_PlayerFox::Tick(const float DeltaTime)
 {
@@ -87,15 +98,11 @@ void APC_PlayerFox::UpdateAnimation()
 		//Update our movement speed
 		MovementSpeed = this->GetVelocity().Size();
 
-		// UE_LOG(
-		// 	LogTemp,
-		// 	Warning, 
-		// 	TEXT("Speed is %f!"),
-		// 	this->GetVelocity().Size()
-		// );
-
 		if (bIsFalling) {
 			this->GetSprite()->SetFlipbook(JumpAnimation);
+		}
+		else if (Crouching) {
+			this->GetSprite()->SetFlipbook(CrouchAnimation);
 		}
 		else if (MovementSpeed != 0.f) {
 			this->GetSprite()->SetFlipbook(RunAnimation);
@@ -113,13 +120,6 @@ void APC_PlayerFox::UpdateAnimation()
 
 void APC_PlayerFox::UpdateRotation(const float Value)
 {
-	// UE_LOG(
-	// 	LogTemp,
-	// 	Warning, 
-	// 	TEXT("Input value is %f!"),
-	// 	Value
-	// );
-	
 	if (Value < 0) {
 		this->GetSprite()->SetRelativeRotation(FRotator(0, 180.f, 0));
 	}
@@ -132,6 +132,8 @@ void APC_PlayerFox::MoveRight(const float Axis)
 {
 	// early return if player in hurt animation right now
 	if (this->GetSprite()->GetFlipbook() == HurtAnimation) {return;}
+	// early return if player is crouching right now
+	if (this->Crouching) {return;}
 	
 	UpdateRotation(Axis);
 	AddMovementInput(FVector(Axis, 0, 0));
