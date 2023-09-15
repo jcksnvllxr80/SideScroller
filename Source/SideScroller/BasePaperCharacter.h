@@ -17,7 +17,13 @@ class SIDESCROLLER_API ABasePaperCharacter : public APaperCharacter
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPaperFlipbook* IdleAnimation;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UPaperFlipbook* DeathAnimation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPaperFlipbook* HurtAnimation;
 	
 	ABasePaperCharacter();
 	
@@ -25,6 +31,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	float GetDamage() const;
+
+	UFUNCTION(BlueprintCallable)
+	void DoDeath();
+	void DoHurt();
+
+	UFUNCTION(BlueprintCallable)
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
 	                         AActor* DamageCauser) override;
 
@@ -37,6 +49,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void DestroyActor();
 
+	UFUNCTION(BlueprintCallable)
+	virtual void HurtFinishedCallback();
+	
 	UFUNCTION(BlueprintCallable)
 	void TakePickup();
 
@@ -53,11 +68,16 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	float DeathAnimationTime = 1.0;
-	FTimerHandle TimerHandle;
 	
 	UPROPERTY(EditAnywhere)
-	float DefaultHealth = 100;
+	float HurtAnimationTime = 0.5;
+	
+	FTimerHandle DeathTimerHandle;
+	FTimerHandle HurtTimerHandle;
+	
 	UPROPERTY(EditAnywhere)
-	float Damage = 10;
+	float DefaultHealth = 100.0;
+	UPROPERTY(EditAnywhere)
+	float Damage = 10.0;
 	
 };

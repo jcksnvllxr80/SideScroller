@@ -15,9 +15,6 @@ class SIDESCROLLER_API APC_PlayerFox : public ABasePaperCharacter
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UPaperFlipbook* IdleAnimation;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UPaperFlipbook* RunAnimation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -45,7 +42,8 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	class UCameraComponent* FollowCamera;
-	
+
+	UFUNCTION(BlueprintCallable)
 	void MoveRight(float Axis);
 
 

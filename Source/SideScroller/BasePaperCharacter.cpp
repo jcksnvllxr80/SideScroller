@@ -31,39 +31,66 @@ float ABasePaperCharacter::GetDamage() const
 	return Damage;
 }
 
+void ABasePaperCharacter::DoDeath()
+{
+	UE_LOG(LogTemp, Warning, TEXT("%s's health depleted!"), *this->GetName());
+	this->SetActorEnableCollision(false);
+	this->GetSprite()->SetLooping(false);
+	this->GetSprite()->SetFlipbook(DeathAnimation);
+	GetWorld()->GetTimerManager().SetTimer(
+		this->DeathTimerHandle,
+		this,
+		&ABasePaperCharacter::DestroyActor,
+		DeathAnimationTime,
+		false
+	);
+
+	UGameplayStatics::SpawnSoundAttached(
+		this->DeathSound,
+		this->GetSprite(),
+		TEXT("BasePaperCharacterDeath")
+	);
+}
+
+void ABasePaperCharacter::DoHurt()
+{
+	if (this->GetName().Contains("PlayerFox"))
+	{
+		// TODO: move character some distance away from the enemy after damage incurred
+		this->GetSprite()->SetFlipbook(HurtAnimation);
+	}
+	
+	GetWorld()->GetTimerManager().SetTimer(
+		this->HurtTimerHandle,
+		this,
+		&ABasePaperCharacter::HurtFinishedCallback,
+		HurtAnimationTime,
+		false
+	);
+	
+	UGameplayStatics::SpawnSoundAttached(
+		this->PainSound,
+		this->GetSprite(),
+		TEXT("BasePaperCharacterPain")
+	);
+}
+
+void ABasePaperCharacter::HurtFinishedCallback()
+{
+	this->GetSprite()->SetFlipbook(IdleAnimation);
+}
+
 float ABasePaperCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
-												AActor* DamageCauser)
+                                      AActor* DamageCauser)
 {
 	this->SetHealth(this->GetHealth() - DamageAmount);
 	UE_LOG(LogTemp, Warning, TEXT("%s's health: %f"), *this->GetName(), this->GetHealth());
 
 	if (this->GetHealth() <= 0)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%s's health depleted!"), *this->GetName());
-		// this->DamageBox->DestroyComponent();
-		this->SetActorEnableCollision(false);
-		this->GetSprite()->SetLooping(false);
-		this->GetSprite()->SetFlipbook(DeathAnimation);
-		GetWorld()->GetTimerManager().SetTimer(
-			this->TimerHandle,
-			this,
-			&ABasePaperCharacter::DestroyActor,
-			DeathAnimationTime,
-			false
-		);
-
-		UGameplayStatics::SpawnSoundAttached(
-			this->DeathSound,
-			this->GetSprite(),
-			TEXT("BasePaperCharacterDeath")
-		);
-	} else
-	{
-		UGameplayStatics::SpawnSoundAttached(
-			this->PainSound,
-			this->GetSprite(),
-			TEXT("BasePaperCharacterPain")
-		);
+		DoDeath();
+	} else {
+		DoHurt();
 	}
 	
 	return DamageAmount;
@@ -73,7 +100,8 @@ void ABasePaperCharacter::DestroyActor()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Destroying %s!"), *this->GetName());
 	this->Destroy();
-	GetWorld()->GetTimerManager().ClearTimer(this->TimerHandle);
+	GetWorld()->GetTimerManager().ClearTimer(this->DeathTimerHandle);
+	GetWorld()->GetTimerManager().ClearTimer(this->HurtTimerHandle);
 }
 
 void ABasePaperCharacter::TakePickup()

@@ -16,8 +16,6 @@ class SIDESCROLLER_API APC_EnemyFrog : public AEnemyCollisionPaperCharacter
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UPaperFlipbook* IdleAnimation;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UPaperFlipbook* JumpAnimation;

@@ -52,6 +52,9 @@ void APC_PlayerFox::BeginPlay()
 
 void APC_PlayerFox::Jump()
 {
+	// early return if player in hurt animation right now
+	if (this->GetSprite()->GetFlipbook() == HurtAnimation) {return;}
+	
 	// dont allow another jump unless not currently jumping
 	if (!this->bIsFalling) {
 		UGameplayStatics::SpawnSoundAttached(
@@ -75,6 +78,9 @@ void APC_PlayerFox::UpdateAnimation()
 {
 	if (this)
 	{
+		// early return if player in hurt animation right now
+		if (this->GetSprite()->GetFlipbook() == HurtAnimation) {return;}
+		
 		//Update our falling property
 		bIsFalling = this->GetMovementComponent()->IsFalling();
  
@@ -124,6 +130,9 @@ void APC_PlayerFox::UpdateRotation(const float Value)
 
 void APC_PlayerFox::MoveRight(const float Axis)
 {
+	// early return if player in hurt animation right now
+	if (this->GetSprite()->GetFlipbook() == HurtAnimation) {return;}
+	
 	UpdateRotation(Axis);
 	AddMovementInput(FVector(Axis, 0, 0));
 }
