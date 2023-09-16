@@ -22,22 +22,29 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UPaperFlipbook* CrouchAnimation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPaperFlipbook* ClimbAnimation;
 	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	APC_PlayerFox();
-	
+
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 	virtual void BeginPlay() override;
 
 	virtual void Jump() override;
 
-	void Crouch();
-	
-	void Uncrouch();
-	
+	void CrouchClimbDown();
+
+	void StopCrouchClimb();
+
+	void ClimbUp();
+
+	void StopClimbUp();
+
 private:
 	UPROPERTY(EditAnywhere)
 	USoundBase* JumpSound;
@@ -47,6 +54,9 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	bool Crouching;
+
+	UPROPERTY(EditAnywhere)
+	bool Climbing;
 	
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	class USpringArmComponent* CameraArm;

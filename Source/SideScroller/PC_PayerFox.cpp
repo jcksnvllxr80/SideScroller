@@ -41,8 +41,10 @@ void APC_PlayerFox::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	PlayerInputComponent->BindAxis("MoveRight", this, &APC_PlayerFox::MoveRight);
-	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &APC_PlayerFox::Crouch);
-	PlayerInputComponent->BindAction("Crouch", IE_Released, this, &APC_PlayerFox::Uncrouch);
+	PlayerInputComponent->BindAction("ClimbUp", IE_Pressed, this, &APC_PlayerFox::ClimbUp);
+	PlayerInputComponent->BindAction("ClimbUp", IE_Released, this, &APC_PlayerFox::StopClimbUp);
+	PlayerInputComponent->BindAction("CrouchClimbDown", IE_Pressed, this, &APC_PlayerFox::CrouchClimbDown);
+	PlayerInputComponent->BindAction("CrouchClimbDown", IE_Released, this, &APC_PlayerFox::StopCrouchClimb);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &APC_PlayerFox::Jump);
 }
 
@@ -67,14 +69,29 @@ void APC_PlayerFox::Jump()
 	}
 }
 
-void APC_PlayerFox::Crouch()
+void APC_PlayerFox::CrouchClimbDown()
 {
+	// TODO: if near ladder
+	// this->Climbing = true;
+	// TODO: else
 	this->Crouching = true;
 }
 
-void APC_PlayerFox::Uncrouch()
+void APC_PlayerFox::StopCrouchClimb()
 {
 	this->Crouching = false;
+	this->Climbing = false;
+}
+
+void APC_PlayerFox::ClimbUp()
+{
+	// TODO: if near ladder
+	this->Climbing = true;
+}
+
+void APC_PlayerFox::StopClimbUp()
+{
+	this->Climbing = false;
 }
 
 // Called every frame
@@ -103,6 +120,8 @@ void APC_PlayerFox::UpdateAnimation()
 		}
 		else if (Crouching) {
 			this->GetSprite()->SetFlipbook(CrouchAnimation);
+		} else if (Climbing) {
+			this->GetSprite()->SetFlipbook(ClimbAnimation);
 		}
 		else if (MovementSpeed != 0.f) {
 			this->GetSprite()->SetFlipbook(RunAnimation);
@@ -133,7 +152,7 @@ void APC_PlayerFox::MoveRight(const float Axis)
 	// early return if player in hurt animation right now
 	if (this->GetSprite()->GetFlipbook() == HurtAnimation) {return;}
 	// early return if player is crouching right now
-	if (this->Crouching) {return;}
+	if (this->Crouching || this->Climbing ) {return;}
 	
 	UpdateRotation(Axis);
 	AddMovementInput(FVector(Axis, 0, 0));
