@@ -109,6 +109,11 @@ void ABasePaperCharacter::TakePickup()
 	// TODO: make player take the pickup
 }
 
+void ABasePaperCharacter::TakeHealing(int HealingValue)
+{
+	this->Health = FMath::Clamp(Health + HealingValue, 0.f, this->DefaultHealth);
+}
+
 void ABasePaperCharacter::SetHealth(float HealthValue)
 {
 	this->Health = HealthValue;

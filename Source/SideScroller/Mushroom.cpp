@@ -26,3 +26,8 @@ void AMushroom::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
+
+void AMushroom::GivePickup(ABasePaperCharacter* OverlappingActor)
+{
+	OverlappingActor->TakeHealing(this->HealingValue);
+}

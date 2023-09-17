@@ -6,6 +6,7 @@
 #include "BasePaperCharacter.h"
 #include "PaperFlipbookComponent.h"
 #include "Engine/DamageEvents.h"
+#include "Interfaces/PickupInterface.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -20,6 +21,30 @@ ABasePickup::ABasePickup()
 	this->PickupBox = CreateDefaultSubobject<UBoxComponent>(TEXT("PickupBox"));
 	this->PickupBox->SetupAttachment(PickupFlipbook);
 	this->PickupBox->SetHiddenInGame(true);
+}
+
+
+// Called when the game starts or when spawned
+void ABasePickup::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (!PickupFlipbook)
+	{
+		return;
+	}
+	
+	this->PickupBox->SetGenerateOverlapEvents(true);
+	this->PickupBox->OnComponentBeginOverlap.AddDynamic(this, &ABasePickup::OnBeginOverlapDelegate);
+	
+	PickupFlipbook->SetFlipbook(IdleAnimation);
+}
+
+// Called every frame
+void ABasePickup::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
 }
 
 UBoxComponent* ABasePickup::GetPickupBox() const
@@ -45,29 +70,9 @@ void ABasePickup::OnBeginOverlapDelegate(
 		OverlappedComponent,
 		TEXT("BasePickupSound")
 	);
-	OverlappingActor->TakePickup();
-	OverlappedComponent->GetOwner()->Destroy();
-}
-
-// Called when the game starts or when spawned
-void ABasePickup::BeginPlay()
-{
-	Super::BeginPlay();
-
-	if (!PickupFlipbook)
+	if (OverlappedComponent->GetClass()->ImplementsInterface(UPickupInterface::StaticClass()))
 	{
-		return;
+		Cast<IPickupInterface>(OverlappedComponent)->GivePickup(OverlappingActor);
+		OverlappedComponent->GetOwner()->Destroy();
 	}
-	
-	this->PickupBox->SetGenerateOverlapEvents(true);
-	this->PickupBox->OnComponentBeginOverlap.AddDynamic(this, &ABasePickup::OnBeginOverlapDelegate);
-	
-	PickupFlipbook->SetFlipbook(IdleAnimation);
-}
-
-// Called every frame
-void ABasePickup::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
 }

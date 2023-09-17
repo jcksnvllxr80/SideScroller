@@ -34,6 +34,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void DoDeath();
+
+	UFUNCTION(BlueprintCallable)
 	void DoHurt();
 
 	UFUNCTION(BlueprintCallable)
@@ -54,6 +56,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	void TakePickup();
+
+	UFUNCTION(BlueprintCallable)
+	void TakeHealing(int HealingValue);
 
 	UPROPERTY(EditAnywhere)
 	USoundBase* DeathSound;
