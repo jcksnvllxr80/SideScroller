@@ -3,9 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BasePaperCharacter.h"
+#include "../Characters/BasePaperCharacter.h"
 #include "BasePickup.h"
-#include "Interfaces/PickupInterface.h"
+#include "../Interfaces/PickupInterface.h"
 #include "Mushroom.generated.h"
 
 /**
@@ -21,7 +21,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION(BlueprintCallable)
-	virtual void GivePickup(ABasePaperCharacter* OverlappingActor) override;
+	virtual void GivePickup(APC_PlayerFox* OverlappingActor) override;
 
 	AMushroom();
 
@@ -30,5 +30,5 @@ protected:
 
 private:
 	UPROPERTY(EditAnywhere)
-	int HealingValue = 20;
+	float HealingValue = 20.f;
 };

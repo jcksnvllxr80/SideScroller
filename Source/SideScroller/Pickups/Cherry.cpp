@@ -1,7 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "ACherry.h"
+#include "Cherry.h"
+
+#include "../Characters/Players/PC_PlayerFox.h"
 
 // Sets default values
 AACherry::AACherry()
@@ -25,5 +27,10 @@ void AACherry::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AACherry::GivePickup(APC_PlayerFox* OverlappingActor)
+{
+	OverlappingActor->TakeCherries(this->CherryAmount);
 }
 

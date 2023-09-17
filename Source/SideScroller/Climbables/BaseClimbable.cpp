@@ -3,9 +3,9 @@
 
 #include "BaseClimbable.h"
 
-#include "BasePaperCharacter.h"
+#include "../Characters/BasePaperCharacter.h"
 #include "PaperSpriteComponent.h"
-#include "PC_PlayerFox.h"
+#include "../Characters/Players/PC_PlayerFox.h"
 #include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
 

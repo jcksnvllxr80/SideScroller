@@ -1,8 +1,8 @@
 
 #pragma once
 #include "CoreMinimal.h"
-#include "BaseClimbable.h"
-#include "BasePaperCharacter.h"
+#include "../../Climbables/BaseClimbable.h"
+#include "../BasePaperCharacter.h"
 #include "PaperFlipbook.h"
 #include "PC_PlayerFox.generated.h"
 
@@ -33,6 +33,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float ClimbSpeed = 1.f;
 
+	UFUNCTION(BlueprintCallable)
+	void TakeHealing(float HealingValue);
+
+	UFUNCTION(BlueprintCallable)
+	void TakeCherries(int NumCherries);
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -55,6 +61,9 @@ public:
 	void SetOverlappingClimbable(bool bOverlappingClimbable, ABaseClimbable* OverlappedClimbable);
 
 private:
+	UPROPERTY(EditAnywhere)
+	int CherryStash = 0;
+	
 	UPROPERTY(EditAnywhere)
 	USoundBase* JumpSound;
 

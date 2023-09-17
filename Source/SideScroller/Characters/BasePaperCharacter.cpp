@@ -3,7 +3,7 @@
 
 #include "BasePaperCharacter.h"
 
-#include "EnemyCollisionPaperCharacter.h"
+#include "Enemies/EnemyCollisionPaperCharacter.h"
 #include "PaperFlipbookComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -83,7 +83,7 @@ void ABasePaperCharacter::HurtFinishedCallback()
 float ABasePaperCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
                                       AActor* DamageCauser)
 {
-	this->SetHealth(this->GetHealth() - DamageAmount);
+	this->AddHealth(-DamageAmount);
 	UE_LOG(LogTemp, Warning, TEXT("%s's health: %f"), *this->GetName(), this->GetHealth());
 
 	if (this->GetHealth() <= 0)
@@ -104,17 +104,12 @@ void ABasePaperCharacter::DestroyActor()
 	GetWorld()->GetTimerManager().ClearTimer(this->HurtTimerHandle);
 }
 
-void ABasePaperCharacter::TakePickup()
+void ABasePaperCharacter::AddHealth(const float HealthValue)
 {
-	// TODO: make player take the pickup
+	this->SetHealth(FMath::Clamp(this->Health + HealthValue, 0.f, this->DefaultHealth));
 }
 
-void ABasePaperCharacter::TakeHealing(int HealingValue)
-{
-	this->Health = FMath::Clamp(Health + HealingValue, 0.f, this->DefaultHealth);
-}
-
-void ABasePaperCharacter::SetHealth(float HealthValue)
+void ABasePaperCharacter::SetHealth(const float HealthValue)
 {
 	this->Health = HealthValue;
 }

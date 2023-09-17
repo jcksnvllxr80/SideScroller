@@ -3,6 +3,8 @@
 
 #include "Mushroom.h"
 
+#include "../Characters/Players/PC_PlayerFox.h"
+
 // Sets default values
 AMushroom::AMushroom()
 {
@@ -27,7 +29,7 @@ void AMushroom::Tick(float DeltaTime)
 
 }
 
-void AMushroom::GivePickup(ABasePaperCharacter* OverlappingActor)
+void AMushroom::GivePickup(APC_PlayerFox* OverlappingActor)
 {
 	OverlappingActor->TakeHealing(this->HealingValue);
 }

@@ -46,6 +46,9 @@ public:
 	void SetHealth(float Health);
 	
 	UFUNCTION(BlueprintCallable)
+	void AddHealth(float HealthValue);
+	
+	UFUNCTION(BlueprintCallable)
 	float GetHealth() const;
 
 	UFUNCTION(BlueprintCallable)
@@ -53,12 +56,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void HurtFinishedCallback();
-	
-	UFUNCTION(BlueprintCallable)
-	void TakePickup();
-
-	UFUNCTION(BlueprintCallable)
-	void TakeHealing(int HealingValue);
 
 	UPROPERTY(EditAnywhere)
 	USoundBase* DeathSound;

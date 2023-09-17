@@ -3,10 +3,11 @@
 
 #include "BasePickup.h"
 
-#include "BasePaperCharacter.h"
+#include "../Characters/BasePaperCharacter.h"
 #include "PaperFlipbookComponent.h"
+#include "../Characters/Players/PC_PlayerFox.h"
 #include "Engine/DamageEvents.h"
-#include "Interfaces/PickupInterface.h"
+#include "../Interfaces/PickupInterface.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -70,9 +71,10 @@ void ABasePickup::OnBeginOverlapDelegate(
 		OverlappedComponent,
 		TEXT("BasePickupSound")
 	);
-	if (OverlappedComponent->GetClass()->ImplementsInterface(UPickupInterface::StaticClass()))
+
+	if (OverlappedComponent->GetOwner()->GetClass()->ImplementsInterface(UPickupInterface::StaticClass()))
 	{
-		Cast<IPickupInterface>(OverlappedComponent)->GivePickup(OverlappingActor);
+		Cast<IPickupInterface>(OverlappedComponent->GetOwner())->GivePickup(Cast<APC_PlayerFox>(OverlappingActor));
 		OverlappedComponent->GetOwner()->Destroy();
 	}
 }

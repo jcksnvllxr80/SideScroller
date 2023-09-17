@@ -196,3 +196,15 @@ void APC_PlayerFox::Jump()
 		Super::Jump();
 	}
 }
+
+void APC_PlayerFox::TakeHealing(const float HealingValue)
+{
+	this->AddHealth(HealingValue);
+	UE_LOG(LogTemp, Warning, TEXT("Health is now %f!"), this->GetHealth());
+}
+
+void APC_PlayerFox::TakeCherries(int NumCherries)
+{
+	this->CherryStash += NumCherries;
+	UE_LOG(LogTemp, Warning, TEXT("CherryStash has increased to %d!"), this->CherryStash);
+}

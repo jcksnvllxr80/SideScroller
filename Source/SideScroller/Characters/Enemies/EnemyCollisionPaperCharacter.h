@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BasePaperCharacter.h"
+#include "../BasePaperCharacter.h"
 #include "EnemyCollisionPaperCharacter.generated.h"
 
 /**

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BasePaperCharacter.h"
+#include "../Characters/BasePaperCharacter.h"
 #include "PaperFlipbook.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/Actor.h"
