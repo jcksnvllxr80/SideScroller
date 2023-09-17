@@ -28,7 +28,10 @@ public:
 	UPaperFlipbook* ClimbAnimation;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float climb_speed = 1.f;
+	UPaperFlipbook* StopOnLadderAnimation;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float ClimbSpeed = 1.f;
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -75,20 +78,18 @@ private:
 
 	USoundBase* NearbyClimbableSound;
 
+	bool OnLadder = false;
+
 	UFUNCTION(BlueprintCallable)
 	void MoveRight(float Axis);
 
 	UFUNCTION(BlueprintCallable)
-	void Climb(float Direction);
+	void Climb(float Value);
 
 protected:
 	/*True means that we're currently in air - or falling*/
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bIsFalling;
-
-	/*Holds the current speed of our character*/
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float MovementSpeed;
 
 	/*Updates the above properties*/
 	UFUNCTION(BlueprintCallable, Category = "UpdateAnimationProperties")

@@ -11,6 +11,7 @@
 #include "Components/BoxComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Physics/ImmediatePhysics/ImmediatePhysicsShared/ImmediatePhysicsCore.h"
 
 APC_PlayerFox::APC_PlayerFox()
 {
@@ -53,58 +54,12 @@ void APC_PlayerFox::BeginPlay()
 	Super::BeginPlay();
 }
 
-void APC_PlayerFox::Jump()
-{
-	// early return if player in hurt animation right now
-	if (this->GetSprite()->GetFlipbook() == HurtAnimation) {return;}
-	
-	// dont allow another jump unless not currently jumping
-	if (!this->bIsFalling) {
-		UGameplayStatics::SpawnSoundAttached(
-			this->JumpSound,
-			this->GetSprite(),
-			TEXT("MyPaperCharacterSpriteJump")
-		);
-		Super::Jump();
-	}
-}
-
-void APC_PlayerFox::CrouchClimbDown()
-{
-	if (OverlappingClimbable)
-	{
-		Climb(-climb_speed);
-	} else {
-		this->Crouching = true;
-	}
-}
-
-void APC_PlayerFox::ClimbUp()
-{
-	if (OverlappingClimbable)
-	{
-		Climb(climb_speed);
-	}
-}
-
-void APC_PlayerFox::StopCrouchClimb()
-{
-	this->Crouching = false;
-	this->StopClimb();
-}
-
-void APC_PlayerFox::StopClimb()
-{
-	this->Climbing = false;
-}
-
 // Called every frame
 void APC_PlayerFox::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	UpdateAnimation();
 }
-
 
 void APC_PlayerFox::UpdateAnimation()
 {
@@ -117,23 +72,28 @@ void APC_PlayerFox::UpdateAnimation()
 		bIsFalling = this->GetMovementComponent()->IsFalling();
  
 		//Update our movement speed
-		MovementSpeed = this->GetVelocity().Size();
+		float MovementSpeed = this->GetVelocity().Size();
 
 		if (bIsFalling) {
 			this->GetSprite()->SetFlipbook(JumpAnimation);
 		}
-		else if (Crouching) {
+		else if (this->Crouching) {
 			this->GetSprite()->SetFlipbook(CrouchAnimation);
-		} else if (Climbing) {
-			this->GetSprite()->SetFlipbook(ClimbAnimation);
+		} else if (this->Climbing || this->OnLadder) {
+			if (this->GetVelocity().Z == 0)
+			{
+				this->GetSprite()->SetFlipbook(StopOnLadderAnimation);
+			} else {
+				this->GetSprite()->SetFlipbook(ClimbAnimation);
+			}
 		}
 		else if (MovementSpeed != 0.f) {
 			this->GetSprite()->SetFlipbook(RunAnimation);
-			UGameplayStatics::SpawnSoundAttached(
-				this->WalkSound,
-				this->GetSprite(),
-				TEXT("MyPaperCharacterSpriteWalk")
-			);
+			// UGameplayStatics::SpawnSoundAttached(
+			// 	this->WalkSound,
+			// 	this->GetSprite(),
+			// 	TEXT("MyPaperCharacterSpriteWalk")
+			// );
 		}
 		else {
 			this->GetSprite()->SetFlipbook(IdleAnimation);
@@ -155,6 +115,43 @@ void APC_PlayerFox::SetOverlappingClimbable(bool bOverlappingClimbable, ABaseCli
 {
 	OverlappingClimbable = bOverlappingClimbable;
 	NearbyClimbableSound = OverlappedClimbable->LadderSound;
+	if (!OverlappingClimbable)
+	{
+		this->OnLadder = false;
+		this->Climbing = false;
+		GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+	}
+}
+
+void APC_PlayerFox::CrouchClimbDown()
+{
+	if (OverlappingClimbable)
+	{
+		Climb(-ClimbSpeed);
+	} else {
+		this->Crouching = true;
+	}
+}
+
+void APC_PlayerFox::ClimbUp()
+{
+	if (OverlappingClimbable)
+	{
+		this->OnLadder = true;
+		Climb(ClimbSpeed);
+	}
+}
+
+void APC_PlayerFox::StopCrouchClimb()
+{
+	this->Crouching = false;
+	this->StopClimb();
+}
+
+void APC_PlayerFox::StopClimb()
+{
+	this->GetMovementComponent()->StopMovementImmediately();
+	this->Climbing = false;
 }
 
 void APC_PlayerFox::MoveRight(const float Axis)
@@ -162,7 +159,7 @@ void APC_PlayerFox::MoveRight(const float Axis)
 	// early return if player in hurt animation right now
 	if (this->GetSprite()->GetFlipbook() == HurtAnimation) {return;}
 	// early return if player is crouching right now
-	if (this->Crouching || this->Climbing ) {return;}
+	if (this->Crouching || this->Climbing) {return;}
 	
 	UpdateRotation(Axis);
 	AddMovementInput(FVector(Axis, 0, 0));
@@ -172,7 +169,7 @@ void APC_PlayerFox::MoveRight(const float Axis)
 	}
 }
 
-void APC_PlayerFox::Climb(float Direction)
+void APC_PlayerFox::Climb(float Value)
 {
 	UGameplayStatics::SpawnSoundAttached(
 		this->NearbyClimbableSound,
@@ -181,5 +178,21 @@ void APC_PlayerFox::Climb(float Direction)
 	);
 	this->Climbing = true;
 	GetCharacterMovement()->SetMovementMode(MOVE_Flying);
-	AddMovementInput(GetActorUpVector(), Direction);
+	AddMovementInput(FVector(0, 0, Value));
+}
+
+void APC_PlayerFox::Jump()
+{
+	// early return if player in hurt animation right now
+	if (this->GetSprite()->GetFlipbook() == HurtAnimation) {return;}
+	
+	// dont allow another jump unless not currently jumping
+	if (!this->bIsFalling && !this->OnLadder) {
+		UGameplayStatics::SpawnSoundAttached(
+			this->JumpSound,
+			this->GetSprite(),
+			TEXT("MyPaperCharacterSpriteJump")
+		);
+		Super::Jump();
+	}
 }
