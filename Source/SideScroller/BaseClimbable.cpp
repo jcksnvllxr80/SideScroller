@@ -5,6 +5,7 @@
 
 #include "BasePaperCharacter.h"
 #include "PaperSpriteComponent.h"
+#include "PC_PlayerFox.h"
 #include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -28,18 +29,23 @@ UBoxComponent* ABaseClimbable::GetClimbableBox() const
 }
 
 // Called when the game starts or when spawned
+
 void ABaseClimbable::BeginPlay()
 {
 	Super::BeginPlay();
 
 	this->SpriteImage->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 	this->ClimbableBox->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
+	// this->SpriteImage->SetGenerateOverlapEvents(true);
 	this->ClimbableBox->SetGenerateOverlapEvents(true);
+	// this->SpriteImage->OnComponentBeginOverlap.AddDynamic(this, &ABaseClimbable::OnBeginOverlapDelegate);
 	this->ClimbableBox->OnComponentBeginOverlap.AddDynamic(this, &ABaseClimbable::OnBeginOverlapDelegate);
+	this->ClimbableBox->OnComponentEndOverlap.AddDynamic(this, &ABaseClimbable::OnEndOverlapDelegate);
 	
 }
 
 // Called every frame
+
 void ABaseClimbable::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -54,16 +60,27 @@ void ABaseClimbable::OnBeginOverlapDelegate(
 	bool bFromSweep,
 	const FHitResult& SweepResult
 ) {
-	ABasePaperCharacter* OverlappingActor = dynamic_cast<ABasePaperCharacter*>(OtherComp->GetOwner());
+	ABaseClimbable* OverlappedClimbableComponent = dynamic_cast<ABaseClimbable*>(OverlappedComponent->GetOwner());
+	APC_PlayerFox* OverlappingActor = dynamic_cast<APC_PlayerFox*>(OtherComp->GetOwner());
 	UE_LOG(LogTemp, Warning, TEXT("%s has overlapped %s!"),
-		   *OtherActor->GetName(),
+		   *OverlappingActor->GetName(),
 		   *OverlappedComponent->GetOwner()->GetName()
 	);
-	UGameplayStatics::SpawnSoundAttached(
-		this->LadderSound,
-		OverlappedComponent,
-		TEXT("BasePickupSound")
-	);
-	// TODO: OverlappingActor->SetNearClimbable(true);
+	OverlappingActor->SetOverlappingClimbable(true, OverlappedClimbableComponent);
+}
+
+void ABaseClimbable::OnEndOverlapDelegate(
+	UPrimitiveComponent* OverlappedComponent,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex
+) {
+	ABaseClimbable* OverlappedClimbableComponent = dynamic_cast<ABaseClimbable*>(OverlappedComponent->GetOwner());
+	APC_PlayerFox* OverlappingActor = dynamic_cast<APC_PlayerFox*>(OtherComp->GetOwner());
+	UE_LOG(LogTemp, Warning, TEXT("%s is no longer overlapping %s!"),
+	   *OverlappingActor->GetName(),
+	   *OverlappedComponent->GetOwner()->GetName()
+);
+	OverlappingActor->SetOverlappingClimbable(false, OverlappedClimbableComponent);
 }
 

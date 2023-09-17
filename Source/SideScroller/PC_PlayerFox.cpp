@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "PC_PayerFox.h"
+#include "PC_PlayerFox.h"
 
 #include "PaperFlipbookComponent.h"
 #include "Components/InputComponent.h"
@@ -42,7 +42,7 @@ void APC_PlayerFox::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 	PlayerInputComponent->BindAxis("MoveRight", this, &APC_PlayerFox::MoveRight);
 	PlayerInputComponent->BindAction("ClimbUp", IE_Pressed, this, &APC_PlayerFox::ClimbUp);
-	PlayerInputComponent->BindAction("ClimbUp", IE_Released, this, &APC_PlayerFox::StopClimbUp);
+	PlayerInputComponent->BindAction("ClimbUp", IE_Released, this, &APC_PlayerFox::StopClimb);
 	PlayerInputComponent->BindAction("CrouchClimbDown", IE_Pressed, this, &APC_PlayerFox::CrouchClimbDown);
 	PlayerInputComponent->BindAction("CrouchClimbDown", IE_Released, this, &APC_PlayerFox::StopCrouchClimb);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &APC_PlayerFox::Jump);
@@ -71,25 +71,29 @@ void APC_PlayerFox::Jump()
 
 void APC_PlayerFox::CrouchClimbDown()
 {
-	// TODO: if near ladder
-	// this->Climbing = true;
-	// TODO: else
-	this->Crouching = true;
+	if (OverlappingClimbable)
+	{
+		Climb(-climb_speed);
+	} else {
+		this->Crouching = true;
+	}
+}
+
+void APC_PlayerFox::ClimbUp()
+{
+	if (OverlappingClimbable)
+	{
+		Climb(climb_speed);
+	}
 }
 
 void APC_PlayerFox::StopCrouchClimb()
 {
 	this->Crouching = false;
-	this->Climbing = false;
+	this->StopClimb();
 }
 
-void APC_PlayerFox::ClimbUp()
-{
-	// TODO: if near ladder
-	this->Climbing = true;
-}
-
-void APC_PlayerFox::StopClimbUp()
+void APC_PlayerFox::StopClimb()
 {
 	this->Climbing = false;
 }
@@ -147,6 +151,12 @@ void APC_PlayerFox::UpdateRotation(const float Value)
 	}
 }
 
+void APC_PlayerFox::SetOverlappingClimbable(bool bOverlappingClimbable, ABaseClimbable* OverlappedClimbable)
+{
+	OverlappingClimbable = bOverlappingClimbable;
+	NearbyClimbableSound = OverlappedClimbable->LadderSound;
+}
+
 void APC_PlayerFox::MoveRight(const float Axis)
 {
 	// early return if player in hurt animation right now
@@ -156,4 +166,20 @@ void APC_PlayerFox::MoveRight(const float Axis)
 	
 	UpdateRotation(Axis);
 	AddMovementInput(FVector(Axis, 0, 0));
+	if (!OverlappingClimbable && !bIsFalling)
+	{
+		GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+	}
+}
+
+void APC_PlayerFox::Climb(float Direction)
+{
+	UGameplayStatics::SpawnSoundAttached(
+		this->NearbyClimbableSound,
+		this->GetSprite(),
+		TEXT("ClimbingSound")
+	);
+	this->Climbing = true;
+	GetCharacterMovement()->SetMovementMode(MOVE_Flying);
+	AddMovementInput(GetActorUpVector(), Direction);
 }

@@ -1,9 +1,10 @@
 
 #pragma once
 #include "CoreMinimal.h"
+#include "BaseClimbable.h"
 #include "BasePaperCharacter.h"
 #include "PaperFlipbook.h"
-#include "PC_PayerFox.generated.h"
+#include "PC_PlayerFox.generated.h"
 
 /**
  * 
@@ -26,6 +27,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UPaperFlipbook* ClimbAnimation;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float climb_speed = 1.f;
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -43,7 +47,9 @@ public:
 
 	void ClimbUp();
 
-	void StopClimbUp();
+	void StopClimb();
+
+	void SetOverlappingClimbable(bool bOverlappingClimbable, ABaseClimbable* OverlappedClimbable);
 
 private:
 	UPROPERTY(EditAnywhere)
@@ -57,6 +63,9 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	bool Climbing;
+
+	UPROPERTY(EditAnywhere)
+	bool OverlappingClimbable;
 	
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	class USpringArmComponent* CameraArm;
@@ -64,8 +73,13 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	class UCameraComponent* FollowCamera;
 
+	USoundBase* NearbyClimbableSound;
+
 	UFUNCTION(BlueprintCallable)
 	void MoveRight(float Axis);
+
+	UFUNCTION(BlueprintCallable)
+	void Climb(float Direction);
 
 protected:
 	/*True means that we're currently in air - or falling*/
@@ -75,7 +89,6 @@ protected:
 	/*Holds the current speed of our character*/
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float MovementSpeed;
-
 
 	/*Updates the above properties*/
 	UFUNCTION(BlueprintCallable, Category = "UpdateAnimationProperties")
