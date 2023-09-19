@@ -154,6 +154,11 @@ void APC_PlayerFox::StopClimb()
 	this->Climbing = false;
 }
 
+float APC_PlayerFox::GetHurtPushAmount() const
+{
+	return HurtPushAmount;
+}
+
 void APC_PlayerFox::MoveRight(const float Axis)
 {
 	// early return if player in hurt animation right now

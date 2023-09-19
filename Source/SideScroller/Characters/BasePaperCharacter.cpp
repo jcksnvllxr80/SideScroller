@@ -10,6 +10,7 @@
 #include "Engine/DamageEvents.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Players/PC_PlayerFox.h"
 #include "Tasks/Task.h"
 
 ABasePaperCharacter::ABasePaperCharacter()
@@ -52,15 +53,23 @@ void ABasePaperCharacter::DoDeath()
 	);
 }
 
-void ABasePaperCharacter::DoHurt()
+void ABasePaperCharacter::DoHurt(AActor* DamageCauser)
 {
 	if (this->GetName().Contains("Player"))
 	{
 		this->GetSprite()->SetFlipbook(HurtAnimation);
 
 		// move character some distance away from the enemy after damage incurred
-		this->GetMovementComponent()->AddInputVector(FVector(-1, 0, 0));
-		
+		const FVector DamageCauserLocation = DamageCauser->GetActorLocation();
+		const FVector PlayerLocation = this->GetActorLocation();
+
+		float HurtPush = dynamic_cast<APC_PlayerFox*>(this)->GetHurtPushAmount();
+		if (DamageCauserLocation.X - PlayerLocation.X > 0)
+		{
+			HurtPush *= -1.f;
+		}
+		this->SetActorRelativeLocation(PlayerLocation + FVector(HurtPush, 0.0, 0.0));
+
 		GetWorld()->GetTimerManager().SetTimer(
 			this->HurtTimerHandle,
 			this,
@@ -87,12 +96,12 @@ float ABasePaperCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Da
 {
 	this->AddHealth(-DamageAmount);
 	UE_LOG(LogTemp, Warning, TEXT("%s's health: %f"), *this->GetName(), this->GetHealth());
-
+	
 	if (this->GetHealth() <= 0)
 	{
 		DoDeath();
 	} else {
-		DoHurt();
+		DoHurt(DamageCauser);
 	}
 	
 	return DamageAmount;

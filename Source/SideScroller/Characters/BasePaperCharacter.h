@@ -24,7 +24,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UPaperFlipbook* HurtAnimation;
-	
+
 	ABasePaperCharacter();
 	
 	virtual void BeginPlay() override;
@@ -36,7 +36,7 @@ public:
 	void DoDeath();
 
 	UFUNCTION(BlueprintCallable)
-	void DoHurt();
+	void DoHurt(AActor* DamageCauser);
 
 	UFUNCTION(BlueprintCallable)
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
