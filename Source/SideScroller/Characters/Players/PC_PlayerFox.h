@@ -31,7 +31,7 @@ public:
 	UPaperFlipbook* StopOnLadderAnimation;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float ClimbSpeed = 1.f;
+	float ClimbSpeed = 0.17f;
 
 	UFUNCTION(BlueprintCallable)
 	void TakeHealing(float HealingValue);
