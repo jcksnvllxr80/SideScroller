@@ -8,10 +8,8 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
-#include "Components/BoxComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Physics/ImmediatePhysics/ImmediatePhysicsShared/ImmediatePhysicsCore.h"
 
 APC_PlayerFox::APC_PlayerFox()
 {
@@ -31,9 +29,9 @@ APC_PlayerFox::APC_PlayerFox()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraArm);
 
-	this->GetCharacterMovement()->MaxWalkSpeed = 300.0;
-	this->GetCharacterMovement()->JumpZVelocity = 600.0;
-	this->GetCharacterMovement()->GravityScale = 3.3;
+	this->GetCharacterMovement()->MaxWalkSpeed = 230.0;
+	this->GetCharacterMovement()->JumpZVelocity = 525.0;
+	this->GetCharacterMovement()->GravityScale = 3.5;
 	this->GetCharacterMovement()->AirControl = 0.4;
 }
 
@@ -42,10 +40,7 @@ void APC_PlayerFox::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	PlayerInputComponent->BindAxis("MoveRight", this, &APC_PlayerFox::MoveRight);
-	PlayerInputComponent->BindAction("ClimbUp", IE_Pressed, this, &APC_PlayerFox::ClimbUp);
-	PlayerInputComponent->BindAction("ClimbUp", IE_Released, this, &APC_PlayerFox::StopClimb);
-	PlayerInputComponent->BindAction("CrouchClimbDown", IE_Pressed, this, &APC_PlayerFox::CrouchClimbDown);
-	PlayerInputComponent->BindAction("CrouchClimbDown", IE_Released, this, &APC_PlayerFox::StopCrouchClimb);
+	PlayerInputComponent->BindAxis("ClimbUp", this, &APC_PlayerFox::ClimbUpAxisInputCallback);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &APC_PlayerFox::Jump);
 }
 
@@ -59,12 +54,12 @@ void APC_PlayerFox::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	CumulativeTime += DeltaTime;
-	if (CumulativeTime > 0.5f)
-	{
-		LogSpeed();
-		CumulativeTime = 0.f;
-	}
+	// CumulativeTime += DeltaTime;
+	// if (CumulativeTime > 0.5f)
+	// {
+	// 	LogSpeed();
+	// 	CumulativeTime = 0.f;
+	// }
 	
 	UpdateAnimation();
 }
@@ -156,14 +151,28 @@ void APC_PlayerFox::ClimbUp()
 
 void APC_PlayerFox::StopCrouchClimb()
 {
-	this->Crouching = false;
+	if (this->Crouching) this->Crouching = false;
 	this->StopClimb();
 }
 
 void APC_PlayerFox::StopClimb()
 {
-	this->GetMovementComponent()->StopMovementImmediately();
+	if (this->OnLadder && this->GetVelocity().Z != 0)
+	{
+		this->GetMovementComponent()->StopMovementImmediately();
+	}
 	this->Climbing = false;
+}
+
+void APC_PlayerFox::ClimbUpAxisInputCallback(const float X)
+{
+	if (X > 0) {
+		ClimbUp();
+	} else if (X < 0) {
+		CrouchClimbDown();
+	} else {
+		StopCrouchClimb();
+	}
 }
 
 float APC_PlayerFox::GetHurtPushAmount() const
@@ -186,7 +195,7 @@ void APC_PlayerFox::MoveRight(const float Axis)
 	}
 }
 
-void APC_PlayerFox::Climb(float Value)
+void APC_PlayerFox::Climb(const float Value)
 {
 	UGameplayStatics::SpawnSoundAttached(
 		this->NearbyClimbableSound,

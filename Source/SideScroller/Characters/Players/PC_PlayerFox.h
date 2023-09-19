@@ -46,7 +46,7 @@ public:
 	float GetHurtPushAmount() const;
 	
 	APC_PlayerFox();
-
+	
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 	virtual void BeginPlay() override;
@@ -97,6 +97,9 @@ private:
 
 	float CumulativeTime = 0.f;
 
+	UFUNCTION(BlueprintCallable)
+	void ClimbUpAxisInputCallback(float X);
+	
 	UFUNCTION(BlueprintCallable)
 	void MoveRight(float Axis);
 
