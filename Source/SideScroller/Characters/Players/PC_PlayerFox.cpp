@@ -58,6 +58,14 @@ void APC_PlayerFox::BeginPlay()
 void APC_PlayerFox::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	CumulativeTime += DeltaTime;
+	if (CumulativeTime > 0.5f)
+	{
+		LogSpeed();
+		CumulativeTime = 0.f;
+	}
+	
 	UpdateAnimation();
 }
 
@@ -88,12 +96,16 @@ void APC_PlayerFox::UpdateAnimation()
 			}
 		}
 		else if (MovementSpeed != 0.f) {
-			this->GetSprite()->SetFlipbook(RunAnimation);
-			// UGameplayStatics::SpawnSoundAttached(
-			// 	this->WalkSound,
-			// 	this->GetSprite(),
-			// 	TEXT("MyPaperCharacterSpriteWalk")
-			// );
+			if (this->GetSprite()->GetFlipbook() != RunAnimation)
+			{
+				this->GetSprite()->SetFlipbook(RunAnimation);
+				UE_LOG(LogTemp, Warning, TEXT("Playing %s's walking sound!"), *this->GetName());
+				UGameplayStatics::SpawnSoundAttached(
+					this->WalkSound,
+					this->GetSprite(),
+					TEXT("PaperCharacterSpriteWalk")
+				);
+			}
 		}
 		else {
 			this->GetSprite()->SetFlipbook(IdleAnimation);
@@ -182,8 +194,8 @@ void APC_PlayerFox::Climb(float Value)
 		TEXT("ClimbingSound")
 	);
 	this->Climbing = true;
-	GetCharacterMovement()->SetMovementMode(MOVE_Flying);
-	AddMovementInput(FVector(0, 0, Value));
+	this->GetCharacterMovement()->SetMovementMode(MOVE_Flying);
+	AddMovementInput(GetActorUpVector(), Value);
 }
 
 void APC_PlayerFox::Jump()
@@ -196,7 +208,7 @@ void APC_PlayerFox::Jump()
 		UGameplayStatics::SpawnSoundAttached(
 			this->JumpSound,
 			this->GetSprite(),
-			TEXT("MyPaperCharacterSpriteJump")
+			TEXT("PaperCharacterSpriteJump")
 		);
 		Super::Jump();
 	}
@@ -212,4 +224,9 @@ void APC_PlayerFox::TakeCherries(int NumCherries)
 {
 	this->CherryStash += NumCherries;
 	UE_LOG(LogTemp, Warning, TEXT("%s's cherry stash has increased to %d!"), *this->GetName(), this->CherryStash);
+}
+
+void APC_PlayerFox::LogSpeed()
+{
+	UE_LOG(LogTemp, Warning, TEXT("%s's speed is %f!"), *this->GetName(), this->GetVelocity().Size());
 }

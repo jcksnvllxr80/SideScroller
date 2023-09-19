@@ -84,8 +84,7 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	float HurtPushAmount = 20.f;
-
-private:
+	
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	class USpringArmComponent* CameraArm;
 
@@ -96,11 +95,16 @@ private:
 
 	bool OnLadder = false;
 
+	float CumulativeTime = 0.f;
+
 	UFUNCTION(BlueprintCallable)
 	void MoveRight(float Axis);
 
 	UFUNCTION(BlueprintCallable)
 	void Climb(float Value);
+
+	UFUNCTION(BlueprintCallable)
+	void LogSpeed();
 
 protected:
 	/*True means that we're currently in air - or falling*/
