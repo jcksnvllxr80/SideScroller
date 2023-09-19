@@ -54,20 +54,22 @@ void ABasePaperCharacter::DoDeath()
 
 void ABasePaperCharacter::DoHurt()
 {
-	if (this->GetName().Contains("PlayerFox"))
+	if (this->GetName().Contains("Player"))
 	{
-		// TODO: move character some distance away from the enemy after damage incurred
 		this->GetSprite()->SetFlipbook(HurtAnimation);
+
+		// move character some distance away from the enemy after damage incurred
+		this->GetMovementComponent()->AddInputVector(FVector(-1, 0, 0));
+		
+		GetWorld()->GetTimerManager().SetTimer(
+			this->HurtTimerHandle,
+			this,
+			&ABasePaperCharacter::HurtFinishedCallback,
+			HurtAnimationTime,
+			false
+		);
 	}
-	
-	GetWorld()->GetTimerManager().SetTimer(
-		this->HurtTimerHandle,
-		this,
-		&ABasePaperCharacter::HurtFinishedCallback,
-		HurtAnimationTime,
-		false
-	);
-	
+
 	UGameplayStatics::SpawnSoundAttached(
 		this->PainSound,
 		this->GetSprite(),
