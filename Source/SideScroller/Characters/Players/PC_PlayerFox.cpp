@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "PC_PlayerFox.h"
 
 #include "PaperFlipbookComponent.h"
@@ -64,6 +61,41 @@ void APC_PlayerFox::Tick(const float DeltaTime)
 	UpdateAnimation();
 }
 
+void APC_PlayerFox::DoWalkAnimAndSound()
+{
+	if (this->GetSprite()->GetFlipbook() != RunAnimation) {
+		this->GetSprite()->SetFlipbook(RunAnimation);
+	}
+			
+	if (this->GetSprite()->GetPlaybackPositionInFrames() % 12 == 0) {
+		// UE_LOG(LogTemp, Warning, TEXT("Playing %s's walking sound!"), *this->GetName());
+		UGameplayStatics::SpawnSoundAttached(
+			this->WalkSound,
+			this->GetSprite(),
+			TEXT("PaperCharacterSpriteWalk")
+		);
+	}
+}
+
+void APC_PlayerFox::DoClimbAnimAndSound()
+{
+	if (this->GetVelocity().Z == 0) {
+		if (this->GetSprite()->GetFlipbook() != StopOnLadderAnimation) {
+			this->GetSprite()->SetFlipbook(StopOnLadderAnimation);
+		}
+	} else {
+		if (this->GetSprite()->GetFlipbook() != ClimbAnimation) this->GetSprite()->SetFlipbook(ClimbAnimation);
+		if (this->GetSprite()->GetPlaybackPositionInFrames() == 0) {
+			// UE_LOG(LogTemp, Warning, TEXT("Playing %s's climbing sound!"), *this->GetName());
+			UGameplayStatics::SpawnSoundAttached(
+				this->NearbyClimbableSound,
+				this->GetSprite(),
+				TEXT("ClimbingSound")
+			);
+		}
+	}
+}
+
 void APC_PlayerFox::UpdateAnimation()
 {
 	if (this)
@@ -83,24 +115,10 @@ void APC_PlayerFox::UpdateAnimation()
 		else if (this->Crouching) {
 			this->GetSprite()->SetFlipbook(CrouchAnimation);
 		} else if (this->Climbing || this->OnLadder) {
-			if (this->GetVelocity().Z == 0)
-			{
-				this->GetSprite()->SetFlipbook(StopOnLadderAnimation);
-			} else {
-				this->GetSprite()->SetFlipbook(ClimbAnimation);
-			}
+			DoClimbAnimAndSound();
 		}
 		else if (MovementSpeed != 0.f) {
-			if (this->GetSprite()->GetFlipbook() != RunAnimation)
-			{
-				this->GetSprite()->SetFlipbook(RunAnimation);
-				UE_LOG(LogTemp, Warning, TEXT("Playing %s's walking sound!"), *this->GetName());
-				UGameplayStatics::SpawnSoundAttached(
-					this->WalkSound,
-					this->GetSprite(),
-					TEXT("PaperCharacterSpriteWalk")
-				);
-			}
+			DoWalkAnimAndSound();
 		}
 		else {
 			this->GetSprite()->SetFlipbook(IdleAnimation);
@@ -197,11 +215,6 @@ void APC_PlayerFox::MoveRight(const float Axis)
 
 void APC_PlayerFox::Climb(const float Value)
 {
-	UGameplayStatics::SpawnSoundAttached(
-		this->NearbyClimbableSound,
-		this->GetSprite(),
-		TEXT("ClimbingSound")
-	);
 	this->Climbing = true;
 	this->GetCharacterMovement()->SetMovementMode(MOVE_Flying);
 	AddMovementInput(GetActorUpVector(), Value);

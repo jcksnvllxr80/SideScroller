@@ -1,4 +1,3 @@
-
 #pragma once
 #include "CoreMinimal.h"
 #include "../../Climbables/BaseClimbable.h"
@@ -6,9 +5,6 @@
 #include "PaperFlipbook.h"
 #include "PC_PlayerFox.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class SIDESCROLLER_API APC_PlayerFox : public ABasePaperCharacter
 {
@@ -108,6 +104,12 @@ private:
 
 	UFUNCTION(BlueprintCallable)
 	void LogSpeed();
+
+	UFUNCTION(BlueprintCallable)
+	void DoWalkAnimAndSound();
+
+	UFUNCTION(BlueprintCallable)
+	void DoClimbAnimAndSound();
 
 protected:
 	/*True means that we're currently in air - or falling*/
