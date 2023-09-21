@@ -61,6 +61,11 @@ void APC_PlayerFox::Tick(const float DeltaTime)
 	UpdateAnimation();
 }
 
+int APC_PlayerFox::GetCherryCount() const
+{
+	return this->CherryStash;
+}
+
 void APC_PlayerFox::DoWalkAnimAndSound()
 {
 	if (this->GetSprite()->GetFlipbook() != RunAnimation) {

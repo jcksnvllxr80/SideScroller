@@ -32,6 +32,26 @@ float ABasePaperCharacter::GetDamage() const
 	return Damage;
 }
 
+void ABasePaperCharacter::AddHealth(const float HealthValue)
+{
+	this->SetHealth(FMath::Clamp(this->Health + HealthValue, 0.f, this->DefaultHealth));
+}
+
+void ABasePaperCharacter::SetHealth(const float HealthValue)
+{
+	this->Health = HealthValue;
+}
+
+float ABasePaperCharacter::GetDefaultHealth() const
+{
+	return DefaultHealth;
+}
+
+float ABasePaperCharacter::GetHealth() const
+{
+	return Health;
+}
+
 void ABasePaperCharacter::DoDeath()
 {
 	UE_LOG(LogTemp, Warning, TEXT("%s's health depleted!"), *this->GetName());
@@ -113,19 +133,4 @@ void ABasePaperCharacter::DestroyActor()
 	this->Destroy();
 	GetWorld()->GetTimerManager().ClearTimer(this->DeathTimerHandle);
 	GetWorld()->GetTimerManager().ClearTimer(this->HurtTimerHandle);
-}
-
-void ABasePaperCharacter::AddHealth(const float HealthValue)
-{
-	this->SetHealth(FMath::Clamp(this->Health + HealthValue, 0.f, this->DefaultHealth));
-}
-
-void ABasePaperCharacter::SetHealth(const float HealthValue)
-{
-	this->Health = HealthValue;
-}
-
-float ABasePaperCharacter::GetHealth() const
-{
-	return Health;
 }

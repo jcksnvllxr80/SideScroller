@@ -11,6 +11,9 @@ class SIDESCROLLER_API APC_PlayerFox : public ABasePaperCharacter
 	GENERATED_BODY()
 
 public:
+	UFUNCTION(BlueprintPure, Category = "HUD")
+	int GetCherryCount() const;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UPaperFlipbook* RunAnimation;
 

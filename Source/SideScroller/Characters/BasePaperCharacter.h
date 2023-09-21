@@ -44,12 +44,15 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetHealth(float Health);
-	
+
 	UFUNCTION(BlueprintCallable)
 	void AddHealth(float HealthValue);
-	
-	UFUNCTION(BlueprintCallable)
+
+	UFUNCTION(BlueprintPure, Category = "HUD")
 	float GetHealth() const;
+
+	UFUNCTION(BlueprintPure, Category = "HUD")
+	float GetDefaultHealth() const;
 
 	UFUNCTION(BlueprintCallable)
 	virtual void DestroyActor();
@@ -64,21 +67,24 @@ public:
 	USoundBase* PainSound;
 
 private:
-	
 	// Properties
 	float Health = 0;
 
 	UPROPERTY(EditAnywhere)
 	float DeathAnimationTime = 1.0;
-	
+
 	UPROPERTY(EditAnywhere)
 	float HurtAnimationTime = 0.5;
-	
+
 	FTimerHandle DeathTimerHandle;
 	FTimerHandle HurtTimerHandle;
-	
+
 	UPROPERTY(EditAnywhere)
 	float DefaultHealth = 100.0;
+
+public:
+
+private:
 	UPROPERTY(EditAnywhere)
 	float Damage = 10.0;
 	
