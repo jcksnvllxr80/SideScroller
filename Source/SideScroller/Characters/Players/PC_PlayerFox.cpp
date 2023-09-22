@@ -30,7 +30,7 @@ APC_PlayerFox::APC_PlayerFox()
 	this->GetCharacterMovement()->JumpZVelocity = 525.0;
 	this->GetCharacterMovement()->GravityScale = 3.5;
 	this->GetCharacterMovement()->AirControl = 0.4;
-	this->GetCharacterMovement()->MaxStepHeight = 0.0;
+	this->GetCharacterMovement()->MaxStepHeight = 10.0;
 }
 
 void APC_PlayerFox::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
