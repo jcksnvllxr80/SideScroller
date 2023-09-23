@@ -20,6 +20,9 @@ ABasePaperCharacter::ABasePaperCharacter()
 
 	this->GetCharacterMovement()->bConstrainToPlane = true;
 	this->GetCharacterMovement()->SetPlaneConstraintNormal(FVector(0, 1, 0));
+
+	ProjectileSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("Projectile Spawn Point"));
+	ProjectileSpawnPoint->SetupAttachment(RootComponent);
 }
 
 void ABasePaperCharacter::BeginPlay()
@@ -125,6 +128,22 @@ float ABasePaperCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Da
 	}
 	
 	return DamageAmount;
+}
+
+void ABasePaperCharacter::Shoot()
+{
+	UE_LOG(LogTemp, Display, TEXT("Fire!"));
+	if (ProjectileClass)
+	{
+		const FVector ProjectileSpawnLocation = ProjectileSpawnPoint->GetComponentLocation();
+		const FRotator ProjectileSpawnRotation = ProjectileSpawnPoint->GetComponentRotation();
+		ABaseProjectile* TempProjectile = GetWorld()->SpawnActor<ABaseProjectile>(
+			ProjectileClass,
+			ProjectileSpawnLocation,
+			ProjectileSpawnRotation
+		);
+		TempProjectile->SetOwner(this);
+	}
 }
 
 void ABasePaperCharacter::DestroyActor()

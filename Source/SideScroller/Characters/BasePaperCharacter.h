@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "PaperCharacter.h"
 #include "PaperFlipbook.h"
+#include "SideScroller/Projectiles/BaseProjectile.h"
 #include "BasePaperCharacter.generated.h"
 
 /**
@@ -70,6 +71,12 @@ private:
 	// Properties
 	float Health = 0;
 
+	UPROPERTY(VisibleAnywhere, BluePrintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	USceneComponent* ProjectileSpawnPoint;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Projectile Type", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<ABaseProjectile> ProjectileClass;
+	
 	UPROPERTY(EditAnywhere)
 	float DeathAnimationTime = 1.0;
 
@@ -81,11 +88,12 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	float DefaultHealth = 100.0;
-
-public:
-
-private:
+	
 	UPROPERTY(EditAnywhere)
 	float Damage = 10.0;
+
+protected:
+	UFUNCTION(BlueprintCallable)
+	virtual void Shoot();
 	
 };

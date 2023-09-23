@@ -45,7 +45,7 @@ public:
 	float GetHurtPushAmount() const;
 	
 	APC_PlayerFox();
-	
+
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 	virtual void BeginPlay() override;
