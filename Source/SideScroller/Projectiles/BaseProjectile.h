@@ -19,6 +19,9 @@ public:
 	// Sets default values for this actor's properties
 	ABaseProjectile();
 
+	UFUNCTION(BlueprintCallable)
+	void LaunchProjectile(const float XDirection);
+
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Effects", meta = (AllowPrivateAccess = "true"))
 	UPaperFlipbook* TravelAnimation;
@@ -56,5 +59,4 @@ private:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
 };

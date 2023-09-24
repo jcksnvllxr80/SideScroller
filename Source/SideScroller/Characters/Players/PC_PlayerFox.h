@@ -14,6 +14,12 @@ public:
 	UFUNCTION(BlueprintPure, Category = "HUD")
 	int GetCherryCount() const;
 	
+	UFUNCTION(BlueprintCallable, Category = "HUD")
+	void SetCherryStash(int CherryStash);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector CrouchProjectileSpawnPoint = FVector(0.f, -25.f, 0.f);
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UPaperFlipbook* RunAnimation;
 
@@ -37,7 +43,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void TakeCherries(int NumCherries);
-
+	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -107,6 +113,12 @@ private:
 
 	UFUNCTION(BlueprintCallable)
 	void LogSpeed();
+
+	UFUNCTION(BlueprintCallable)
+	void LogRotation();
+
+	UFUNCTION(BlueprintCallable)
+	void LogLocation();
 
 	UFUNCTION(BlueprintCallable)
 	void DoWalkAnimAndSound();

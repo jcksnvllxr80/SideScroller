@@ -62,6 +62,8 @@ void ABasePickup::OnBeginOverlapDelegate(
 	const FHitResult& SweepResult
 ) {
 	ABasePaperCharacter* OverlappingActor = dynamic_cast<ABasePaperCharacter*>(OtherComp->GetOwner());
+	if (OverlappingActor == nullptr) return;
+	
 	UE_LOG(LogTemp, Warning, TEXT("%s has overlapped %s!"),
 		   *OtherActor->GetName(),
 		   *OverlappedComponent->GetOwner()->GetName()

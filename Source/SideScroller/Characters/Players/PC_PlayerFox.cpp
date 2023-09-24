@@ -5,6 +5,7 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/ArrowComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -57,6 +58,8 @@ void APC_PlayerFox::Tick(const float DeltaTime)
 	// if (CumulativeTime > 0.5f)
 	// {
 	// 	LogSpeed();
+	// 	LogRotation();
+	// 	LogLocation();
 	// 	CumulativeTime = 0.f;
 	// }
 	
@@ -66,6 +69,11 @@ void APC_PlayerFox::Tick(const float DeltaTime)
 int APC_PlayerFox::GetCherryCount() const
 {
 	return this->CherryStash;
+}
+
+void APC_PlayerFox::SetCherryStash(int NumCherries)
+{
+	this->CherryStash = NumCherries;
 }
 
 void APC_PlayerFox::DoWalkAnimAndSound()
@@ -135,11 +143,15 @@ void APC_PlayerFox::UpdateAnimation()
 
 void APC_PlayerFox::UpdateRotation(const float Value)
 {
+	const FVector ProjSpawnLoc = GetProjectileSpawnPoint()->GetRelativeLocation();
+	
 	if (Value < 0) {
 		this->GetSprite()->SetRelativeRotation(FRotator(0, 180.f, 0));
+		GetProjectileSpawnPoint()->SetRelativeLocation(FVector(ProjectileSpawnLoc.X * -1.f, ProjSpawnLoc.Y, ProjSpawnLoc.Z));
 	}
 	else {
 		this->GetSprite()->SetRelativeRotation(FRotator(0, 0, 0));
+		GetProjectileSpawnPoint()->SetRelativeLocation(FVector(ProjectileSpawnLoc.X, ProjSpawnLoc.Y, ProjSpawnLoc.Z));
 	}
 }
 
@@ -162,6 +174,7 @@ void APC_PlayerFox::CrouchClimbDown()
 		Climb(-ClimbSpeed);
 	} else {
 		this->Crouching = true;
+		this->GetProjectileSpawnPoint()->SetRelativeLocation(ProjectileSpawnLoc - CrouchProjectileSpawnPoint);
 	}
 }
 
@@ -176,7 +189,14 @@ void APC_PlayerFox::ClimbUp()
 
 void APC_PlayerFox::StopCrouchClimb()
 {
-	if (this->Crouching) this->Crouching = false;
+	if (this->Crouching)
+	{
+		const FVector ProjSpawnLoc = GetProjectileSpawnPoint()->GetRelativeLocation();
+		this->Crouching = false;
+		this->GetProjectileSpawnPoint()->SetRelativeLocation(
+			FVector(ProjSpawnLoc.X, ProjectileSpawnLoc.Y, ProjSpawnLoc.Z)
+		);
+	}
 	this->StopClimb();
 }
 
@@ -258,4 +278,14 @@ void APC_PlayerFox::TakeCherries(int NumCherries)
 void APC_PlayerFox::LogSpeed()
 {
 	UE_LOG(LogTemp, Warning, TEXT("%s's speed is %f!"), *this->GetName(), this->GetVelocity().Size());
+}
+
+void APC_PlayerFox::LogRotation()
+{
+	UE_LOG(LogTemp, Warning, TEXT("%s's rotation is %s!"), *this->GetName(), *GetSprite()->GetRelativeRotation().ToString());
+}
+
+void APC_PlayerFox::LogLocation()
+{
+	UE_LOG(LogTemp, Warning, TEXT("%s's location is %s!"), *this->GetName(), *this->GetActorLocation().ToString());
 }

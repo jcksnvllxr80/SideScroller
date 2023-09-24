@@ -62,6 +62,8 @@ void AEnemyCollisionPaperCharacter::OnBeginOverlapDelegate(
 	const FHitResult & SweepResult
 ){
 	ABasePaperCharacter* OverlappingActor = dynamic_cast<ABasePaperCharacter*>(OtherComp->GetOwner());
+	if (OverlappingActor == nullptr) return;
+	
 	if (OverlappingActor != this)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s has overlapped %s!"),
@@ -89,6 +91,8 @@ void AEnemyCollisionPaperCharacter::OnHitDelegate(
 		*HitComponent->GetOwner()->GetName()
 	);
 	ABasePaperCharacter* DamagingActor = dynamic_cast<ABasePaperCharacter*>(OtherComp->GetOwner());
+	if (DamagingActor == nullptr) return;
+	
 	this->TakeDamage(
 		DamagingActor->GetDamage(),
 		FDamageEvent(UDamageType::StaticClass()),

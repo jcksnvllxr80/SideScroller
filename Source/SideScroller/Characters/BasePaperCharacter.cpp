@@ -28,6 +28,7 @@ ABasePaperCharacter::ABasePaperCharacter()
 void ABasePaperCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	ProjectileSpawnPoint->SetRelativeLocation(ProjectileSpawnLoc);
 }
 
 float ABasePaperCharacter::GetDamage() const
@@ -53,6 +54,11 @@ float ABasePaperCharacter::GetDefaultHealth() const
 float ABasePaperCharacter::GetHealth() const
 {
 	return Health;
+}
+
+USceneComponent* ABasePaperCharacter::GetProjectileSpawnPoint() const
+{
+	return ProjectileSpawnPoint;
 }
 
 void ABasePaperCharacter::DoDeath()
@@ -132,6 +138,35 @@ float ABasePaperCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Da
 
 void ABasePaperCharacter::Shoot()
 {
+	APC_PlayerFox* Player = UECasts_Private::DynamicCast<APC_PlayerFox*>(this);
+	if (Player != nullptr)
+	{
+		int NumCherries = Player->GetCherryCount();
+		if (NumCherries > 0)
+		{
+			NumCherries -= 1;
+			UE_LOG(LogTemp, Warning, TEXT("ABasePaperCharacter::Shoot - Subtract 1 cherry; now, %s has %d charries"),
+				   *Player->GetName(),
+				   NumCherries
+			);
+			Player->SetCherryStash(NumCherries);
+		} else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("ABasePaperCharacter::Shoot - Can't shoot; %s has %d charries"),
+				   *Player->GetName(),
+				   NumCherries
+			)
+			return;
+		}
+	}
+	
+	float Direction = 1.f;
+	if (this->GetSprite()->GetRelativeRotation().Yaw == 180.0)
+	{
+		Direction = -1.f;
+
+	}
+	
 	UE_LOG(LogTemp, Display, TEXT("Fire!"));
 	if (ProjectileClass)
 	{
@@ -143,6 +178,12 @@ void ABasePaperCharacter::Shoot()
 			ProjectileSpawnRotation
 		);
 		TempProjectile->SetOwner(this);
+		TempProjectile->LaunchProjectile(Direction);
+		UE_LOG(
+			LogTemp, Warning, TEXT("ABasePaperCharacter::Shoot - Owner of spawned projectile, %s, is %s!"),
+			*TempProjectile->GetName(),
+			*TempProjectile->GetOwner()->GetName()
+		);
 	}
 }
 

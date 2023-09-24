@@ -16,7 +16,7 @@ class SIDESCROLLER_API ABasePaperCharacter : public APaperCharacter
 {
 	GENERATED_BODY()
 
-public:
+public:	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UPaperFlipbook* IdleAnimation;
 	
@@ -26,6 +26,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UPaperFlipbook* HurtAnimation;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector ProjectileSpawnLoc;
+
 	ABasePaperCharacter();
 	
 	virtual void BeginPlay() override;
@@ -33,6 +36,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	float GetDamage() const;
 
+	UFUNCTION(BlueprintCallable)
+	USceneComponent* GetProjectileSpawnPoint() const;
+	
 	UFUNCTION(BlueprintCallable)
 	void DoDeath();
 
@@ -84,6 +90,7 @@ private:
 	float HurtAnimationTime = 0.5;
 
 	FTimerHandle DeathTimerHandle;
+	
 	FTimerHandle HurtTimerHandle;
 
 	UPROPERTY(EditAnywhere)
@@ -95,5 +102,4 @@ private:
 protected:
 	UFUNCTION(BlueprintCallable)
 	virtual void Shoot();
-	
 };
