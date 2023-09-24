@@ -22,6 +22,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void LaunchProjectile(const float XDirection);
 
+	UFUNCTION(BlueprintCallable)
+	UProjectileMovementComponent* GetProjectileMovementComp() const;
+
+	UFUNCTION(BlueprintCallable)
+	UPaperFlipbookComponent* GetProjectileFlipbook() const;
+
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Effects", meta = (AllowPrivateAccess = "true"))
 	UPaperFlipbook* TravelAnimation;
@@ -38,6 +44,7 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = Actor)
 	UPaperFlipbookComponent* ProjectileFlipbook;
 
+private:
 	UPROPERTY(VisibleAnywhere, Category = Collision)
 	UCapsuleComponent* ProjectileBox;
 
@@ -52,6 +59,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Move", meta = (AllowPrivateAccess = "true"))
 	float MovementSpeed = 50.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Lifespan", meta = (AllowPrivateAccess = "true"))
+	float ProjectileInLifespan = 0.5f;
 
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);

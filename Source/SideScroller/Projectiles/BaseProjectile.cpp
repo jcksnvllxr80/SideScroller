@@ -4,7 +4,6 @@
 #include "BaseProjectile.h"
 
 #include "PaperFlipbookComponent.h"
-#include "Components/ArrowComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Engine/DamageEvents.h"
 #include "GameFramework/ProjectileMovementComponent.h"
@@ -34,26 +33,53 @@ void ABaseProjectile::BeginPlay()
 	this->ProjectileBox->SetNotifyRigidBodyCollision(true);
 	this->ProjectileBox->OnComponentHit.AddDynamic(this, &ABaseProjectile::OnHit);
 
-	ProjectileMovementComp->ProjectileGravityScale = 0.f;
 	ProjectileMovementComp->InitialSpeed = MovementSpeed;
 	ProjectileMovementComp->MaxSpeed = MovementSpeed;
 }
 
-void ABaseProjectile::LaunchProjectile(const float XDirection)
+UProjectileMovementComponent* ABaseProjectile::GetProjectileMovementComp() const
+{
+	return ProjectileMovementComp;
+}
+
+UPaperFlipbookComponent* ABaseProjectile::GetProjectileFlipbook() const
+{
+	return ProjectileFlipbook;
+}
+
+void ABaseProjectile::LaunchProjectile(const float Direction)
 {
 	AActor* MyOwner = GetOwner();
 	if (!MyOwner)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ABaseProjectile::LaunchProjectile - Component has no owner! Exiting OnHit Function."));
+		UE_LOG(LogTemp, Warning,
+			TEXT("ABaseProjectile::LaunchProjectile - %s has no owner! Exiting OnHit Function."),
+			*this->GetName()
+		);
 		return;
 	}
-	UE_LOG(LogTemp, Warning, TEXT("ABaseProjectile::LaunchProjectile - Projectile's  owner is %s."), *GetOwner()->GetName());
+	UE_LOG(LogTemp, Warning, TEXT("ABaseProjectile::LaunchProjectile - %s's  owner is %s."),
+		*this->GetName(),
+		*GetOwner()->GetName()
+	);
 
 	const ABasePaperCharacter* BaseChar = dynamic_cast<ABasePaperCharacter*>(MyOwner);
 	if (BaseChar == nullptr) return;
 
-	this->SetLifeSpan(0.5f);
-	ProjectileMovementComp->Velocity = FVector(XDirection * MovementSpeed, 0 , 0);
+	UGameplayStatics::SpawnSoundAttached(
+		this->LaunchSound,
+		this->ProjectileFlipbook,
+		TEXT("ProjectileLaunch")
+	);
+	
+	this->SetLifeSpan(ProjectileInLifespan);
+	this->ProjectileFlipbook->SetRelativeRotation(BaseChar->GetSprite()->GetRelativeRotation());
+	UE_LOG(LogTemp, Warning,
+	       TEXT("ABaseProjectile::LaunchProjectile - %s has rotation %s."),
+	       *this->ProjectileFlipbook->GetName(),
+	       *this->ProjectileFlipbook->GetRelativeRotation().ToString()
+	);
+	ProjectileMovementComp->Velocity = FVector(Direction * MovementSpeed, 0.f, 0.f);
 }
 
 void ABaseProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
