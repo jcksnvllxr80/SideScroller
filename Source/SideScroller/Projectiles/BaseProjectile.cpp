@@ -109,14 +109,38 @@ void ABaseProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
 	
 	if (OtherBasePaperActor != MyOwner)
 	{
-		UGameplayStatics::PlaySoundAtLocation(this, HitSound, GetActorLocation());
-		OtherBasePaperActor->TakeDamage(
-			Damage,
-			FDamageEvent(UDamageType::StaticClass()),
-			MyOwner->GetInstigatorController(),
-			this
-		);
-		Destroy();
+		DoCollisionAnimAndSound(MyOwner, OtherBasePaperActor);
 	}
+}
+
+void ABaseProjectile::DoCollisionAnimAndSound(const AActor* MyOwner, ABasePaperCharacter* OtherBasePaperActor)
+{
+	this->SetLifeSpan(CollisionAnimationTime);
+	this->ProjectileMovementComp->StopMovementImmediately();
+	this->SetActorEnableCollision(false);
+	this->GetProjectileFlipbook()->SetLooping(false);
+	this->GetProjectileFlipbook()->SetFlipbook(CollisionAnimation);
+	GetWorld()->GetTimerManager().SetTimer(
+		this->CollisionTimerHandle,
+		this,
+		&ABaseProjectile::DestroyActor,
+		CollisionAnimationTime,
+		false
+	);
+		
+	UGameplayStatics::PlaySoundAtLocation(this, HitSound, GetActorLocation());
+	OtherBasePaperActor->TakeDamage(
+		Damage,
+		FDamageEvent(UDamageType::StaticClass()),
+		MyOwner->GetInstigatorController(),
+		this
+	);
+}
+
+void ABaseProjectile::DestroyActor()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Destroying %s!"), *this->GetName());
+	this->Destroy();
+	GetWorld()->GetTimerManager().ClearTimer(this->CollisionTimerHandle);
 }
 

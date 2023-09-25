@@ -10,6 +10,8 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "BaseProjectile.generated.h"
 
+class ABasePaperCharacter;
+
 UCLASS()
 class SIDESCROLLER_API ABaseProjectile : public AActor
 {
@@ -21,6 +23,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void LaunchProjectile(const float XDirection);
+	void DoCollisionAnimAndSound(const AActor* MyOwner, ABasePaperCharacter* OtherBasePaperActor);
 
 	UFUNCTION(BlueprintCallable)
 	UProjectileMovementComponent* GetProjectileMovementComp() const;
@@ -44,7 +47,11 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = Actor)
 	UPaperFlipbookComponent* ProjectileFlipbook;
 
-private:
+	UPROPERTY(EditAnywhere)
+	float CollisionAnimationTime = 1.0;
+	
+	FTimerHandle CollisionTimerHandle;
+	
 	UPROPERTY(VisibleAnywhere, Category = Collision)
 	UCapsuleComponent* ProjectileBox;
 
@@ -63,6 +70,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Lifespan", meta = (AllowPrivateAccess = "true"))
 	float ProjectileInLifespan = 0.5f;
 
+	UFUNCTION(BlueprintCallable)
+	virtual void DestroyActor();
+	
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
