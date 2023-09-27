@@ -116,7 +116,7 @@ void ABaseProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
 void ABaseProjectile::DoCollisionAnimAndSound(const AActor* MyOwner, ABasePaperCharacter* OtherBasePaperActor)
 {
 	this->SetLifeSpan(CollisionAnimationTime);
-	this->ProjectileMovementComp->StopMovementImmediately();±±±
+	this->ProjectileMovementComp->StopMovementImmediately();
 	this->SetActorEnableCollision(false);
 	this->GetProjectileFlipbook()->SetLooping(false);
 	this->GetProjectileFlipbook()->SetFlipbook(CollisionAnimation);
