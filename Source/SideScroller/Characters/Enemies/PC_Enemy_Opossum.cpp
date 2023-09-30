@@ -21,3 +21,9 @@ APC_Enemy_Opossum::APC_Enemy_Opossum()
 
 	this->SetDamage(30.f);
 }
+
+void APC_Enemy_Opossum::BeginPlay()
+{
+	Super::BeginPlay();
+
+}

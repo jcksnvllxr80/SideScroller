@@ -17,5 +17,7 @@ class SIDESCROLLER_API APC_Enemy_Opossum : public AEnemyCollisionPaperCharacter
 public:
 
 	APC_Enemy_Opossum();
+
+	virtual void BeginPlay() override;
 	
 };

@@ -87,23 +87,27 @@ void ABasePaperCharacter::DoDeath()
 	);
 }
 
+void ABasePaperCharacter::PushHurtCharacter(AActor* DamageCauser)
+{
+	// move character some distance away from the enemy after damage incurred
+	const FVector DamageCauserLocation = DamageCauser->GetActorLocation();
+	const FVector PlayerLocation = this->GetActorLocation();
+
+	float HurtPush = UECasts_Private::DynamicCast<APC_PlayerFox*>(this)->GetHurtPushAmount();
+	if (DamageCauserLocation.X - PlayerLocation.X > 0)
+	{
+		HurtPush *= -1.f;
+	}
+	// TODO: Need an alternative to SetActorRelativeLocation; it causes player to get stuck in walls
+	this->SetActorRelativeLocation(PlayerLocation + FVector(HurtPush, 0.0, 0.0));
+}
+
 void ABasePaperCharacter::DoHurt(AActor* DamageCauser)
 {
 	if (this->GetName().Contains("Player"))
 	{
 		this->GetSprite()->SetFlipbook(HurtAnimation);
-
-		// move character some distance away from the enemy after damage incurred
-		const FVector DamageCauserLocation = DamageCauser->GetActorLocation();
-		const FVector PlayerLocation = this->GetActorLocation();
-
-		float HurtPush = dynamic_cast<APC_PlayerFox*>(this)->GetHurtPushAmount();
-		if (DamageCauserLocation.X - PlayerLocation.X > 0)
-		{
-			HurtPush *= -1.f;
-		}
-		this->SetActorRelativeLocation(PlayerLocation + FVector(HurtPush, 0.0, 0.0));
-
+		
 		GetWorld()->GetTimerManager().SetTimer(
 			this->HurtTimerHandle,
 			this,
@@ -111,6 +115,8 @@ void ABasePaperCharacter::DoHurt(AActor* DamageCauser)
 			HurtAnimationTime,
 			false
 		);
+		
+		PushHurtCharacter(DamageCauser);
 	}
 
 	UGameplayStatics::SpawnSoundAttached(
@@ -190,6 +196,11 @@ void ABasePaperCharacter::Shoot()
 			*TempProjectile->GetOwner()->GetName()
 		);
 	}
+}
+
+bool ABasePaperCharacter::GetShootUpward() const
+{
+	return ShootUpward;
 }
 
 void ABasePaperCharacter::DestroyActor()

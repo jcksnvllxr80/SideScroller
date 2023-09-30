@@ -42,9 +42,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UPaperFlipbook* StopOnLadderAnimation;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float ClimbSpeed = 0.17f;
-
 	UFUNCTION(BlueprintCallable)
 	void TakeMoney(int MonetaryValue);
 
@@ -53,32 +50,39 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void TakeCherries(int NumCherries);
-	
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION(BlueprintCallable)
 	float GetHurtPushAmount() const;
-	
+
 	APC_PlayerFox();
 
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 	virtual void BeginPlay() override;
-
+	
 	virtual void Jump() override;
 
+	UFUNCTION(BlueprintCallable)
 	void CrouchClimbDown();
 
+	UFUNCTION(BlueprintCallable)
 	void StopCrouchClimb();
 
+	UFUNCTION(BlueprintCallable)
 	void ClimbUp();
-
+	
+	UFUNCTION(BlueprintCallable)
 	void StopClimb();
 
 	void SetOverlappingClimbable(bool bOverlappingClimbable, ABaseClimbable* OverlappedClimbable);
 
 private:
+	UPROPERTY(EditAnywhere)
+	float ClimbSpeed = 0.17f;
+
 	UPROPERTY(EditAnywhere)
 	int CherryStash = 0;
 
@@ -116,7 +120,7 @@ private:
 	float CumulativeTime = 0.f;
 
 	UFUNCTION(BlueprintCallable)
-	void ClimbUpAxisInputCallback(float X);
+	void ClimbUpAxisInputCallback(float Z);
 	
 	UFUNCTION(BlueprintCallable)
 	void MoveRight(float Axis);

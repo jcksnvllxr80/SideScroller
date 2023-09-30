@@ -73,18 +73,30 @@ void ABaseProjectile::LaunchProjectile(const float Direction)
 	);
 	
 	this->SetLifeSpan(ProjectileInLifespan);
-	this->ProjectileFlipbook->SetRelativeRotation(BaseChar->GetSprite()->GetRelativeRotation());
+
+	if (BaseChar->GetShootUpward())
+	{
+		this->ProjectileFlipbook->SetRelativeRotation(FRotator(90, 0, 0));
+		ProjectileMovementComp->Velocity = FVector(0.f, 0.f, Direction * MovementSpeed);
+	}
+	else
+	{
+		this->ProjectileFlipbook->SetRelativeRotation(BaseChar->GetSprite()->GetRelativeRotation());
+		ProjectileMovementComp->Velocity = FVector(Direction * MovementSpeed, 0.f, 0.f);
+	}
+
 	UE_LOG(LogTemp, Warning,
 	       TEXT("ABaseProjectile::LaunchProjectile - %s has rotation %s."),
 	       *this->ProjectileFlipbook->GetName(),
 	       *this->ProjectileFlipbook->GetRelativeRotation().ToString()
 	);
-	ProjectileMovementComp->Velocity = FVector(Direction * MovementSpeed, 0.f, 0.f);
 }
 
 void ABaseProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
                             FVector NormalImpulse, const FHitResult& Hit)
 {
+	UE_LOG(LogTemp, Warning, TEXT("hit something."));
+
 	const AActor* MyOwner = GetOwner();
 	if (!MyOwner)
 	{

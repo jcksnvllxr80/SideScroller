@@ -13,7 +13,6 @@ UCLASS()
 class SIDESCROLLER_API APC_Enemy_Eagle : public AEnemyCollisionPaperCharacter
 {
 	GENERATED_BODY()
-
 	
 public:
 

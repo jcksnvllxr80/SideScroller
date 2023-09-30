@@ -34,9 +34,11 @@ void AEnemyCollisionPaperCharacter::BeginPlay()
 
 	this->LeftHurtBox->SetGenerateOverlapEvents(true);
 	this->LeftHurtBox->OnComponentBeginOverlap.AddDynamic(this, &AEnemyCollisionPaperCharacter::OnBeginOverlapDelegate);
+	this->LeftHurtBox->SetCollisionProfileName("OverlapAllDynamic");
 
 	this->RightHurtBox->SetGenerateOverlapEvents(true);
 	this->RightHurtBox->OnComponentBeginOverlap.AddDynamic(this, &AEnemyCollisionPaperCharacter::OnBeginOverlapDelegate);
+	this->RightHurtBox->SetCollisionProfileName("OverlapAllDynamic");
 }
 
 UBoxComponent* AEnemyCollisionPaperCharacter::GetDamageBox() const

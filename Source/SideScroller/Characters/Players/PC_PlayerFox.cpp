@@ -8,6 +8,8 @@
 #include "Components/ArrowComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Physics/ImmediatePhysics/ImmediatePhysicsChaos/ImmediatePhysicsCore_Chaos.h"
+#include "Physics/ImmediatePhysics/ImmediatePhysicsShared/ImmediatePhysicsCore.h"
 
 APC_PlayerFox::APC_PlayerFox()
 {
@@ -194,6 +196,12 @@ void APC_PlayerFox::ClimbUp()
 	{
 		this->OnLadder = true;
 		Climb(ClimbSpeed);
+	} else
+	{
+		const FVector ProjSpawnLoc = GetProjectileSpawnPoint()->GetRelativeLocation();
+		this->Crouching = false;
+		this->GetProjectileSpawnPoint()->SetRelativeLocation(ProjectileUpwardSpawnLoc);
+		this->ShootUpward = true;
 	}
 }
 
@@ -207,6 +215,14 @@ void APC_PlayerFox::StopCrouchClimb()
 			FVector(ProjSpawnLoc.X, ProjectileSpawnLoc.Y, ProjSpawnLoc.Z)
 		);
 	}
+
+	// set ShootUpward to false if its true
+	this->ShootUpward &= false;
+	const FVector ProjSpawnLoc = GetProjectileSpawnPoint()->GetRelativeLocation();
+	this->GetProjectileSpawnPoint()->SetRelativeLocation(
+		FVector(ProjSpawnLoc.X, ProjectileSpawnLoc.Y, ProjectileSpawnLoc.Z)
+	);
+	
 	this->StopClimb();
 }
 
@@ -219,11 +235,11 @@ void APC_PlayerFox::StopClimb()
 	this->Climbing = false;
 }
 
-void APC_PlayerFox::ClimbUpAxisInputCallback(const float X)
+void APC_PlayerFox::ClimbUpAxisInputCallback(const float Z)
 {
-	if (X > 0) {
+	if (Z > 0) {
 		ClimbUp();
-	} else if (X < 0) {
+	} else if (Z < 0) {
 		CrouchClimbDown();
 	} else {
 		StopCrouchClimb();
@@ -243,7 +259,12 @@ void APC_PlayerFox::MoveRight(const float Axis)
 	if (this->Crouching || this->Climbing) {return;}
 	
 	UpdateRotation(Axis);
+	if (GetCharacterMovement()->GetMovementName() == "Flying")
+	{
+		GetMovementComponent()->StopMovementImmediately();
+	}
 	AddMovementInput(FVector(Axis, 0, 0));
+
 	if (!OverlappingClimbable && !bIsFalling)
 	{
 		GetCharacterMovement()->SetMovementMode(MOVE_Walking);
@@ -252,7 +273,10 @@ void APC_PlayerFox::MoveRight(const float Axis)
 
 void APC_PlayerFox::Climb(const float Value)
 {
-	this->Climbing = true;
+	if (!this->Climbing){
+		GetMovementComponent()->StopMovementImmediately();
+		this->Climbing = true;
+	}
 	this->GetCharacterMovement()->SetMovementMode(MOVE_Flying);
 	AddMovementInput(GetActorUpVector(), Value);
 }
