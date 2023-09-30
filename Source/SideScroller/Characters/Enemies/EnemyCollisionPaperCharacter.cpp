@@ -10,7 +10,7 @@
 
 AEnemyCollisionPaperCharacter::AEnemyCollisionPaperCharacter()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 	
 	this->DamageBox = CreateDefaultSubobject<UBoxComponent>(TEXT("DamageBox"));
 	this->DamageBox->SetupAttachment(RootComponent);
@@ -30,6 +30,7 @@ void AEnemyCollisionPaperCharacter::BeginPlay()
 	Super::BeginPlay();
 	this->DamageBox->SetNotifyRigidBodyCollision(true);
 	this->DamageBox->OnComponentHit.AddDynamic(this, &AEnemyCollisionPaperCharacter::OnHitDelegate);
+	this->DamageBox->SetCollisionProfileName("BlockAllDynamic");
 
 	this->LeftHurtBox->SetGenerateOverlapEvents(true);
 	this->LeftHurtBox->OnComponentBeginOverlap.AddDynamic(this, &AEnemyCollisionPaperCharacter::OnBeginOverlapDelegate);

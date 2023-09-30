@@ -15,7 +15,7 @@
 
 ABasePaperCharacter::ABasePaperCharacter()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 	Health = DefaultHealth;
 
 	this->GetCharacterMovement()->bConstrainToPlane = true;
@@ -34,6 +34,11 @@ void ABasePaperCharacter::BeginPlay()
 float ABasePaperCharacter::GetDamage() const
 {
 	return Damage;
+}
+
+void ABasePaperCharacter::SetDamage(const float DamageAmount)
+{
+	this->Damage = DamageAmount;
 }
 
 void ABasePaperCharacter::AddHealth(const float HealthValue)

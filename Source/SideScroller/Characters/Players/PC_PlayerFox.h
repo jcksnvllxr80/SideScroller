@@ -3,6 +3,7 @@
 #include "../../Climbables/BaseClimbable.h"
 #include "../BasePaperCharacter.h"
 #include "PaperFlipbook.h"
+#include "SideScroller/Pickups/Gem.h"
 #include "PC_PlayerFox.generated.h"
 
 UCLASS()
@@ -17,6 +18,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "HUD")
 	void SetCherryStash(int CherryStash);
 
+	UFUNCTION(BlueprintPure, Category = "HUD")
+	int GetMoneyCount() const;
+	
+	UFUNCTION(BlueprintCallable, Category = "HUD")
+	void SetMoneyStash(const int MoneyAmount);
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector CrouchProjectileSpawnPoint = FVector(0.f, -25.f, 0.f);
 
@@ -31,12 +38,15 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UPaperFlipbook* ClimbAnimation;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UPaperFlipbook* StopOnLadderAnimation;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float ClimbSpeed = 0.17f;
+
+	UFUNCTION(BlueprintCallable)
+	void TakeMoney(int MonetaryValue);
 
 	UFUNCTION(BlueprintCallable)
 	void TakeHealing(float HealingValue);
@@ -71,6 +81,9 @@ public:
 private:
 	UPROPERTY(EditAnywhere)
 	int CherryStash = 0;
+
+	UPROPERTY(EditAnywhere)
+	int MoneyStash = 0;
 	
 	UPROPERTY(EditAnywhere)
 	USoundBase* JumpSound;

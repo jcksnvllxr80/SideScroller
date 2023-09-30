@@ -37,6 +37,9 @@ public:
 	float GetDamage() const;
 
 	UFUNCTION(BlueprintCallable)
+	void SetDamage(const float Damage);
+	
+	UFUNCTION(BlueprintCallable)
 	USceneComponent* GetProjectileSpawnPoint() const;
 	
 	UFUNCTION(BlueprintCallable)

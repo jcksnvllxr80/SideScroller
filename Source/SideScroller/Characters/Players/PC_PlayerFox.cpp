@@ -76,6 +76,16 @@ void APC_PlayerFox::SetCherryStash(int NumCherries)
 	this->CherryStash = NumCherries;
 }
 
+int APC_PlayerFox::GetMoneyCount() const
+{
+	return this->MoneyStash;
+}
+
+void APC_PlayerFox::SetMoneyStash(const int MoneyAmount)
+{
+	this->MoneyStash = MoneyAmount;
+}
+
 void APC_PlayerFox::DoWalkAnimAndSound()
 {
 	if (this->GetSprite()->GetFlipbook() != RunAnimation) {
@@ -261,6 +271,13 @@ void APC_PlayerFox::Jump()
 		);
 		Super::Jump();
 	}
+}
+
+void APC_PlayerFox::TakeMoney(int MonetaryValue)
+{
+	this->MoneyStash += MonetaryValue;
+	UE_LOG(LogTemp, Warning, TEXT("%s's money stash is now %i!"), *this->GetName(), this->MoneyStash);
+
 }
 
 void APC_PlayerFox::TakeHealing(const float HealingValue)

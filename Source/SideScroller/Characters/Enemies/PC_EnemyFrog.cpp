@@ -7,7 +7,7 @@
 
 APC_EnemyFrog::APC_EnemyFrog()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	this->GetDamageBox()->SetRelativeScale3D(FVector(-0.100219,0.120000,0.252439));
 	

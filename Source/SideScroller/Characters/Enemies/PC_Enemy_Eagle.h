@@ -13,5 +13,11 @@ UCLASS()
 class SIDESCROLLER_API APC_Enemy_Eagle : public AEnemyCollisionPaperCharacter
 {
 	GENERATED_BODY()
+
 	
+public:
+
+	APC_Enemy_Eagle();
+
+	virtual void BeginPlay() override;
 };

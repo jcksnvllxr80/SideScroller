@@ -9,7 +9,7 @@
 AMushroom::AMushroom()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	this->GetPickupBox()->SetRelativeScale3D(FVector(0.2,0.2,0.2));
 	this->GetPickupBox()->SetRelativeLocation(FVector(0.0,0.0,0.0));
