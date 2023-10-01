@@ -27,30 +27,31 @@ void APC_AIController::Tick(const float DeltaSeconds)
 
 	if (!PlayerPawn) return;
 	// this->MoveToActor(PlayerPawn, 200.f);
-	bool PlayerLOS = this->LineOfSightTo(PlayerPawn);
-	MoveToActor(PlayerPawn, 100);
-	if (PlayerLOS)
+
+	if (this->LineOfSightTo(PlayerPawn))
 	{
 		this->SetFocus(PlayerPawn);
+		
 		ABasePaperCharacter* EnemyAI = dynamic_cast<ABasePaperCharacter*>(this->GetPawn());
 		if (EnemyAI)
 		{
 			if (this->CanShoot)
 			{
+				EnemyAI->Shoot();
 				this->CanShoot = false;
-				EnemyAI->AIShoot();
+
 				GetWorld()->GetTimerManager().SetTimer(
 					this->ShootTimerHandle,
 					this,
 					&APC_AIController::CanShootAgain,
-					ShootDelayTime,
+					EnemyAI->GetShootDelayTime(),
 					false
 				);
 			}
 		}
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("ABasePaperCharacter::Shoot cannot cast %s to EnemyPC."), *this->GetName());
+			UE_LOG(LogTemp, Warning, TEXT("APC_AIController::Tick - cannot cast %s to EnemyPC."), *this->GetName());
 		}
 	}
 	else

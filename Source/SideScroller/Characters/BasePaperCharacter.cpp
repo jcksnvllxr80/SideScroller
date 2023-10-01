@@ -6,6 +6,7 @@
 #include "Enemies/EnemyCollisionPaperCharacter.h"
 #include "PaperFlipbookComponent.h"
 #include "PC_AIController.h"
+#include "Components/ArrowComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Engine/DamageEvents.h"
@@ -132,9 +133,9 @@ void ABasePaperCharacter::HurtFinishedCallback()
 	this->GetSprite()->SetFlipbook(IdleAnimation);
 }
 
-void ABasePaperCharacter::AIShoot()
+float ABasePaperCharacter::GetShootDelayTime() const
 {
-	this->Shoot();
+	return ShootDelayTime;
 }
 
 float ABasePaperCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
@@ -153,48 +154,26 @@ float ABasePaperCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Da
 	return DamageAmount;
 }
 
-void ABasePaperCharacter::Shoot()
+void ABasePaperCharacter::PrepProjectileLaunch(bool bIsPLayer = true)
 {
-	APC_PlayerFox* Player = UECasts_Private::DynamicCast<APC_PlayerFox*>(this);
-	if (Player != nullptr)
+	float Yaw;
+	if (bIsPLayer)
 	{
-		if (Player->GetMovementComponent()->IsFalling()) return;
-
-		int NumCherries = Player->GetCherryCount();
-		if (NumCherries > 0)
-		{
-			NumCherries -= 1;
-			UE_LOG(LogTemp, Warning, TEXT("ABasePaperCharacter::Shoot - Subtract 1 cherry; now, %s has %d charries"),
-				   *Player->GetName(),
-				   NumCherries
-			);
-			Player->SetCherryStash(NumCherries);
-		} else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("ABasePaperCharacter::Shoot - Can't shoot; %s has %d charries"),
-				   *Player->GetName(),
-				   NumCherries
-			)
-			return;
-		}
+		Yaw = abs(round(this->GetSprite()->GetRelativeRotation().Yaw));
 	}
-
-	AEnemyCollisionPaperCharacter* EnemyAI = UECasts_Private::DynamicCast<AEnemyCollisionPaperCharacter*>(this);
-	if (EnemyAI != nullptr)
+	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ABasePaperCharacter::Shoot %s is shooting."),
-		   *EnemyAI->GetName()
-		);
+		Yaw = abs(round(this->GetArrowComponent()->GetComponentRotation().Yaw));
 	}
 	
 	float Direction = 1.f;
-	if (this->GetSprite()->GetRelativeRotation().Yaw == 180.0)
+	// if the sprite is close to 180 degrees, set direction to negative
+	if (Yaw == 180.0)
 	{
 		Direction = -1.f;
-
 	}
 	
-	UE_LOG(LogTemp, Display, TEXT("Fire!"));
+	// UE_LOG(LogTemp, Display, TEXT("Fire!"));
 	if (ProjectileClass)
 	{
 		const FVector ProjectileSpawnLocation = ProjectileSpawnPoint->GetComponentLocation();
@@ -218,6 +197,61 @@ void ABasePaperCharacter::Shoot()
 			LogTemp, Warning, TEXT("ABasePaperCharacter::Shoot - %s has no projectile class set!"),
 			*this->GetName()
 		);
+	}
+}
+
+bool ABasePaperCharacter::PlayerCanShoot()
+{
+	APC_PlayerFox* Player = UECasts_Private::DynamicCast<APC_PlayerFox*>(this);
+	if (Player != nullptr)
+	{
+		if (Player->GetMovementComponent()->IsFalling()) return false;
+
+		int NumCherries = Player->GetCherryCount();
+		if (NumCherries > 0)
+		{
+			NumCherries -= 1;
+			UE_LOG(LogTemp, Warning, TEXT("ABasePaperCharacter::PlayerCanShoot - Subtract 1 cherry; now, %s has %d cherries"),
+			       *Player->GetName(),
+			       NumCherries
+			);
+			Player->SetCherryStash(NumCherries);
+			return true;
+		}
+		
+		UE_LOG(LogTemp, Warning, TEXT("ABasePaperCharacter::PlayerCanShoot - Can't shoot; %s has %d cherries"),
+		       *Player->GetName(),
+		       NumCherries
+		)
+	}
+	return false;
+}
+
+bool ABasePaperCharacter::EnemyCanShoot()
+{
+	AEnemyCollisionPaperCharacter* EnemyAI = UECasts_Private::DynamicCast<AEnemyCollisionPaperCharacter*>(this);
+	if (EnemyAI)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ABasePaperCharacter::EnemyCanShoot - %s is shooting."), *EnemyAI->GetName());
+		return true;
+	}
+
+	UE_LOG(
+		LogTemp, Warning, TEXT("ABasePaperCharacter::EnemyCanShoot - Cannot cast %s to AEnemyCollisionPaperCharacter."),
+		*this->GetName()
+	);
+	return false;
+}
+
+void ABasePaperCharacter::Shoot()
+{
+	if (PlayerCanShoot())
+	{
+		PrepProjectileLaunch(true);
+	}
+	else if (EnemyCanShoot())
+	{
+		PrepProjectileLaunch(false);
 	}
 }
 

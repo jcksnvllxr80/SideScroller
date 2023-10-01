@@ -29,9 +29,6 @@ private:
 	
 	FTimerHandle ShootTimerHandle;
 	
-	UPROPERTY(EditAnywhere)
-	float ShootDelayTime = 2.0;
-	
 	bool CanShoot = true;
 
 protected:

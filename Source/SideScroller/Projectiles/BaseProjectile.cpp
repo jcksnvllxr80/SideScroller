@@ -4,6 +4,7 @@
 #include "BaseProjectile.h"
 
 #include "PaperFlipbookComponent.h"
+#include "Components/ArrowComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Engine/DamageEvents.h"
 #include "GameFramework/ProjectileMovementComponent.h"
@@ -47,13 +48,58 @@ UPaperFlipbookComponent* ABaseProjectile::GetProjectileFlipbook() const
 	return ProjectileFlipbook;
 }
 
+void ABaseProjectile::GetEnemyPlayerPitch(
+	const ABasePaperCharacter* BaseChar,
+	FRotator& OwnerRotation,
+	float Direction
+) const {
+	OwnerRotation = BaseChar->GetArrowComponent()->GetComponentRotation();
+	UE_LOG(LogTemp, Warning,
+		TEXT("ABaseProjectile::GetEnemyPlayerPitch - %s's (owner) rotation is %s."),
+		*BaseChar->GetName(), *OwnerRotation.ToString()
+	);
+
+	const FVector PlayerLocation = GetWorld()->GetFirstPlayerController()->GetPawn()->GetTargetLocation();
+	UE_LOG(LogTemp, Warning,
+		TEXT("ABaseProjectile::GetEnemyPlayerPitch - %s's (player) location is %s."),
+		*GetWorld()->GetFirstPlayerController()->GetName(), *PlayerLocation.ToString()
+	);
+	
+	const FVector OwnerLocation = BaseChar->GetActorLocation();
+	UE_LOG(LogTemp, Warning,
+		TEXT("ABaseProjectile::GetEnemyPlayerPitch - %s's (owner) location is %s."),
+		*BaseChar->GetName(), *OwnerLocation.ToString()
+	);
+	
+	const FVector ProjectileVector = PlayerLocation - OwnerLocation;
+	UE_LOG(LogTemp, Warning,
+		TEXT("ABaseProjectile::GetEnemyPlayerPitch - projectile vector should be %s."),
+		*ProjectileVector.ToString()
+	);
+
+	const float DzDx = ProjectileVector.Z / ProjectileVector.X;
+	UE_LOG(LogTemp, Warning, TEXT("ABaseProjectile::GetEnemyPlayerPitch - DzDx should be %f."), DzDx);
+
+	const float PitchRadians = atan(DzDx);
+	UE_LOG(LogTemp, Warning, TEXT("ABaseProjectile::GetEnemyPlayerPitch - PitchRadians should be %f."), PitchRadians);
+	
+	const float ProjectilePitch = Direction * (180 * PitchRadians / PI);
+	UE_LOG(LogTemp, Warning, TEXT("ABaseProjectile::GetEnemyPlayerPitch - PitchDegrees should be %f."), ProjectilePitch);
+	
+	OwnerRotation = FRotator(ProjectilePitch, OwnerRotation.Yaw, OwnerRotation.Roll);
+	UE_LOG(LogTemp, Warning,
+		TEXT("ABaseProjectile::GetEnemyPlayerPitch - Rotation from owner to player is %s."),
+		*OwnerRotation.ToString()
+	);
+}
+
 void ABaseProjectile::LaunchProjectile(const float Direction)
 {
 	AActor* MyOwner = GetOwner();
 	if (!MyOwner)
 	{
 		UE_LOG(LogTemp, Warning,
-			TEXT("ABaseProjectile::LaunchProjectile - %s has no owner! Exiting OnHit Function."),
+			TEXT("ABaseProjectile::LaunchProjectile - %s has no owner! Exiting LaunchProjectile Function."),
 			*this->GetName()
 		);
 		return;
@@ -81,7 +127,23 @@ void ABaseProjectile::LaunchProjectile(const float Direction)
 	}
 	else
 	{
-		this->ProjectileFlipbook->SetRelativeRotation(BaseChar->GetSprite()->GetRelativeRotation());
+		FRotator OwnerRotation;
+		if (MyOwner->GetName().Contains("Player"))
+		{
+			OwnerRotation = BaseChar->GetSprite()->GetRelativeRotation();
+		}
+		else
+		{
+			if (MyOwner->GetName().Contains("Eagle"))
+			{
+				GetEnemyPlayerPitch(BaseChar, OwnerRotation, Direction);
+			} else
+			{
+				OwnerRotation = BaseChar->GetArrowComponent()->GetComponentRotation();
+			}
+		}
+		
+		this->ProjectileFlipbook->SetRelativeRotation(OwnerRotation);
 		ProjectileMovementComp->Velocity = FVector(Direction * MovementSpeed, 0.f, 0.f);
 	}
 

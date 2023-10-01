@@ -35,6 +35,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	bool GetShootUpward() const;
+
+	UFUNCTION(BlueprintCallable)
+	float GetShootDelayTime() const;
+	
+	UFUNCTION(BlueprintCallable)
+	virtual void Shoot();
 	
 	UFUNCTION(BlueprintCallable)
 	float GetDamage() const;
@@ -58,6 +64,12 @@ public:
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
 	                         AActor* DamageCauser) override;
 
+	void PrepProjectileLaunch(bool bIsPLayer);
+
+	bool PlayerCanShoot();
+
+	bool EnemyCanShoot();
+
 	UFUNCTION(BlueprintCallable)
 	void SetHealth(float Health);
 
@@ -75,9 +87,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void HurtFinishedCallback();
-
-	UFUNCTION(BlueprintCallable)
-	void AIShoot();
 
 	UPROPERTY(EditAnywhere)
 	USoundBase* DeathSound;
@@ -111,6 +120,9 @@ private:
 	
 	UPROPERTY(EditAnywhere)
 	float Damage = 10.0;
+	
+	UPROPERTY(EditAnywhere)
+	float ShootDelayTime = 2.0;
 
 protected:
 	UPROPERTY(EditAnywhere)
@@ -118,7 +130,4 @@ protected:
 	
 	UPROPERTY(EditAnywhere)
 	bool ShootUpward = false;
-	
-	UFUNCTION(BlueprintCallable)
-	virtual void Shoot();
 };
