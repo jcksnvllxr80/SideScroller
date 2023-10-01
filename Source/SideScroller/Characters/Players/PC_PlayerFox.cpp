@@ -161,7 +161,7 @@ void APC_PlayerFox::UpdateRotation(const float Value)
 		this->GetSprite()->SetRelativeRotation(FRotator(0, 180.f, 0));
 		GetProjectileSpawnPoint()->SetRelativeLocation(FVector(ProjectileSpawnLoc.X * -1.f, ProjSpawnLoc.Y, ProjSpawnLoc.Z));
 	}
-	else {
+	else if (Value > 0){
 		this->GetSprite()->SetRelativeRotation(FRotator(0, 0, 0));
 		GetProjectileSpawnPoint()->SetRelativeLocation(FVector(ProjectileSpawnLoc.X, ProjSpawnLoc.Y, ProjSpawnLoc.Z));
 	}

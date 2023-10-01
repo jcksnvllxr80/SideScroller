@@ -76,6 +76,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void HurtFinishedCallback();
 
+	UFUNCTION(BlueprintCallable)
+	void AIShoot();
+
 	UPROPERTY(EditAnywhere)
 	USoundBase* DeathSound;
 

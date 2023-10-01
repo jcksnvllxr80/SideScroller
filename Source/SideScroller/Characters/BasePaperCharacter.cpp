@@ -5,6 +5,7 @@
 
 #include "Enemies/EnemyCollisionPaperCharacter.h"
 #include "PaperFlipbookComponent.h"
+#include "PC_AIController.h"
 #include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Engine/DamageEvents.h"
@@ -131,6 +132,11 @@ void ABasePaperCharacter::HurtFinishedCallback()
 	this->GetSprite()->SetFlipbook(IdleAnimation);
 }
 
+void ABasePaperCharacter::AIShoot()
+{
+	this->Shoot();
+}
+
 float ABasePaperCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
                                       AActor* DamageCauser)
 {
@@ -152,6 +158,8 @@ void ABasePaperCharacter::Shoot()
 	APC_PlayerFox* Player = UECasts_Private::DynamicCast<APC_PlayerFox*>(this);
 	if (Player != nullptr)
 	{
+		if (Player->GetMovementComponent()->IsFalling()) return;
+
 		int NumCherries = Player->GetCherryCount();
 		if (NumCherries > 0)
 		{
@@ -169,6 +177,14 @@ void ABasePaperCharacter::Shoot()
 			)
 			return;
 		}
+	}
+
+	AEnemyCollisionPaperCharacter* EnemyAI = UECasts_Private::DynamicCast<AEnemyCollisionPaperCharacter*>(this);
+	if (EnemyAI != nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ABasePaperCharacter::Shoot %s is shooting."),
+		   *EnemyAI->GetName()
+		);
 	}
 	
 	float Direction = 1.f;
@@ -194,6 +210,13 @@ void ABasePaperCharacter::Shoot()
 			LogTemp, Warning, TEXT("ABasePaperCharacter::Shoot - Owner of spawned projectile, %s, is %s!"),
 			*TempProjectile->GetName(),
 			*TempProjectile->GetOwner()->GetName()
+		);
+	}
+	else
+	{
+		UE_LOG(
+			LogTemp, Warning, TEXT("ABasePaperCharacter::Shoot - %s has no projectile class set!"),
+			*this->GetName()
 		);
 	}
 }

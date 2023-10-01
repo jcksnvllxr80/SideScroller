@@ -25,5 +25,4 @@ APC_Enemy_Opossum::APC_Enemy_Opossum()
 void APC_Enemy_Opossum::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
