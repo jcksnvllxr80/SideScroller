@@ -30,7 +30,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	UPaperFlipbookComponent* GetProjectileFlipbook() const;
-	void GetEnemyPlayerPitch(const ABasePaperCharacter* BaseChar, FRotator& OwnerRotation, float Direction) const;
+	float GetEnemyToPlayerPitchRadians(const ABasePaperCharacter* BaseChar, FRotator& OwnerRotation,
+	                                   float Direction) const;
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Effects", meta = (AllowPrivateAccess = "true"))
