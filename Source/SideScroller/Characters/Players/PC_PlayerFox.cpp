@@ -179,6 +179,28 @@ void APC_PlayerFox::SetOverlappingClimbable(bool bOverlappingClimbable, ABaseCli
 	}
 }
 
+void APC_PlayerFox::SetProjectileTransform(
+	const float Direction,
+	AActor* MyOwner,
+	const ABasePaperCharacter* BaseChar,
+	const ABaseProjectile* Projectile
+) {
+	if (ShootUpward)
+	{
+		Projectile->GetProjectileFlipbook()->SetRelativeRotation(FRotator(90, 0, 0));
+		Projectile->GetProjectileMovementComp()->Velocity = FVector(
+			0.f, 0.f, Direction * Projectile->GetMovementSpeed()
+		);
+	}
+	else
+	{
+		Projectile->GetProjectileFlipbook()->SetRelativeRotation(BaseChar->GetSprite()->GetRelativeRotation());
+		Projectile->GetProjectileMovementComp()->Velocity = FVector(
+			Direction * Projectile->GetMovementSpeed(), 0.f, 0.f
+		);
+	}
+}
+
 void APC_PlayerFox::CrouchClimbDown()
 {
 	if (OverlappingClimbable)

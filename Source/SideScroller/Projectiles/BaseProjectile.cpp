@@ -10,6 +10,7 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "SideScroller/Characters/BasePaperCharacter.h"
+#include "SideScroller/Interfaces/ProjectileInterface.h"
 
 // Sets default values
 ABaseProjectile::ABaseProjectile()
@@ -38,6 +39,11 @@ void ABaseProjectile::BeginPlay()
 	ProjectileMovementComp->MaxSpeed = MovementSpeed;
 }
 
+float ABaseProjectile::GetMovementSpeed() const
+{
+	return MovementSpeed;
+}
+
 UProjectileMovementComponent* ABaseProjectile::GetProjectileMovementComp() const
 {
 	return ProjectileMovementComp;
@@ -46,52 +52,6 @@ UProjectileMovementComponent* ABaseProjectile::GetProjectileMovementComp() const
 UPaperFlipbookComponent* ABaseProjectile::GetProjectileFlipbook() const
 {
 	return ProjectileFlipbook;
-}
-
-float ABaseProjectile::GetEnemyToPlayerPitchRadians(
-	const ABasePaperCharacter* BaseChar,
-	FRotator& OwnerRotation,
-	float Direction
-) const {
-	OwnerRotation = BaseChar->GetArrowComponent()->GetComponentRotation();
-	// UE_LOG(LogTemp, Warning,
-	// 	TEXT("ABaseProjectile::GetEnemyPlayerPitch - %s's (owner) rotation is %s."),
-	// 	*BaseChar->GetName(), *OwnerRotation.ToString()
-	// );
-
-	const FVector PlayerLocation = GetWorld()->GetFirstPlayerController()->GetPawn()->GetTargetLocation();
-	// UE_LOG(LogTemp, Warning,
-	// 	TEXT("ABaseProjectile::GetEnemyPlayerPitch - %s's (player) location is %s."),
-	// 	*GetWorld()->GetFirstPlayerController()->GetName(), *PlayerLocation.ToString()
-	// );
-	
-	const FVector OwnerLocation = BaseChar->GetActorLocation();
-	// UE_LOG(LogTemp, Warning,
-	// 	TEXT("ABaseProjectile::GetEnemyPlayerPitch - %s's (owner) location is %s."),
-	// 	*BaseChar->GetName(), *OwnerLocation.ToString()
-	// );
-	
-	const FVector ProjectileVector = PlayerLocation - OwnerLocation;
-	// UE_LOG(LogTemp, Warning,
-	// 	TEXT("ABaseProjectile::GetEnemyPlayerPitch - projectile vector should be %s."),
-	// 	*ProjectileVector.ToString()
-	// );
-
-	const float DzDx = ProjectileVector.Z / ProjectileVector.X;
-	// UE_LOG(LogTemp, Warning, TEXT("ABaseProjectile::GetEnemyPlayerPitch - DzDx should be %f."), DzDx);
-
-	const float PitchRadians = atan(DzDx);
-	// UE_LOG(LogTemp, Warning, TEXT("ABaseProjectile::GetEnemyPlayerPitch - PitchRadians should be %f."), PitchRadians);
-	
-	const float ProjectilePitch = Direction * (180 * PitchRadians / PI);
-	// UE_LOG(LogTemp, Warning, TEXT("ABaseProjectile::GetEnemyPlayerPitch - PitchDegrees should be %f."), ProjectilePitch);
-	
-	OwnerRotation = FRotator(ProjectilePitch, OwnerRotation.Yaw, OwnerRotation.Roll);
-	// UE_LOG(LogTemp, Warning,
-	// 	TEXT("ABaseProjectile::GetEnemyPlayerPitch - Rotation from owner to player is %s."),
-	// 	*OwnerRotation.ToString()
-	// );
-	return PitchRadians;
 }
 
 void ABaseProjectile::LaunchProjectile(const float Direction)
@@ -121,44 +81,9 @@ void ABaseProjectile::LaunchProjectile(const float Direction)
 	
 	this->SetLifeSpan(ProjectileInLifespan);
 
-	if (BaseChar->GetShootUpward())
+	if (MyOwner->GetClass()->ImplementsInterface(UProjectileInterface::StaticClass()))
 	{
-		this->ProjectileFlipbook->SetRelativeRotation(FRotator(90, 0, 0));
-		ProjectileMovementComp->Velocity = FVector(0.f, 0.f, Direction * MovementSpeed);
-	}
-	else
-	{
-		float ProjetilePitchRads = 0.0;
-		FRotator OwnerRotation;
-		if (MyOwner->GetName().Contains("Player"))
-		{
-			OwnerRotation = BaseChar->GetSprite()->GetRelativeRotation();
-		}
-		else
-		{
-			if (MyOwner->GetName().Contains("Eagle"))
-			{
-				ProjetilePitchRads = GetEnemyToPlayerPitchRadians(BaseChar, OwnerRotation, Direction);
-			} else
-			{
-				OwnerRotation = BaseChar->GetArrowComponent()->GetComponentRotation();
-			}
-		}
-		
-		this->ProjectileFlipbook->SetRelativeRotation(OwnerRotation);
-
-		if (ProjetilePitchRads != 0.0)
-		{
-			ProjectileMovementComp->Velocity = FVector(
-				MovementSpeed * Direction * cos(ProjetilePitchRads),
-				0.f,
-				MovementSpeed * Direction * sin(ProjetilePitchRads)
-			);
-		}
-		else
-		{
-			ProjectileMovementComp->Velocity = FVector(Direction * MovementSpeed, 0.f, 0.f);
-		}
+		Cast<IProjectileInterface>(MyOwner)->SetProjectileTransform(Direction, MyOwner, BaseChar, this);
 	}
 
 	UE_LOG(LogTemp, Warning,

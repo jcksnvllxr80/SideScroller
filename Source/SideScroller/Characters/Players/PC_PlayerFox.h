@@ -3,11 +3,12 @@
 #include "../../Climbables/BaseClimbable.h"
 #include "../BasePaperCharacter.h"
 #include "PaperFlipbook.h"
+#include "SideScroller/Interfaces/ProjectileInterface.h"
 #include "SideScroller/Pickups/Gem.h"
 #include "PC_PlayerFox.generated.h"
 
 UCLASS()
-class SIDESCROLLER_API APC_PlayerFox : public ABasePaperCharacter
+class SIDESCROLLER_API APC_PlayerFox : public ABasePaperCharacter, public IProjectileInterface
 {
 	GENERATED_BODY()
 
@@ -77,7 +78,16 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void StopClimb();
 
+	UFUNCTION(BlueprintCallable)
 	void SetOverlappingClimbable(bool bOverlappingClimbable, ABaseClimbable* OverlappedClimbable);
+
+	UFUNCTION(BlueprintCallable)
+	virtual void SetProjectileTransform(
+		const float Direction,
+		AActor* MyOwner,
+		const ABasePaperCharacter* BaseChar,
+		const ABaseProjectile* Projectile
+	) override;
 
 private:
 	UPROPERTY(EditAnywhere)

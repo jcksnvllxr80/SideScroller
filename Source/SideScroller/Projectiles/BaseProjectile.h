@@ -22,7 +22,12 @@ public:
 	ABaseProjectile();
 
 	UFUNCTION(BlueprintCallable)
+	float GetMovementSpeed() const;
+	
+	UFUNCTION(BlueprintCallable)
 	void LaunchProjectile(const float XDirection);
+
+	UFUNCTION(BlueprintCallable)
 	void DoCollisionAnimAndSound(const AActor* MyOwner, ABasePaperCharacter* OtherBasePaperActor);
 
 	UFUNCTION(BlueprintCallable)
@@ -30,8 +35,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	UPaperFlipbookComponent* GetProjectileFlipbook() const;
-	float GetEnemyToPlayerPitchRadians(const ABasePaperCharacter* BaseChar, FRotator& OwnerRotation,
-	                                   float Direction) const;
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Effects", meta = (AllowPrivateAccess = "true"))

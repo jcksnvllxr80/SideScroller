@@ -21,7 +21,6 @@ class SIDESCROLLER_API IPickupInterface
 {
 	GENERATED_BODY()
 
-	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	UFUNCTION(Category="Pickup")
 	virtual void GivePickup(APC_PlayerFox* OverlappingActor) = 0;
