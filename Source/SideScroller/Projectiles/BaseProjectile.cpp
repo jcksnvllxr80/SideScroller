@@ -150,9 +150,9 @@ void ABaseProjectile::LaunchProjectile(const float Direction)
 		if (ProjetilePitchRads != 0.0)
 		{
 			ProjectileMovementComp->Velocity = FVector(
-				MovementSpeed * cos(ProjetilePitchRads),
+				MovementSpeed * Direction * cos(ProjetilePitchRads),
 				0.f,
-				MovementSpeed * sin(ProjetilePitchRads)
+				MovementSpeed * Direction * sin(ProjetilePitchRads)
 			);
 		}
 		else
