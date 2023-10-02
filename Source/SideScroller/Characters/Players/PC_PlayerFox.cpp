@@ -268,11 +268,6 @@ void APC_PlayerFox::ClimbUpAxisInputCallback(const float Z)
 	}
 }
 
-float APC_PlayerFox::GetHurtPushAmount() const
-{
-	return HurtPushAmount;
-}
-
 void APC_PlayerFox::MoveRight(const float Axis)
 {
 	// early return if player in hurt animation right now

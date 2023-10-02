@@ -17,7 +17,7 @@
 
 ABasePaperCharacter::ABasePaperCharacter()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 	Health = DefaultHealth;
 
 	this->GetCharacterMovement()->bConstrainToPlane = true;
@@ -95,13 +95,13 @@ void ABasePaperCharacter::PushHurtCharacter(AActor* DamageCauser)
 	const FVector DamageCauserLocation = DamageCauser->GetActorLocation();
 	const FVector PlayerLocation = this->GetActorLocation();
 
-	float HurtPush = UECasts_Private::DynamicCast<APC_PlayerFox*>(this)->GetHurtPushAmount();
+	float HurtPush = UECasts_Private::DynamicCast<APC_PlayerFox*>(this)->HurtPushAmount;
 	if (DamageCauserLocation.X - PlayerLocation.X > 0)
 	{
 		HurtPush *= -1.f;
 	}
-	// TODO: Need an alternative to SetActorRelativeLocation; it causes player to get stuck in walls
-	this->SetActorRelativeLocation(PlayerLocation + FVector(HurtPush, 0.0, 0.0));
+	// for player knock-back, use launch to be sent away from enemy
+	this->LaunchCharacter(FVector(HurtPush, 0.0, 0.0), false, false);
 }
 
 void ABasePaperCharacter::DoHurt(AActor* DamageCauser)

@@ -54,10 +54,7 @@ public:
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	UFUNCTION(BlueprintCallable)
-	float GetHurtPushAmount() const;
-
+	
 	APC_PlayerFox();
 
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
@@ -113,9 +110,6 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	bool OverlappingClimbable;
-
-	UPROPERTY(EditAnywhere)
-	float HurtPushAmount = 20.f;
 	
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	class USpringArmComponent* CameraArm;

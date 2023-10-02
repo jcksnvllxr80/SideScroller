@@ -124,6 +124,9 @@ private:
 	UPROPERTY(EditAnywhere)
 	float ShootDelayTime = 2.0;
 
+	UPROPERTY(EditAnywhere)
+	float HurtPushAmount = 20.f;
+
 protected:
 	UPROPERTY(EditAnywhere)
 	FVector ProjectileUpwardSpawnLoc = FVector(0.0, 0.0, 10);
