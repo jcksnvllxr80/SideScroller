@@ -5,19 +5,15 @@
 
 #include "Enemies/EnemyCollisionPaperCharacter.h"
 #include "PaperFlipbookComponent.h"
-#include "PC_AIController.h"
 #include "Components/ArrowComponent.h"
-#include "Components/BoxComponent.h"
-#include "Components/CapsuleComponent.h"
 #include "Engine/DamageEvents.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Players/PC_PlayerFox.h"
-#include "Tasks/Task.h"
 
 ABasePaperCharacter::ABasePaperCharacter()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 	Health = DefaultHealth;
 
 	this->GetCharacterMovement()->bConstrainToPlane = true;

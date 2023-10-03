@@ -26,7 +26,7 @@ void APC_AIController::Tick(const float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 
 	if (!PlayerPawn) return;
-	// this->MoveToActor(PlayerPawn, 200.f);
+	this->MoveToActor(PlayerPawn, 200.f);
 
 	if (this->LineOfSightTo(PlayerPawn))
 	{
@@ -65,4 +65,6 @@ void APC_AIController::BeginPlay()
 	Super::BeginPlay();
 
 	PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+	// this->MoveToActor(PlayerPawn, 200.f);
+
 }

@@ -5,11 +5,8 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
-#include "Components/ArrowComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Physics/ImmediatePhysics/ImmediatePhysicsChaos/ImmediatePhysicsCore_Chaos.h"
-#include "Physics/ImmediatePhysics/ImmediatePhysicsShared/ImmediatePhysicsCore.h"
 
 APC_PlayerFox::APC_PlayerFox()
 {
@@ -134,7 +131,7 @@ void APC_PlayerFox::UpdateAnimation()
 		bIsFalling = this->GetMovementComponent()->IsFalling();
  
 		//Update our movement speed
-		float MovementSpeed = this->GetVelocity().Size();
+		const float MovementSpeed = this->GetVelocity().Size();
 
 		if (bIsFalling) {
 			this->GetSprite()->SetFlipbook(JumpAnimation);
@@ -276,11 +273,23 @@ void APC_PlayerFox::MoveRight(const float Axis)
 	if (this->Crouching || this->Climbing) {return;}
 	
 	UpdateRotation(Axis);
+	
 	if (GetCharacterMovement()->GetMovementName() == "Flying")
 	{
-		GetMovementComponent()->StopMovementImmediately();
+		if (Axis == 0)
+		{
+			GetMovementComponent()->StopMovementImmediately();
+		}
+		else
+		{
+			AddMovementInput(FVector(Axis * ClimbingLateralSpeed, 0, 0));
+		}
 	}
-	AddMovementInput(FVector(Axis, 0, 0));
+	else
+	{
+		AddMovementInput(FVector(Axis, 0, 0));
+	}
+
 
 	if (!OverlappingClimbable && !bIsFalling)
 	{

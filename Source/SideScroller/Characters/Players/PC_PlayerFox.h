@@ -91,6 +91,9 @@ private:
 	float ClimbSpeed = 0.17f;
 
 	UPROPERTY(EditAnywhere)
+	float ClimbingLateralSpeed = 0.4;
+
+	UPROPERTY(EditAnywhere)
 	int CherryStash = 0;
 
 	UPROPERTY(EditAnywhere)
