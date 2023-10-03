@@ -66,6 +66,7 @@ USceneComponent* ABasePaperCharacter::GetProjectileSpawnPoint() const
 
 void ABasePaperCharacter::DoDeath()
 {
+	this->IsDead = true;
 	UE_LOG(LogTemp, Warning, TEXT("%s's health depleted!"), *this->GetName());
 	this->SetActorEnableCollision(false);
 	this->GetSprite()->SetLooping(false);
@@ -228,6 +229,12 @@ bool ABasePaperCharacter::EnemyCanShoot()
 	AEnemyCollisionPaperCharacter* EnemyAI = UECasts_Private::DynamicCast<AEnemyCollisionPaperCharacter*>(this);
 	if (EnemyAI)
 	{
+		if (EnemyAI->IsDead)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("ABasePaperCharacter::EnemyCanShoot - %s is deadand cannot shoot."), *EnemyAI->GetName());
+			return false;
+		}
+		
 		UE_LOG(LogTemp, Warning, TEXT("ABasePaperCharacter::EnemyCanShoot - %s is shooting."), *EnemyAI->GetName());
 		return true;
 	}

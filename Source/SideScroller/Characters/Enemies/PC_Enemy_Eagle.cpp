@@ -28,6 +28,7 @@ void APC_Enemy_Eagle::BeginPlay()
 	Super::BeginPlay();
 	
 	this->GetCharacterMovement()->SetMovementMode(MOVE_Flying);
+	this->GetCharacterMovement()->MaxFlySpeed = 50.f;
 }
 
 void APC_Enemy_Eagle::SetProjectileTransform(

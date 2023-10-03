@@ -127,6 +127,8 @@ private:
 	UPROPERTY(EditAnywhere)
 	float HurtPushAmount = 20.f;
 
+	bool IsDead = false;
+
 protected:
 	UPROPERTY(EditAnywhere)
 	FVector ProjectileUpwardSpawnLoc = FVector(0.0, 0.0, 10);

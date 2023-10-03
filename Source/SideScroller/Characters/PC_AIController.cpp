@@ -65,6 +65,4 @@ void APC_AIController::BeginPlay()
 	Super::BeginPlay();
 
 	PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-	// this->MoveToActor(PlayerPawn, 200.f);
-
 }

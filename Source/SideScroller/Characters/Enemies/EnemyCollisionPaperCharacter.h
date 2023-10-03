@@ -52,5 +52,4 @@ private:
 	
 	UPROPERTY(VisibleAnywhere, Category = Collision)
 	class UBoxComponent* RightHurtBox;
-	
 };
