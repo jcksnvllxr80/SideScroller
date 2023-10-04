@@ -258,11 +258,6 @@ void ABasePaperCharacter::Shoot()
 	}
 }
 
-bool ABasePaperCharacter::GetShootUpward() const
-{
-	return ShootUpward;
-}
-
 void ABasePaperCharacter::DestroyActor()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Destroying %s!"), *this->GetName());

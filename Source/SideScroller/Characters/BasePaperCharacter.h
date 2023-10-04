@@ -34,9 +34,6 @@ public:
 	virtual void BeginPlay() override;
 
 	UFUNCTION(BlueprintCallable)
-	bool GetShootUpward() const;
-
-	UFUNCTION(BlueprintCallable)
 	float GetShootDelayTime() const;
 	
 	UFUNCTION(BlueprintCallable)
@@ -128,11 +125,4 @@ private:
 	float HurtPushAmount = 20.f;
 
 	bool IsDead = false;
-
-protected:
-	UPROPERTY(EditAnywhere)
-	FVector ProjectileUpwardSpawnLoc = FVector(0.0, 0.0, 10);
-	
-	UPROPERTY(EditAnywhere)
-	bool ShootUpward = false;
 };
