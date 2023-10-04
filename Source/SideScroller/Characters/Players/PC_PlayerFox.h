@@ -24,9 +24,6 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "HUD")
 	void SetMoneyStash(const int MoneyAmount);
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FVector CrouchProjectileSpawnPoint = FVector(0.f, -25.f, 0.f);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UPaperFlipbook* RunAnimation;
@@ -149,6 +146,15 @@ private:
 
 	UFUNCTION(BlueprintCallable)
 	void DoClimbAnimAndSound();
+	
+	UPROPERTY(EditAnywhere)
+	FVector CrouchProjectileSpawnPoint = FVector(0.f, 0.f, 5.f);
+
+	UPROPERTY(EditAnywhere)
+	FVector ProjectileUpwardSpawnLoc = FVector(0.0, 0.0, 10);
+	
+	UPROPERTY(EditAnywhere)
+	bool ShootUpward = false;
 
 protected:
 	/*True means that we're currently in air - or falling*/

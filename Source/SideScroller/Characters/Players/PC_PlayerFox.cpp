@@ -162,6 +162,13 @@ void APC_PlayerFox::UpdateRotation(const float Value)
 		this->GetSprite()->SetRelativeRotation(FRotator(0, 0, 0));
 		GetProjectileSpawnPoint()->SetRelativeLocation(FVector(ProjectileSpawnLoc.X, ProjSpawnLoc.Y, ProjSpawnLoc.Z));
 	}
+	
+	// UE_LOG(
+	// 	LogTemp, Warning, TEXT("%s's location is %s, and projectile spawn point is %s!"),
+	// 	*this->GetName(),
+	// 	*this->GetActorLocation().ToString(),
+	// 	*this->GetProjectileSpawnPoint()->GetRelativeLocation().ToString()
+	// );
 }
 
 void APC_PlayerFox::SetOverlappingClimbable(bool bOverlappingClimbable, ABaseClimbable* OverlappedClimbable)
@@ -184,9 +191,9 @@ void APC_PlayerFox::SetProjectileTransform(
 ) {
 	if (ShootUpward)
 	{
-		Projectile->GetProjectileFlipbook()->SetRelativeRotation(FRotator(90, 0, 0));
+		Projectile->GetProjectileFlipbook()->SetRelativeRotation(FRotator( 90, 0, 0));
 		Projectile->GetProjectileMovementComp()->Velocity = FVector(
-			0.f, 0.f, Direction * Projectile->GetMovementSpeed()
+			0.f, 0.f, Projectile->GetMovementSpeed()
 		);
 	}
 	else
@@ -205,7 +212,20 @@ void APC_PlayerFox::CrouchClimbDown()
 		Climb(-ClimbSpeed);
 	} else {
 		this->Crouching = true;
-		this->GetProjectileSpawnPoint()->SetRelativeLocation(ProjectileSpawnLoc - CrouchProjectileSpawnPoint);
+		this->GetProjectileSpawnPoint()->SetRelativeLocation(
+			FVector(
+				this->GetProjectileSpawnPoint()->GetRelativeLocation().X,
+				0.f,
+				ProjectileSpawnLoc.Z - CrouchProjectileSpawnPoint.Z
+			)
+		);
+		
+		// UE_LOG(
+		// 	LogTemp, Warning, TEXT("%s's location is %s, and projectile spawn point is %s!"),
+		// 	*this->GetName(),
+		// 	*this->GetActorLocation().ToString(),
+		// 	*this->GetProjectileSpawnPoint()->GetRelativeLocation().ToString()
+		// );
 	}
 }
 
@@ -215,12 +235,20 @@ void APC_PlayerFox::ClimbUp()
 	{
 		this->OnLadder = true;
 		Climb(ClimbSpeed);
-	} else
+	}
+	else
 	{
-		const FVector ProjSpawnLoc = GetProjectileSpawnPoint()->GetRelativeLocation();
+		// const FVector ProjSpawnLoc = GetProjectileSpawnPoint()->GetRelativeLocation();
 		this->Crouching = false;
-		this->GetProjectileSpawnPoint()->SetRelativeLocation(ProjectileUpwardSpawnLoc);
 		this->ShootUpward = true;
+		this->GetProjectileSpawnPoint()->SetRelativeLocation(ProjectileUpwardSpawnLoc);
+		
+		// UE_LOG(
+		// 	LogTemp, Warning, TEXT("%s's location is %s, and projectile spawn point is %s!"),
+		// 	*this->GetName(),
+		// 	*this->GetActorLocation().ToString(),
+		// 	*this->GetProjectileSpawnPoint()->GetRelativeLocation().ToString()
+		// );
 	}
 }
 
@@ -233,14 +261,29 @@ void APC_PlayerFox::StopCrouchClimb()
 		this->GetProjectileSpawnPoint()->SetRelativeLocation(
 			FVector(ProjSpawnLoc.X, ProjectileSpawnLoc.Y, ProjSpawnLoc.Z)
 		);
+		
+		// UE_LOG(
+		// 	LogTemp, Warning, TEXT("%s's location is %s, and projectile spawn point is %s!"),
+		// 	*this->GetName(),
+		// 	*this->GetActorLocation().ToString(),
+		// 	*this->GetProjectileSpawnPoint()->GetRelativeLocation().ToString()
+		// );
 	}
 
 	// set ShootUpward to false if its true
 	this->ShootUpward &= false;
+	
 	const FVector ProjSpawnLoc = GetProjectileSpawnPoint()->GetRelativeLocation();
 	this->GetProjectileSpawnPoint()->SetRelativeLocation(
 		FVector(ProjSpawnLoc.X, ProjectileSpawnLoc.Y, ProjectileSpawnLoc.Z)
 	);
+	
+	// UE_LOG(
+	// 	LogTemp, Warning, TEXT("%s's location is %s, and projectile spawn point is %s!"),
+	// 	*this->GetName(),
+	// 	*this->GetActorLocation().ToString(),
+	// 	*this->GetProjectileSpawnPoint()->GetRelativeLocation().ToString()
+	// );
 	
 	this->StopClimb();
 }
@@ -273,20 +316,23 @@ void APC_PlayerFox::MoveRight(const float Axis)
 	if (this->Crouching || this->Climbing) {return;}
 	
 	UpdateRotation(Axis);
-	
+
+	// on ladder == flying
 	if (GetCharacterMovement()->GetMovementName() == "Flying")
 	{
-		if (Axis == 0)
+		if (Axis == 0)  // if not pressing move left or right button
 		{
 			GetMovementComponent()->StopMovementImmediately();
 		}
 		else
 		{
+			// move horizontally on ladder at a reduced speed compared to normal
 			AddMovementInput(FVector(Axis * ClimbingLateralSpeed, 0, 0));
 		}
 	}
 	else
 	{
+		// move left/right normally
 		AddMovementInput(FVector(Axis, 0, 0));
 	}
 
