@@ -26,11 +26,14 @@ APC_PlayerFox::APC_PlayerFox()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraArm);
 
-	this->GetCharacterMovement()->MaxWalkSpeed = 230.0;
+	this->GetCharacterMovement()->MaxWalkSpeed = 250.0;
 	this->GetCharacterMovement()->JumpZVelocity = 525.0;
 	this->GetCharacterMovement()->GravityScale = 3.5;
 	this->GetCharacterMovement()->AirControl = 0.4;
 	this->GetCharacterMovement()->MaxStepHeight = 10.0;
+	this->GetCharacterMovement()->SetWalkableFloorAngle(60.f);
+	this->GetCharacterMovement()->MaxAcceleration = 400.f;
+	this->GetCharacterMovement()->BrakingFrictionFactor = 0.65;
 }
 
 void APC_PlayerFox::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -41,11 +44,16 @@ void APC_PlayerFox::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAxis("ClimbUp", this, &APC_PlayerFox::ClimbUpAxisInputCallback);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &APC_PlayerFox::Jump);
 	PlayerInputComponent->BindAction("Shoot", IE_Pressed, this, &APC_PlayerFox::Shoot);
+	PlayerInputComponent->BindAction("Run", IE_Pressed, this, &APC_PlayerFox::SetRunVelocity);
+	PlayerInputComponent->BindAction("Run", IE_Released, this, &APC_PlayerFox::SetWalkVelocity);
+
 }
 
 void APC_PlayerFox::BeginPlay()
 {
 	Super::BeginPlay();
+	this->StandingFriction = this->GetCharacterMovement()->BrakingFrictionFactor;
+	this->NormalWalkingSpeed = this->GetCharacterMovement()->MaxWalkSpeed;
 }
 
 // Called every frame
@@ -136,9 +144,9 @@ void APC_PlayerFox::UpdateAnimation()
 		if (bIsFalling) {
 			this->GetSprite()->SetFlipbook(JumpAnimation);
 		}
-		else if (this->Crouching) {
+		else if (this->bIsCrouching) {
 			this->GetSprite()->SetFlipbook(CrouchAnimation);
-		} else if (this->Climbing || this->OnLadder) {
+		} else if (this->bIsClimbing || this->bOnLadder) {
 			DoClimbAnimAndSound();
 		}
 		else if (MovementSpeed != 0.f) {
@@ -171,14 +179,14 @@ void APC_PlayerFox::UpdateRotation(const float Value)
 	// );
 }
 
-void APC_PlayerFox::SetOverlappingClimbable(bool bOverlappingClimbable, ABaseClimbable* OverlappedClimbable)
+void APC_PlayerFox::SetOverlappingClimbable(bool OverlappingClimbable, ABaseClimbable* OverlappedClimbable)
 {
-	OverlappingClimbable = bOverlappingClimbable;
+	bOverlappingClimbable = OverlappingClimbable;
 	NearbyClimbableSound = OverlappedClimbable->LadderSound;
-	if (!OverlappingClimbable)
+	if (!bOverlappingClimbable)
 	{
-		this->OnLadder = false;
-		this->Climbing = false;
+		this->bOnLadder = false;
+		this->bIsClimbing = false;
 		GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 	}
 }
@@ -207,11 +215,18 @@ void APC_PlayerFox::SetProjectileTransform(
 
 void APC_PlayerFox::CrouchClimbDown()
 {
-	if (OverlappingClimbable)
+	if (!this->bIsSliding && abs(this->GetVelocity().X) > this->CrouchSlidingThresholdVelocity)
+	{
+		this->bIsSliding = true;
+		this->GetCharacterMovement()->BrakingFrictionFactor = this->CrouchSlideFriction;
+		return;
+	}
+	
+	if (bOverlappingClimbable && !this->bIsSliding)
 	{
 		Climb(-ClimbSpeed);
 	} else {
-		this->Crouching = true;
+		this->bIsCrouching = true;
 		this->GetProjectileSpawnPoint()->SetRelativeLocation(
 			FVector(
 				this->GetProjectileSpawnPoint()->GetRelativeLocation().X,
@@ -231,15 +246,15 @@ void APC_PlayerFox::CrouchClimbDown()
 
 void APC_PlayerFox::ClimbUp()
 {
-	if (OverlappingClimbable)
+	if (bOverlappingClimbable)
 	{
-		this->OnLadder = true;
+		this->bOnLadder = true;
 		Climb(ClimbSpeed);
 	}
 	else
 	{
 		// const FVector ProjSpawnLoc = GetProjectileSpawnPoint()->GetRelativeLocation();
-		this->Crouching = false;
+		this->bIsCrouching = false;
 		this->ShootUpward = true;
 		this->GetProjectileSpawnPoint()->SetRelativeLocation(ProjectileUpwardSpawnLoc);
 		
@@ -254,10 +269,12 @@ void APC_PlayerFox::ClimbUp()
 
 void APC_PlayerFox::StopCrouchClimb()
 {
-	if (this->Crouching)
+	if (this->bIsCrouching)
 	{
 		const FVector ProjSpawnLoc = GetProjectileSpawnPoint()->GetRelativeLocation();
-		this->Crouching = false;
+		this->bIsSliding = false;
+		this->GetCharacterMovement()->BrakingFrictionFactor = this->StandingFriction;
+		this->bIsCrouching = false;
 		this->GetProjectileSpawnPoint()->SetRelativeLocation(
 			FVector(ProjSpawnLoc.X, ProjectileSpawnLoc.Y, ProjSpawnLoc.Z)
 		);
@@ -290,11 +307,11 @@ void APC_PlayerFox::StopCrouchClimb()
 
 void APC_PlayerFox::StopClimb()
 {
-	if (this->OnLadder && this->GetVelocity().Z != 0)
+	if (this->bOnLadder && this->GetVelocity().Z != 0)
 	{
 		this->GetMovementComponent()->StopMovementImmediately();
 	}
-	this->Climbing = false;
+	this->bIsClimbing = false;
 }
 
 void APC_PlayerFox::ClimbUpAxisInputCallback(const float Z)
@@ -313,7 +330,7 @@ void APC_PlayerFox::MoveRight(const float Axis)
 	// early return if player in hurt animation right now
 	if (this->GetSprite()->GetFlipbook() == HurtAnimation) {return;}
 	// early return if player is crouching right now
-	if (this->Crouching || this->Climbing) {return;}
+	if (this->bIsCrouching || this->bIsClimbing) {return;}
 	
 	UpdateRotation(Axis);
 
@@ -337,7 +354,7 @@ void APC_PlayerFox::MoveRight(const float Axis)
 	}
 
 
-	if (!OverlappingClimbable && !bIsFalling)
+	if (!bOverlappingClimbable && !bIsFalling)
 	{
 		GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 	}
@@ -345,9 +362,9 @@ void APC_PlayerFox::MoveRight(const float Axis)
 
 void APC_PlayerFox::Climb(const float Value)
 {
-	if (!this->Climbing){
+	if (!this->bIsClimbing){
 		GetMovementComponent()->StopMovementImmediately();
-		this->Climbing = true;
+		this->bIsClimbing = true;
 	}
 	this->GetCharacterMovement()->SetMovementMode(MOVE_Flying);
 	AddMovementInput(GetActorUpVector(), Value);
@@ -359,7 +376,7 @@ void APC_PlayerFox::Jump()
 	if (this->GetSprite()->GetFlipbook() == HurtAnimation) {return;}
 	
 	// dont allow another jump unless not currently jumping
-	if (!this->bIsFalling && !this->OnLadder) {
+	if (!this->bIsFalling && !this->bOnLadder) {
 		UGameplayStatics::SpawnSoundAttached(
 			this->JumpSound,
 			this->GetSprite(),
@@ -373,7 +390,6 @@ void APC_PlayerFox::TakeMoney(int MonetaryValue)
 {
 	this->MoneyStash += MonetaryValue;
 	UE_LOG(LogTemp, Warning, TEXT("%s's money stash is now %i!"), *this->GetName(), this->MoneyStash);
-
 }
 
 void APC_PlayerFox::TakeHealing(const float HealingValue)
@@ -396,6 +412,16 @@ void APC_PlayerFox::LogSpeed()
 void APC_PlayerFox::LogRotation()
 {
 	UE_LOG(LogTemp, Warning, TEXT("%s's rotation is %s!"), *this->GetName(), *GetSprite()->GetRelativeRotation().ToString());
+}
+
+void APC_PlayerFox::SetRunVelocity()
+{
+	this->GetCharacterMovement()->MaxWalkSpeed = MaxRunningSpeed;
+}
+
+void APC_PlayerFox::SetWalkVelocity()
+{
+	this->GetCharacterMovement()->MaxWalkSpeed = NormalWalkingSpeed;
 }
 
 void APC_PlayerFox::LogLocation()

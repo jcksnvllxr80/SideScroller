@@ -51,13 +51,13 @@ public:
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	
-	APC_PlayerFox();
 
+	APC_PlayerFox();
+	
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 	virtual void BeginPlay() override;
-	
+
 	virtual void Jump() override;
 
 	UFUNCTION(BlueprintCallable)
@@ -68,7 +68,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void ClimbUp();
-	
+
 	UFUNCTION(BlueprintCallable)
 	void StopClimb();
 
@@ -91,6 +91,19 @@ private:
 	float ClimbingLateralSpeed = 0.4;
 
 	UPROPERTY(EditAnywhere)
+	float CrouchSlideFriction = 0.175;
+
+	float StandingFriction;
+
+	float NormalWalkingSpeed;
+
+	UPROPERTY(EditAnywhere)
+	float MaxRunningSpeed = 500.f;
+	
+	UPROPERTY(EditAnywhere)
+	double CrouchSlidingThresholdVelocity = 200.f;
+
+	UPROPERTY(EditAnywhere)
 	int CherryStash = 0;
 
 	UPROPERTY(EditAnywhere)
@@ -103,14 +116,20 @@ private:
 	USoundBase* WalkSound;
 
 	UPROPERTY(EditAnywhere)
-	bool Crouching;
+	bool bIsCrouching = false;
 
 	UPROPERTY(EditAnywhere)
-	bool Climbing;
+	bool bIsClimbing = false;
 
 	UPROPERTY(EditAnywhere)
-	bool OverlappingClimbable;
+	bool bIsSliding = false;
+
+	UPROPERTY(EditAnywhere)
+	bool bOnLadder = false;
 	
+	UPROPERTY(EditAnywhere)
+	bool bOverlappingClimbable;
+
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	class USpringArmComponent* CameraArm;
 
@@ -119,8 +138,7 @@ private:
 
 	USoundBase* NearbyClimbableSound;
 
-	bool OnLadder = false;
-
+	UPROPERTY(EditAnywhere)
 	float CumulativeTime = 0.f;
 
 	UFUNCTION(BlueprintCallable)
@@ -138,6 +156,12 @@ private:
 	UFUNCTION(BlueprintCallable)
 	void LogRotation();
 
+	UFUNCTION(BlueprintCallable)
+	void SetRunVelocity();
+
+	UFUNCTION(BlueprintCallable)
+	void SetWalkVelocity();
+	
 	UFUNCTION(BlueprintCallable)
 	void LogLocation();
 

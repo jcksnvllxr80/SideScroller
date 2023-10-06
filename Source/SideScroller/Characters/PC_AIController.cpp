@@ -25,7 +25,7 @@ void APC_AIController::Tick(const float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	if (!PlayerPawn) return;
+	if (PlayerPawn == nullptr) return;
 	this->MoveToActor(PlayerPawn, 200.f);
 
 	if (this->LineOfSightTo(PlayerPawn))
