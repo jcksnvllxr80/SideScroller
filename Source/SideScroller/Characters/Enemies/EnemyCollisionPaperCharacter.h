@@ -4,18 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "../BasePaperCharacter.h"
+#include "SideScroller/Interfaces/PointsInterface.h"
 #include "EnemyCollisionPaperCharacter.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class SIDESCROLLER_API AEnemyCollisionPaperCharacter : public ABasePaperCharacter
+class SIDESCROLLER_API AEnemyCollisionPaperCharacter : public ABasePaperCharacter, public IPointsInterface
 {
 	GENERATED_BODY()
 
 public:
-	
 	virtual void BeginPlay() override;
 
 	AEnemyCollisionPaperCharacter();
@@ -43,7 +43,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UBoxComponent* GetRightHurtBox() const;
 
+	UFUNCTION(BlueprintCallable)
+	int GetPointWorth() const;
+
 private:
+	UPROPERTY(EditAnywhere, Category = Points)
+	int PointWorth = 100;
+	
 	UPROPERTY(VisibleAnywhere, Category = Collision)
 	class UBoxComponent* DamageBox;
 
@@ -52,4 +58,7 @@ private:
 	
 	UPROPERTY(VisibleAnywhere, Category = Collision)
 	class UBoxComponent* RightHurtBox;
+
+	UFUNCTION(BlueprintCallable)
+	virtual void GivePoints(APC_PlayerFox* PlayerChar) override;
 };

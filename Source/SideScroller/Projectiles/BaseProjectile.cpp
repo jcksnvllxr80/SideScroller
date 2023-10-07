@@ -112,9 +112,15 @@ void ABaseProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
 		*MyOwner->GetName()
 	);
 
+	// this keeps enemies from shooting each other
+	if (MyOwner->GetName().Contains("Enemy") && OtherActor->GetName().Contains("Enemy"))
+	{
+		return;
+	}
+
 	ABasePaperCharacter* OtherBasePaperActor = dynamic_cast<ABasePaperCharacter*>(OtherActor);
 	if (OtherBasePaperActor == nullptr) return;
-
+	
 	UE_LOG(LogTemp, Warning,
 		TEXT("ABaseProjectile::OnHit - %s has hit %s."),
 		*this->GetName(), *OtherBasePaperActor->GetName()

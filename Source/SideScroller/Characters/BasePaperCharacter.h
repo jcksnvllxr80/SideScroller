@@ -93,7 +93,7 @@ public:
 
 private:
 	// Properties
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(VisibleAnywhere)
 	float Health = 0;
 
 	UPROPERTY(VisibleAnywhere, BluePrintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))

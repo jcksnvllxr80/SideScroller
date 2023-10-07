@@ -143,6 +143,11 @@ float ABasePaperCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Da
 	
 	if (this->GetHealth() <= 0)
 	{
+		if (EventInstigator->GetPawn()->GetClass()->ImplementsInterface(UPointsInterface::StaticClass()))
+		{
+			Cast<IPointsInterface>(this)->GivePoints(Cast<APC_PlayerFox>(DamageCauser));
+		}
+		
 		DoDeath();
 	} else {
 		DoHurt(DamageCauser);

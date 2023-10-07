@@ -73,6 +73,26 @@ void APC_PlayerFox::Tick(const float DeltaTime)
 	UpdateAnimation();
 }
 
+int APC_PlayerFox::GetAccumulatedPoints() const
+{
+	return this->AccumulatedPoints;
+}
+
+void APC_PlayerFox::SetAccumulatedPoints(const int Points)
+{
+	this->AccumulatedPoints = Points;
+}
+
+int APC_PlayerFox::GetNumberOfLives() const
+{
+	return this->NumberOfLives;
+}
+
+void APC_PlayerFox::SetNumberOfLives(const int NumLives)
+{
+	this->NumberOfLives = NumLives;
+}
+
 int APC_PlayerFox::GetCherryCount() const
 {
 	return this->CherryStash;

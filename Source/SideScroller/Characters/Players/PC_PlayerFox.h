@@ -4,7 +4,6 @@
 #include "../BasePaperCharacter.h"
 #include "PaperFlipbook.h"
 #include "SideScroller/Interfaces/ProjectileInterface.h"
-#include "SideScroller/Pickups/Gem.h"
 #include "PC_PlayerFox.generated.h"
 
 UCLASS()
@@ -13,6 +12,18 @@ class SIDESCROLLER_API APC_PlayerFox : public ABasePaperCharacter, public IProje
 	GENERATED_BODY()
 
 public:
+	UFUNCTION(BlueprintPure, Category = "HUD")
+	int GetAccumulatedPoints() const;
+
+	UFUNCTION(BlueprintCallable, Category = "HUD")
+	void SetAccumulatedPoints(const int Points);
+
+	UFUNCTION(BlueprintPure, Category = "HUD")
+	int GetNumberOfLives() const;
+
+	UFUNCTION(BlueprintCallable, Category = "HUD")
+	void SetNumberOfLives(const int NumberOfLives);
+	
 	UFUNCTION(BlueprintPure, Category = "HUD")
 	int GetCherryCount() const;
 	
@@ -59,7 +70,7 @@ public:
 	virtual void BeginPlay() override;
 
 	virtual void Jump() override;
-
+	
 	UFUNCTION(BlueprintCallable)
 	void CrouchClimbDown();
 
@@ -84,6 +95,12 @@ public:
 	) override;
 
 private:
+	UPROPERTY(EditAnywhere)
+	int NumberOfLives = 5;
+
+	UPROPERTY(EditAnywhere)
+	int AccumulatedPoints = 0;
+
 	UPROPERTY(EditAnywhere)
 	float ClimbSpeed = 0.17f;
 
@@ -188,6 +205,7 @@ protected:
 	/*Updates the above properties*/
 	UFUNCTION(BlueprintCallable, Category = "UpdateAnimationProperties")
 	void UpdateAnimation();
+	
 	UFUNCTION(BlueprintCallable, Category = "UpdateAnimationProperties")
 	void UpdateRotation(const float Value);
 };

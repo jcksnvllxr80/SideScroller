@@ -3,10 +3,9 @@
 
 #include "EnemyCollisionPaperCharacter.h"
 
-#include "PaperFlipbookComponent.h"
 #include "Components/BoxComponent.h"
 #include "Engine/DamageEvents.h"
-#include "Kismet/GameplayStatics.h"
+#include "SideScroller/Characters/Players/PC_PlayerFox.h"
 
 AEnemyCollisionPaperCharacter::AEnemyCollisionPaperCharacter()
 {
@@ -56,6 +55,21 @@ UBoxComponent* AEnemyCollisionPaperCharacter::GetRightHurtBox() const
 	return RightHurtBox;
 }
 
+int AEnemyCollisionPaperCharacter::GetPointWorth() const
+{
+	return this->PointWorth;
+}
+
+void AEnemyCollisionPaperCharacter::GivePoints(APC_PlayerFox* PlayerChar)
+{
+	if (PlayerChar == nullptr) return;
+
+	UE_LOG(LogTemp, Warning, TEXT("%s giving %s %d points!"),
+	   *this->GetName(), *PlayerChar->GetName(), this->PointWorth
+	);
+	PlayerChar->SetAccumulatedPoints(PlayerChar->GetAccumulatedPoints() + this->PointWorth);
+}
+
 void AEnemyCollisionPaperCharacter::OnBeginOverlapDelegate(
 	UPrimitiveComponent* OverlappedComponent,
 	AActor* OtherActor,
@@ -64,22 +78,20 @@ void AEnemyCollisionPaperCharacter::OnBeginOverlapDelegate(
 	bool bFromSweep,
 	const FHitResult & SweepResult
 ){
-	ABasePaperCharacter* OverlappingActor = dynamic_cast<ABasePaperCharacter*>(OtherComp->GetOwner());
+	APC_PlayerFox* OverlappingActor = dynamic_cast<APC_PlayerFox*>(OtherComp->GetOwner());
 	if (OverlappingActor == nullptr) return;
 	
-	if (OverlappingActor != this)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("%s has overlapped %s!"),
-		       *OtherActor->GetName(),
-		       *OverlappedComponent->GetOwner()->GetName()
-		);
-		OverlappingActor->TakeDamage(
-			this->GetDamage(),
-			FDamageEvent(UDamageType::StaticClass()),
-			this->GetInstigatorController(),
-			this
-		);
-	}
+
+	UE_LOG(LogTemp, Warning, TEXT("%s has overlapped %s!"),
+	       *OtherActor->GetName(),
+	       *OverlappedComponent->GetOwner()->GetName()
+	);
+	OverlappingActor->TakeDamage(
+		this->GetDamage(),
+		FDamageEvent(UDamageType::StaticClass()),
+		this->GetInstigatorController(),
+		this
+	);
 }
 
 void AEnemyCollisionPaperCharacter::OnHitDelegate(
@@ -93,13 +105,13 @@ void AEnemyCollisionPaperCharacter::OnHitDelegate(
 		*OtherActor->GetName(),
 		*HitComponent->GetOwner()->GetName()
 	);
-	ABasePaperCharacter* DamagingActor = dynamic_cast<ABasePaperCharacter*>(OtherComp->GetOwner());
+	const APC_PlayerFox* DamagingActor = dynamic_cast<APC_PlayerFox*>(OtherComp->GetOwner());
 	if (DamagingActor == nullptr) return;
 	
 	this->TakeDamage(
 		DamagingActor->GetDamage(),
 		FDamageEvent(UDamageType::StaticClass()),
 		this->GetInstigatorController(),
-		this
+		OtherActor
 	);
 }
