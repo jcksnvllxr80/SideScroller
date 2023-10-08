@@ -252,6 +252,24 @@ void USideScrollerGameInstance::OnFindSessionsComplete(bool Success)
 				}
 				ServerData.Add(Data);
 			}
+
+			FServerData Data1, Data2, Data3;
+
+			Data1.MaxPlayers = 3;
+			Data1.CurrentPlayers = Data1.MaxPlayers - 3;
+			Data1.HostUserName = "Test Server 1";
+			ServerData.Add(Data1);
+
+			Data2.MaxPlayers = 3;
+			Data2.CurrentPlayers = Data2.MaxPlayers - 3;
+			Data2.HostUserName = "Test Server 2";
+			ServerData.Add(Data2);
+
+			Data3.MaxPlayers = 3;
+			Data3.CurrentPlayers = Data3.MaxPlayers - 3;
+			Data3.HostUserName = "Test Server 3";
+			ServerData.Add(Data3);
+
 			Menu->SetServerList(ServerData);
 		}
 		else

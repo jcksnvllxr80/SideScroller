@@ -20,4 +20,7 @@ public:
 
 private:
 	uint32 NumberOfPlayers = 0;
+
+	UPROPERTY(EditAnywhere)
+	uint32 MinPlayersToStartGame = 3;
 };

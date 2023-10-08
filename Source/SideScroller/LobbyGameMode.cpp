@@ -8,7 +8,7 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 	Super::PostLogin(NewPlayer);
 	++NumberOfPlayers;
 	UE_LOG(LogTemp, Warning, TEXT("There are %i players in the lobby."), NumberOfPlayers);
-	if(NumberOfPlayers >= 3)
+	if(NumberOfPlayers >= MinPlayersToStartGame)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Leaving lobby to start game..."), NumberOfPlayers);
 		UWorld* World = GetWorld();
