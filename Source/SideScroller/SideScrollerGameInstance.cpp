@@ -14,7 +14,7 @@
 #include "MenuSystem/MenuWidget.h"
 #include "UObject/ConstructorHelpers.h"
 
-const static FName SESSION_NAME = TEXT("My Session Game");
+const static FName SESSION_NAME = NAME_GameSession;
 const static FName SERVER_NAME_SESSION_KEY = TEXT("CustomServerName");
 
 USideScrollerGameInstance::USideScrollerGameInstance(const FObjectInitializer & ObjectInitializer)
@@ -60,7 +60,7 @@ void USideScrollerGameInstance::LoadMainMenu()
 {
 	APlayerController* PlayerController = GetFirstLocalPlayerController();
 	if (!PlayerController) return;
-	PlayerController->ClientTravel("/Game/MenuSystem/MainMenu", ETravelType::TRAVEL_Absolute);
+	PlayerController->ClientTravel("/Game/Maps/Map_MainMenu", ETravelType::TRAVEL_Absolute);
 }
 
 void USideScrollerGameInstance::RefreshServerList()
@@ -78,7 +78,7 @@ void USideScrollerGameInstance::RefreshServerList()
 		return;
 	}
 	// GameSessionSearch->bIsLanQuery = true;
-	GameSessionSearch->MaxSearchResults = 100;
+	GameSessionSearch->MaxSearchResults = 10000;
 	GameSessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals); 
 	UE_LOG(LogTemp, Display, TEXT("Starting session search."));
 	SessionInterface->FindSessions(0, GameSessionSearch.ToSharedRef());
@@ -253,22 +253,25 @@ void USideScrollerGameInstance::OnFindSessionsComplete(bool Success)
 				ServerData.Add(Data);
 			}
 
-			FServerData Data1, Data2, Data3;
+			//FServerData Data1, Data2, Data3;
 
-			Data1.MaxPlayers = 3;
-			Data1.CurrentPlayers = Data1.MaxPlayers - 3;
-			Data1.HostUserName = "Test Server 1";
-			ServerData.Add(Data1);
+			//Data1.ServerName = "Test Server 1";
+			//Data1.MaxPlayers = 3;
+			//Data1.CurrentPlayers = Data1.MaxPlayers - 3;
+			//Data1.HostUserName = "Grabbir Bubi";
+			//ServerData.Add(Data1);
 
-			Data2.MaxPlayers = 3;
-			Data2.CurrentPlayers = Data2.MaxPlayers - 3;
-			Data2.HostUserName = "Test Server 2";
-			ServerData.Add(Data2);
+			//Data2.ServerName = "Test Server 2";
+			//Data2.MaxPlayers = 3;
+			//Data2.CurrentPlayers = Data2.MaxPlayers - 3;
+			//Data2.HostUserName = "Haida Salami";
+			//ServerData.Add(Data2);
 
-			Data3.MaxPlayers = 3;
-			Data3.CurrentPlayers = Data3.MaxPlayers - 3;
-			Data3.HostUserName = "Test Server 3";
-			ServerData.Add(Data3);
+			//Data3.ServerName = "Test Server 3";
+			//Data3.MaxPlayers = 3;
+			//Data3.CurrentPlayers = Data3.MaxPlayers - 3;
+			//Data3.HostUserName = "Yo Momma";
+			//ServerData.Add(Data3);
 
 			Menu->SetServerList(ServerData);
 		}
@@ -318,9 +321,10 @@ void USideScrollerGameInstance::CreateSession()
 		UE_LOG(LogTemp, Display, TEXT("Creating session, %s."), *SESSION_NAME.ToString());
 		FOnlineSessionSettings SessionSettings;
 		SessionSettings.bIsLANMatch = (IOnlineSubsystem::Get()->GetSubsystemName().ToString() == "NULL");
-		SessionSettings.NumPublicConnections = 2;
+		SessionSettings.NumPublicConnections = 3;
 		SessionSettings.bShouldAdvertise = true;
 		SessionSettings.bUsesPresence = true;
+		SessionSettings.bUseLobbiesIfAvailable = true;
 		if (!DesiredServerName.IsEmpty())
 		{
 			SessionSettings.Set(SERVER_NAME_SESSION_KEY, DesiredServerName,
