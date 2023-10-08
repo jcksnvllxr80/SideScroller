@@ -14,7 +14,7 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 		UWorld* World = GetWorld();
 		if (!World) return;
 		bUseSeamlessTravel = true;
-		World->ServerTravel("/Game/ThirdPersonCPP/Maps/ThirdPersonExampleMap?listen");
+		World->ServerTravel("/Game/Maps/Map_Level1?listen");
 	}
 }
 

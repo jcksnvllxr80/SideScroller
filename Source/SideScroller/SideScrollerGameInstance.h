@@ -5,8 +5,21 @@
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 #include "Interfaces/MenuInterface.h"
-#include "SideScrollerGameInstance.generated.h"
+#include "OnlineSessionSettings.h"
+#include "OnlineSubsystem.h"
+#include "Interfaces/OnlineSessionInterface.h"
+#include "SidescrollerGameInstance.generated.h"
 
+USTRUCT()
+struct FServerData
+{
+	GENERATED_BODY()
+	FString ServerName;
+	uint16 CurrentPlayers;
+	uint16 MaxPlayers;
+	FString HostUserName;
+	
+};
 /**
  * 
  */
@@ -17,17 +30,37 @@ class SIDESCROLLER_API USideScrollerGameInstance : public UGameInstance, public 
 
 public:
 	USideScrollerGameInstance(const FObjectInitializer & ObjectInitializer);
-	
 	virtual void Init();
-	// virtual void LoadMainMenu() override;
-	
+	virtual void LoadMainMenu() override;
+	void RefreshServerList() override;
+
+	UFUNCTION(Exec)
+	void Host(FString ServerName) override;
+
+	UFUNCTION(Exec)
+	void JoinIP(FString& IpAddress) override;
+
+	UFUNCTION(Exec)
+	void Join(uint32 Index) override;
+
 	UFUNCTION(BlueprintCallable)
 	void LoadMenu();
 
-	void PlayGame() override;
-	
+	UFUNCTION(BlueprintCallable)
+	void InGameLoadMenu();
+
 private:
 	TSubclassOf<class UUserWidget> MainMenuClass = nullptr;
 	TSubclassOf<class UUserWidget> InGameMenuClass = nullptr;
 	TSubclassOf<class UUserWidget> SettingsMenuClass = nullptr;
+	class UMainMenu* Menu;
+	IOnlineSessionPtr SessionInterface;
+	TSharedPtr<class FOnlineSessionSearch> GameSessionSearch;
+	void OnGameSessionComplete(FName SessionName, bool Success);
+	void OnDestroySessionComplete(FName SessionName, bool Success);
+	void OnFindSessionsComplete(bool Success);
+	void OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
+
+	FString DesiredServerName;
+	void CreateSession();
 };
