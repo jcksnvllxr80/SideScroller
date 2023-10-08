@@ -236,7 +236,7 @@ void USideScrollerGameInstance::OnFindSessionsComplete(bool Success)
 				{
 					if (CustomServerName.IsEmpty())
 					{
-						UE_LOG(LogTemp, Warning, TEXT("Did not find custom server name, using default."));
+						UE_LOG(LogTemp, Display, TEXT("Did not find custom server name, using default."));
 						Data.ServerName = SessionSearchResult.GetSessionIdStr();
 					}
 					else
@@ -247,7 +247,7 @@ void USideScrollerGameInstance::OnFindSessionsComplete(bool Success)
 				}
 				else
 				{
-					UE_LOG(LogTemp, Warning, TEXT("Did not find custom server name, using default."));
+					UE_LOG(LogTemp, Display, TEXT("Did not find custom server name, using default."));
 					Data.ServerName = SessionSearchResult.GetSessionIdStr();
 				}
 				ServerData.Add(Data);
@@ -277,7 +277,7 @@ void USideScrollerGameInstance::OnFindSessionsComplete(bool Success)
 		}
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("There were 0 game sessions found in the find session search."));
+			UE_LOG(LogTemp, Display, TEXT("There were 0 game sessions found in the find session search."));
 		}
 	}
 	else
@@ -293,7 +293,7 @@ void USideScrollerGameInstance::OnJoinSessionComplete(FName SessionName, EOnJoin
 		FString Address;
 		if (!SessionInterface->GetResolvedConnectString(SessionName, Address))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Could not get connect string."));
+			UE_LOG(LogTemp, Display, TEXT("Could not get connect string."));
 			return;
 		}
 		

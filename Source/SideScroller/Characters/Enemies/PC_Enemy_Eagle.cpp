@@ -54,40 +54,40 @@ float APC_Enemy_Eagle::GetEnemyToPlayerPitchRadians(
 	float Direction
 ) const {
 	OwnerRotation = BaseChar->GetArrowComponent()->GetComponentRotation();
-	// UE_LOG(LogTemp, Warning,
+	// UE_LOG(LogTemp, VeryVerbose,
 	// 	TEXT("ABaseProjectile::GetEnemyPlayerPitch - %s's (owner) rotation is %s."),
 	// 	*BaseChar->GetName(), *OwnerRotation.ToString()
 	// );
 
 	const FVector PlayerLocation = GetWorld()->GetFirstPlayerController()->GetPawn()->GetTargetLocation();
-	// UE_LOG(LogTemp, Warning,
+	// UE_LOG(LogTemp, VeryVerbose,
 	// 	TEXT("ABaseProjectile::GetEnemyPlayerPitch - %s's (player) location is %s."),
 	// 	*GetWorld()->GetFirstPlayerController()->GetName(), *PlayerLocation.ToString()
 	// );
 	
 	const FVector OwnerLocation = BaseChar->GetActorLocation();
-	// UE_LOG(LogTemp, Warning,
+	// UE_LOG(LogTemp, VeryVerbose,
 	// 	TEXT("ABaseProjectile::GetEnemyPlayerPitch - %s's (owner) location is %s."),
 	// 	*BaseChar->GetName(), *OwnerLocation.ToString()
 	// );
 	
 	const FVector ProjectileVector = PlayerLocation - OwnerLocation;
-	// UE_LOG(LogTemp, Warning,
+	// UE_LOG(LogTemp, VeryVerbose,
 	// 	TEXT("ABaseProjectile::GetEnemyPlayerPitch - projectile vector should be %s."),
 	// 	*ProjectileVector.ToString()
 	// );
 
 	const float DzDx = ProjectileVector.Z / ProjectileVector.X;
-	// UE_LOG(LogTemp, Warning, TEXT("ABaseProjectile::GetEnemyPlayerPitch - DzDx should be %f."), DzDx);
+	// UE_LOG(LogTemp, VeryVerbose, TEXT("ABaseProjectile::GetEnemyPlayerPitch - DzDx should be %f."), DzDx);
 
 	const float PitchRadians = atan(DzDx);
-	// UE_LOG(LogTemp, Warning, TEXT("ABaseProjectile::GetEnemyPlayerPitch - PitchRadians should be %f."), PitchRadians);
+	// UE_LOG(LogTemp, VeryVerbose, TEXT("ABaseProjectile::GetEnemyPlayerPitch - PitchRadians should be %f."), PitchRadians);
 	
 	const float ProjectilePitch = Direction * (180 * PitchRadians / PI);
-	// UE_LOG(LogTemp, Warning, TEXT("ABaseProjectile::GetEnemyPlayerPitch - PitchDegrees should be %f."), ProjectilePitch);
+	// UE_LOG(LogTemp, VeryVerbose, TEXT("ABaseProjectile::GetEnemyPlayerPitch - PitchDegrees should be %f."), ProjectilePitch);
 	
 	OwnerRotation = FRotator(ProjectilePitch, OwnerRotation.Yaw, OwnerRotation.Roll);
-	// UE_LOG(LogTemp, Warning,
+	// UE_LOG(LogTemp, VeryVerbose,
 	// 	TEXT("ABaseProjectile::GetEnemyPlayerPitch - Rotation from owner to player is %s."),
 	// 	*OwnerRotation.ToString()
 	// );

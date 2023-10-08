@@ -64,7 +64,7 @@ void ABasePickup::OnBeginOverlapDelegate(
 	APC_PlayerFox* OverlappingActor = dynamic_cast<APC_PlayerFox*>(OtherComp->GetOwner());
 	if (OverlappingActor == nullptr) return;
 	
-	UE_LOG(LogTemp, Warning, TEXT("%s has overlapped %s!"),
+	UE_LOG(LogTemp, Verbose, TEXT("%s has overlapped %s!"),
 		   *OtherActor->GetName(),
 		   *OverlappedComponent->GetOwner()->GetName()
 	);

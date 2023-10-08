@@ -183,6 +183,9 @@ private:
 	void LogLocation();
 
 	UFUNCTION(BlueprintCallable)
+	void OpenInGameMenu();
+
+	UFUNCTION(BlueprintCallable)
 	void DoWalkAnimAndSound();
 
 	UFUNCTION(BlueprintCallable)

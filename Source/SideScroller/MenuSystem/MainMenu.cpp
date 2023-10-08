@@ -93,6 +93,7 @@ UMainMenu::UMainMenu(const FObjectInitializer & ObjectInitializer)
 	ConstructorHelpers::FClassFinder<UUserWidget> ServerRowBPClass(TEXT("/Game/MenuSystem/WBP_ServerRow"));
 	if (!ServerRowBPClass.Class) return;
 	ServerRowClass = ServerRowBPClass.Class;
+	bIsFocusable = true;
 }
 
 void UMainMenu::SetServerList(TArray<FServerData> ServersData)
@@ -229,7 +230,7 @@ void UMainMenu::JoinServer()
                 UE_LOG(LogTemp, Display, TEXT("IP Address field is empty. Trying server list item."));
             	if (SelectedIndex.IsSet()) 
             	{
-            		UE_LOG(LogTemp, Warning, TEXT("Joining server index: %i"), SelectedIndex.GetValue());
+            		UE_LOG(LogTemp, Display, TEXT("Joining server index: %i"), SelectedIndex.GetValue());
             		MenuInterface->Join(SelectedIndex.GetValue());
             	}
             	else

@@ -64,7 +64,7 @@ void AEnemyCollisionPaperCharacter::GivePoints(APC_PlayerFox* PlayerChar)
 {
 	if (PlayerChar == nullptr) return;
 
-	UE_LOG(LogTemp, Warning, TEXT("%s giving %s %d points!"),
+	UE_LOG(LogTemp, Display, TEXT("%s giving %s %d points!"),
 	   *this->GetName(), *PlayerChar->GetName(), this->PointWorth
 	);
 	PlayerChar->SetAccumulatedPoints(PlayerChar->GetAccumulatedPoints() + this->PointWorth);
@@ -82,7 +82,7 @@ void AEnemyCollisionPaperCharacter::OnBeginOverlapDelegate(
 	if (OverlappingActor == nullptr) return;
 	
 
-	UE_LOG(LogTemp, Warning, TEXT("%s has overlapped %s!"),
+	UE_LOG(LogTemp, Verbose, TEXT("%s has overlapped %s!"),
 	       *OtherActor->GetName(),
 	       *OverlappedComponent->GetOwner()->GetName()
 	);
@@ -101,7 +101,7 @@ void AEnemyCollisionPaperCharacter::OnHitDelegate(
 	FVector NormalImpulse,
 	const FHitResult& Hit
 ) {
-	UE_LOG(LogTemp, Warning, TEXT("%s has hit %s!"),
+	UE_LOG(LogTemp, Display, TEXT("%s has hit %s!"),
 		*OtherActor->GetName(),
 		*HitComponent->GetOwner()->GetName()
 	);

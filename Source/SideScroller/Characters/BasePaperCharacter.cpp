@@ -67,7 +67,7 @@ USceneComponent* ABasePaperCharacter::GetProjectileSpawnPoint() const
 void ABasePaperCharacter::DoDeath()
 {
 	this->IsDead = true;
-	UE_LOG(LogTemp, Warning, TEXT("%s's health depleted!"), *this->GetName());
+	UE_LOG(LogTemp, Display, TEXT("%s's health depleted!"), *this->GetName());
 	this->SetActorEnableCollision(false);
 	this->GetSprite()->SetLooping(false);
 	this->GetSprite()->SetFlipbook(DeathAnimation);
@@ -139,7 +139,7 @@ float ABasePaperCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Da
                                       AActor* DamageCauser)
 {
 	this->AddHealth(-DamageAmount);
-	UE_LOG(LogTemp, Warning, TEXT("%s's health: %f"), *this->GetName(), this->GetHealth());
+	UE_LOG(LogTemp, Verbose, TEXT("%s's health: %f"), *this->GetName(), this->GetHealth());
 	
 	if (this->GetHealth() <= 0)
 	{
@@ -188,7 +188,7 @@ void ABasePaperCharacter::PrepProjectileLaunch(bool bIsPLayer = true)
 		TempProjectile->SetOwner(this);
 		TempProjectile->LaunchProjectile(Direction);
 		UE_LOG(
-			LogTemp, Warning, TEXT("ABasePaperCharacter::Shoot - Owner of spawned projectile, %s, is %s!"),
+			LogTemp, Verbose, TEXT("ABasePaperCharacter::PrepProjectileLaunch - Owner of spawned projectile, %s, is %s!"),
 			*TempProjectile->GetName(),
 			*TempProjectile->GetOwner()->GetName()
 		);
@@ -196,7 +196,7 @@ void ABasePaperCharacter::PrepProjectileLaunch(bool bIsPLayer = true)
 	else
 	{
 		UE_LOG(
-			LogTemp, Warning, TEXT("ABasePaperCharacter::Shoot - %s has no projectile class set!"),
+			LogTemp, Warning, TEXT("ABasePaperCharacter::PrepProjectileLaunch - %s has no projectile class set!"),
 			*this->GetName()
 		);
 	}
@@ -213,7 +213,7 @@ bool ABasePaperCharacter::PlayerCanShoot()
 		if (NumCherries > 0)
 		{
 			NumCherries -= 1;
-			UE_LOG(LogTemp, Warning, TEXT("ABasePaperCharacter::PlayerCanShoot - Subtract 1 cherry; now, %s has %d cherries"),
+			UE_LOG(LogTemp, VeryVerbose, TEXT("ABasePaperCharacter::PlayerCanShoot - Subtract 1 cherry; now, %s has %d cherries"),
 			       *Player->GetName(),
 			       NumCherries
 			);
@@ -221,7 +221,7 @@ bool ABasePaperCharacter::PlayerCanShoot()
 			return true;
 		}
 		
-		UE_LOG(LogTemp, Warning, TEXT("ABasePaperCharacter::PlayerCanShoot - Can't shoot; %s has %d cherries"),
+		UE_LOG(LogTemp, Display, TEXT("ABasePaperCharacter::PlayerCanShoot - Can't shoot; %s has %d cherries"),
 		       *Player->GetName(),
 		       NumCherries
 		)
@@ -236,11 +236,11 @@ bool ABasePaperCharacter::EnemyCanShoot()
 	{
 		if (EnemyAI->IsDead)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("ABasePaperCharacter::EnemyCanShoot - %s is deadand cannot shoot."), *EnemyAI->GetName());
+			UE_LOG(LogTemp, Verbose, TEXT("ABasePaperCharacter::EnemyCanShoot - %s is deadand cannot shoot."), *EnemyAI->GetName());
 			return false;
 		}
 		
-		UE_LOG(LogTemp, Warning, TEXT("ABasePaperCharacter::EnemyCanShoot - %s is shooting."), *EnemyAI->GetName());
+		UE_LOG(LogTemp, Verbose, TEXT("ABasePaperCharacter::EnemyCanShoot - %s is shooting."), *EnemyAI->GetName());
 		return true;
 	}
 
@@ -265,7 +265,7 @@ void ABasePaperCharacter::Shoot()
 
 void ABasePaperCharacter::DestroyActor()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Destroying %s!"), *this->GetName());
+	UE_LOG(LogTemp, Display, TEXT("Destroying %s!"), *this->GetName());
 	this->Destroy();
 	GetWorld()->GetTimerManager().ClearTimer(this->DeathTimerHandle);
 	GetWorld()->GetTimerManager().ClearTimer(this->HurtTimerHandle);

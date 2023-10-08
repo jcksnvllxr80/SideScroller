@@ -64,7 +64,7 @@ void ABaseClimbable::OnBeginOverlapDelegate(
 	APC_PlayerFox* OverlappingActor = dynamic_cast<APC_PlayerFox*>(OtherComp->GetOwner());
 	if (OverlappingActor == nullptr) return;
 	
-	UE_LOG(LogTemp, Warning, TEXT("%s has overlapped %s!"),
+	UE_LOG(LogTemp, Verbose, TEXT("%s has overlapped %s!"),
 		   *OverlappingActor->GetName(),
 		   *OverlappedComponent->GetOwner()->GetName()
 	);
@@ -81,7 +81,7 @@ void ABaseClimbable::OnEndOverlapDelegate(
 	APC_PlayerFox* OverlappingActor = dynamic_cast<APC_PlayerFox*>(OtherComp->GetOwner());
 	if (OverlappingActor == nullptr) return;
 	
-	UE_LOG(LogTemp, Warning, TEXT("%s is no longer overlapping %s!"),
+	UE_LOG(LogTemp, Verbose, TEXT("%s is no longer overlapping %s!"),
 	   *OverlappingActor->GetName(),
 	   *OverlappedComponent->GetOwner()->GetName()
 );
