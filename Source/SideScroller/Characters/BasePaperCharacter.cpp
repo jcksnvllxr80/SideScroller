@@ -165,6 +165,8 @@ void ABasePaperCharacter::PrepProjectileLaunch(bool bIsPLayer = true)
 	}
 	else
 	{
+		// TODO: This check keeps enemies from ever firing anymore. not sure whats going on
+		if (this->GetArrowComponent() == nullptr) return;
 		Yaw = abs(round(this->GetArrowComponent()->GetComponentRotation().Yaw));
 	}
 	

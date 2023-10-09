@@ -17,6 +17,7 @@ class SIDESCROLLER_API ALobbyGameMode : public ASideScrollerGameModeBase
 public:
 	void PostLogin(APlayerController* NewPlayer) override;
 	void Logout(AController* Exiting) override;
+	virtual void BeginPlay() override;
 
 private:
 	uint32 NumberOfPlayers = 0;

@@ -24,3 +24,13 @@ void ALobbyGameMode::Logout(AController* Exiting)
 	--NumberOfPlayers;
 	UE_LOG(LogTemp, Display, TEXT("There are %i players in the lobby."), NumberOfPlayers);
 }
+
+void ALobbyGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	if (PlayerController == nullptr) return;
+
+	PlayerController->SetShowMouseCursor(true);
+	PlayerController->SetInputMode(FInputModeGameOnly());
+}
