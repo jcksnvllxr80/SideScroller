@@ -1,5 +1,4 @@
 #include "PC_PlayerFox.h"
-#include "../../SideScroller/SideScrollerGameInstance.h"
 
 #include "PaperFlipbookComponent.h"
 #include "Components/InputComponent.h"
@@ -8,6 +7,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "SideScroller/SideScrollerGameInstance.h"
 
 APC_PlayerFox::APC_PlayerFox()
 {
@@ -453,7 +453,7 @@ void APC_PlayerFox::LogLocation()
 
 void APC_PlayerFox::OpenInGameMenu()
 {
-	SideScrollerGameInstance* GameInstance = Cast<SideScrollerGameInstance>(GetGameInstance());
+	GameInstance = dynamic_cast<USideScrollerGameInstance*>(GetGameInstance());
 	if (GameInstance != nullptr) {
 		GameInstance->InGameLoadMenu();
 	}

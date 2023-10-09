@@ -6,6 +6,8 @@
 #include "SideScroller/Interfaces/ProjectileInterface.h"
 #include "PC_PlayerFox.generated.h"
 
+class USideScrollerGameInstance;
+
 UCLASS()
 class SIDESCROLLER_API APC_PlayerFox : public ABasePaperCharacter, public IProjectileInterface
 {
@@ -95,6 +97,8 @@ public:
 	) override;
 
 private:
+	USideScrollerGameInstance* GameInstance;
+	
 	UPROPERTY(EditAnywhere)
 	int NumberOfLives = 5;
 
