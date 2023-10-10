@@ -24,7 +24,8 @@ Just messing around with unreal engine and c++ to create a mario like game.
 - kill z
 - start menu
     - multiplayer
-        - 2,3,&4 player options
+        - 2, 3, & 4 player options (make player selection set players in lobby before start)
+        - add player selection (select the color)
     - settings
         - resolution
 - new levels
@@ -37,4 +38,11 @@ Just messing around with unreal engine and c++ to create a mario like game.
   https://www.youtube.com/watch?v=2rB8LpxI9Ww
 - game saves
 - slide down hills when moving and crouching on a hill
-- unreunrereesc key calls in game menu and set time dilation to 0
+- esc key calls in game menu and set time dilation to 0
+- add item feedback animation to pickups
+- implement the frog jump and fall flipbook on the frog and get AI to make him jump
+
+#### Done:
+
+~~- add other color fox animations to blueprints. one BP for each color so they can have unique properties (fast, light, acceleration, etc)~~  
+~~- add separate animations for the players jump when going up and one when down~~  

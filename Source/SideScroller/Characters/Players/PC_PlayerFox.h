@@ -45,6 +45,9 @@ public:
 	UPaperFlipbook* JumpAnimation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPaperFlipbook* FallAnimation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UPaperFlipbook* CrouchAnimation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

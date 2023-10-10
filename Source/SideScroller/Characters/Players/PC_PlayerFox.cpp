@@ -164,7 +164,12 @@ void APC_PlayerFox::UpdateAnimation()
 		const float MovementSpeed = this->GetVelocity().Size();
 
 		if (bIsFalling) {
-			this->GetSprite()->SetFlipbook(JumpAnimation);
+			if (this->GetVelocity().Z > 0.f) {
+				this->GetSprite()->SetFlipbook(JumpAnimation);
+			}
+			else {
+				this->GetSprite()->SetFlipbook(FallAnimation);
+			}
 		}
 		else if (this->bIsCrouching) {
 			this->GetSprite()->SetFlipbook(CrouchAnimation);
