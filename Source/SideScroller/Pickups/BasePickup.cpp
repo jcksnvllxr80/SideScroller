@@ -61,22 +61,38 @@ void ABasePickup::OnBeginOverlapDelegate(
 	bool bFromSweep,
 	const FHitResult& SweepResult
 ) {
+	UE_LOG(LogTemp, Display, TEXT("%s has overlapped %s!"),
+		*OtherActor->GetName(),
+		*OverlappedComponent->GetOwner()->GetName()
+	);
+
 	APC_PlayerFox* OverlappingActor = dynamic_cast<APC_PlayerFox*>(OtherComp->GetOwner());
 	if (OverlappingActor == nullptr) return;
-	
-	UE_LOG(LogTemp, Verbose, TEXT("%s has overlapped %s!"),
-		   *OtherActor->GetName(),
-		   *OverlappedComponent->GetOwner()->GetName()
-	);
+
 	UGameplayStatics::SpawnSoundAttached(
 		this->PickupSound,
 		OverlappedComponent,
 		TEXT("BasePickupSound")
 	);
 
+	PickupFlipbook->SetFlipbook(ItemTakenAnimation);
+	GetWorld()->GetTimerManager().SetTimer(
+		this->ItemTakenTimerHandle,
+		this,
+		&ABasePickup::DestroyActor,
+		ItemTakenAnimationTime,
+		false
+	);
+
 	if (OverlappedComponent->GetOwner()->GetClass()->ImplementsInterface(UPickupInterface::StaticClass()))
 	{
-		Cast<IPickupInterface>(OverlappedComponent->GetOwner())->GivePickup(Cast<APC_PlayerFox>(OverlappingActor));
-		OverlappedComponent->GetOwner()->Destroy();
+		Cast<IPickupInterface>(OverlappedComponent->GetOwner())->GivePickup(OverlappingActor);
 	}
+}
+
+void ABasePickup::DestroyActor()
+{
+	UE_LOG(LogTemp, Verbose, TEXT("Destroying %s!"), *this->GetName());
+	this->Destroy();
+	GetWorld()->GetTimerManager().ClearTimer(this->ItemTakenTimerHandle);
 }
