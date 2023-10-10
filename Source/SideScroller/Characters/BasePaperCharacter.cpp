@@ -143,9 +143,13 @@ float ABasePaperCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Da
 	
 	if (this->GetHealth() <= 0)
 	{
-		if (EventInstigator->GetPawn()->GetClass()->ImplementsInterface(UPointsInterface::StaticClass()))
-		{
-			Cast<IPointsInterface>(this)->GivePoints(Cast<APC_PlayerFox>(DamageCauser));
+		APC_PlayerFox* PlayerFoxDamageCauser = dynamic_cast<APC_PlayerFox*>(DamageCauser);
+		if (PlayerFoxDamageCauser) {
+			// the damage causer is the player, so give the player points if the object implements points interface
+			if (EventInstigator->GetPawn()->GetClass()->ImplementsInterface(UPointsInterface::StaticClass()))
+			{
+				Cast<IPointsInterface>(this)->GivePoints(PlayerFoxDamageCauser);
+			}
 		}
 		
 		DoDeath();

@@ -59,7 +59,10 @@ float APC_Enemy_Eagle::GetEnemyToPlayerPitchRadians(
 	// 	*BaseChar->GetName(), *OwnerRotation.ToString()
 	// );
 
-	const FVector PlayerLocation = GetWorld()->GetFirstPlayerController()->GetPawn()->GetTargetLocation();
+	const APawn* PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
+	if (PlayerPawn == nullptr) return 0.0;  // player not in existanct anymore, return 0.0 radians
+
+	const FVector PlayerLocation = PlayerPawn->GetTargetLocation();
 	// UE_LOG(LogTemp, VeryVerbose,
 	// 	TEXT("ABaseProjectile::GetEnemyPlayerPitch - %s's (player) location is %s."),
 	// 	*GetWorld()->GetFirstPlayerController()->GetName(), *PlayerLocation.ToString()
