@@ -65,7 +65,7 @@ void ABaseProjectile::LaunchProjectile(const float Direction)
 		);
 		return;
 	}
-	UE_LOG(LogTemp, Warning, TEXT("ABaseProjectile::LaunchProjectile - %s's  owner is %s."),
+	UE_LOG(LogTemp, Verbose, TEXT("ABaseProjectile::LaunchProjectile - %s's  owner is %s."),
 		*this->GetName(),
 		*GetOwner()->GetName()
 	);
@@ -86,7 +86,7 @@ void ABaseProjectile::LaunchProjectile(const float Direction)
 		Cast<IProjectileInterface>(MyOwner)->SetProjectileTransform(Direction, MyOwner, BaseChar, this);
 	}
 
-	UE_LOG(LogTemp, Warning,
+	UE_LOG(LogTemp, Verbose,
 	       TEXT("ABaseProjectile::LaunchProjectile - %s has rotation %s."),
 	       *this->ProjectileFlipbook->GetName(),
 	       *this->ProjectileFlipbook->GetRelativeRotation().ToString()
@@ -96,7 +96,7 @@ void ABaseProjectile::LaunchProjectile(const float Direction)
 void ABaseProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
                             FVector NormalImpulse, const FHitResult& Hit)
 {
-	UE_LOG(LogTemp, Warning, TEXT("hit something."));
+	UE_LOG(LogTemp, Verbose, TEXT("hit something."));
 
 	const AActor* MyOwner = GetOwner();
 	if (!MyOwner)
@@ -106,7 +106,7 @@ void ABaseProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
 	}
 	UE_LOG(
 		LogTemp,
-		Warning,
+		Display,
 		TEXT("ABaseProjectile::OnHit - The owner of projectile, %s, is %s."),
 		*this->GetName(),
 		*MyOwner->GetName()
@@ -121,7 +121,7 @@ void ABaseProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
 	ABasePaperCharacter* OtherBasePaperActor = dynamic_cast<ABasePaperCharacter*>(OtherActor);
 	if (OtherBasePaperActor == nullptr) return;
 	
-	UE_LOG(LogTemp, Warning,
+	UE_LOG(LogTemp, Display,
 		TEXT("ABaseProjectile::OnHit - %s has hit %s."),
 		*this->GetName(), *OtherBasePaperActor->GetName()
 	);
@@ -158,7 +158,7 @@ void ABaseProjectile::DoCollisionAnimAndSound(const AActor* MyOwner, ABasePaperC
 
 void ABaseProjectile::DestroyActor()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Destroying %s!"), *this->GetName());
+	UE_LOG(LogTemp, Display, TEXT("Destroying %s!"), *this->GetName());
 	this->Destroy();
 	GetWorld()->GetTimerManager().ClearTimer(this->CollisionTimerHandle);
 }

@@ -7,6 +7,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "SideScroller/SideScrollerGameInstance.h"
 
 APC_PlayerFox::APC_PlayerFox()
 {
@@ -46,6 +47,7 @@ void APC_PlayerFox::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAction("Shoot", IE_Pressed, this, &APC_PlayerFox::Shoot);
 	PlayerInputComponent->BindAction("Run", IE_Pressed, this, &APC_PlayerFox::SetRunVelocity);
 	PlayerInputComponent->BindAction("Run", IE_Released, this, &APC_PlayerFox::SetWalkVelocity);
+	PlayerInputComponent->BindAction("InGameMenu", IE_Pressed, this, &APC_PlayerFox::OpenInGameMenu);
 
 }
 
@@ -120,7 +122,7 @@ void APC_PlayerFox::DoWalkAnimAndSound()
 	}
 			
 	if (this->GetSprite()->GetPlaybackPositionInFrames() % 12 == 0) {
-		// UE_LOG(LogTemp, Warning, TEXT("Playing %s's walking sound!"), *this->GetName());
+		// UE_LOG(LogTemp, VeryVerbose, TEXT("Playing %s's walking sound!"), *this->GetName());
 		UGameplayStatics::SpawnSoundAttached(
 			this->WalkSound,
 			this->GetSprite(),
@@ -138,7 +140,7 @@ void APC_PlayerFox::DoClimbAnimAndSound()
 	} else {
 		if (this->GetSprite()->GetFlipbook() != ClimbAnimation) this->GetSprite()->SetFlipbook(ClimbAnimation);
 		if (this->GetSprite()->GetPlaybackPositionInFrames() == 0) {
-			// UE_LOG(LogTemp, Warning, TEXT("Playing %s's climbing sound!"), *this->GetName());
+			// UE_LOG(LogTemp, VeryVerbose, TEXT("Playing %s's climbing sound!"), *this->GetName());
 			UGameplayStatics::SpawnSoundAttached(
 				this->NearbyClimbableSound,
 				this->GetSprite(),
@@ -162,7 +164,12 @@ void APC_PlayerFox::UpdateAnimation()
 		const float MovementSpeed = this->GetVelocity().Size();
 
 		if (bIsFalling) {
-			this->GetSprite()->SetFlipbook(JumpAnimation);
+			if (this->GetVelocity().Z > 0.f) {
+				this->GetSprite()->SetFlipbook(JumpAnimation);
+			}
+			else {
+				this->GetSprite()->SetFlipbook(FallAnimation);
+			}
 		}
 		else if (this->bIsCrouching) {
 			this->GetSprite()->SetFlipbook(CrouchAnimation);
@@ -409,29 +416,29 @@ void APC_PlayerFox::Jump()
 void APC_PlayerFox::TakeMoney(int MonetaryValue)
 {
 	this->MoneyStash += MonetaryValue;
-	UE_LOG(LogTemp, Warning, TEXT("%s's money stash is now %i!"), *this->GetName(), this->MoneyStash);
+	UE_LOG(LogTemp, Verbose, TEXT("%s's money stash is now %i!"), *this->GetName(), this->MoneyStash);
 }
 
 void APC_PlayerFox::TakeHealing(const float HealingValue)
 {
 	this->AddHealth(HealingValue);
-	UE_LOG(LogTemp, Warning, TEXT("%s's health is now %f!"), *this->GetName(), this->GetHealth());
+	UE_LOG(LogTemp, Verbose, TEXT("%s's health is now %f!"), *this->GetName(), this->GetHealth());
 }
 
 void APC_PlayerFox::TakeCherries(int NumCherries)
 {
 	this->CherryStash += NumCherries;
-	UE_LOG(LogTemp, Warning, TEXT("%s's cherry stash has increased to %d!"), *this->GetName(), this->CherryStash);
+	UE_LOG(LogTemp, Verbose, TEXT("%s's cherry stash has increased to %d!"), *this->GetName(), this->CherryStash);
 }
 
 void APC_PlayerFox::LogSpeed()
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s's speed is %f!"), *this->GetName(), this->GetVelocity().Size());
+	UE_LOG(LogTemp, VeryVerbose, TEXT("%s's speed is %f!"), *this->GetName(), this->GetVelocity().Size());
 }
 
 void APC_PlayerFox::LogRotation()
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s's rotation is %s!"), *this->GetName(), *GetSprite()->GetRelativeRotation().ToString());
+	UE_LOG(LogTemp, VeryVerbose, TEXT("%s's rotation is %s!"), *this->GetName(), *GetSprite()->GetRelativeRotation().ToString());
 }
 
 void APC_PlayerFox::SetRunVelocity()
@@ -446,5 +453,16 @@ void APC_PlayerFox::SetWalkVelocity()
 
 void APC_PlayerFox::LogLocation()
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s's location is %s!"), *this->GetName(), *this->GetActorLocation().ToString());
+	UE_LOG(LogTemp, VeryVerbose, TEXT("%s's location is %s!"), *this->GetName(), *this->GetActorLocation().ToString());
+}
+
+void APC_PlayerFox::OpenInGameMenu()
+{
+	GameInstance = dynamic_cast<USideScrollerGameInstance*>(GetGameInstance());
+	if (GameInstance != nullptr) {
+		GameInstance->InGameLoadMenu();
+	}
+	else {
+		UE_LOG(LogTemp, Warning, TEXT("Can't open InGameMenu!"));
+	}
 }

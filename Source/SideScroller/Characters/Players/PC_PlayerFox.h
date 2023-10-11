@@ -6,6 +6,8 @@
 #include "SideScroller/Interfaces/ProjectileInterface.h"
 #include "PC_PlayerFox.generated.h"
 
+class USideScrollerGameInstance;
+
 UCLASS()
 class SIDESCROLLER_API APC_PlayerFox : public ABasePaperCharacter, public IProjectileInterface
 {
@@ -41,6 +43,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UPaperFlipbook* JumpAnimation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPaperFlipbook* FallAnimation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UPaperFlipbook* CrouchAnimation;
@@ -95,6 +100,8 @@ public:
 	) override;
 
 private:
+	USideScrollerGameInstance* GameInstance;
+	
 	UPROPERTY(EditAnywhere)
 	int NumberOfLives = 5;
 
@@ -181,6 +188,9 @@ private:
 	
 	UFUNCTION(BlueprintCallable)
 	void LogLocation();
+
+	UFUNCTION(BlueprintCallable)
+	void OpenInGameMenu();
 
 	UFUNCTION(BlueprintCallable)
 	void DoWalkAnimAndSound();

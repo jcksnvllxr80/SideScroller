@@ -9,7 +9,7 @@ public class SideScroller : ModuleRules
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
 		PublicDependencyModuleNames.AddRange(new string[] {
-			"Core", "CoreUObject", "Engine", "InputCore", "UMG", "AIModule"
+			"Core", "CoreUObject", "Engine", "InputCore", "UMG", "AIModule", "OnlineSubsystem", "OnlineSubsystemSteam"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });

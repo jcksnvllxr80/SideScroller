@@ -14,4 +14,7 @@ class SIDESCROLLER_API ASideScrollerGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 	
+public:
+	ASideScrollerGameModeBase();
+
 };

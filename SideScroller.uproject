@@ -11,7 +11,8 @@
 			"AdditionalDependencies": [
 				"Engine",
 				"Paper2D",
-				"AIModule"
+				"AIModule",
+				"UMG"
 			]
 		}
 	],
@@ -25,6 +26,10 @@
 		},
 		{
 			"Name": "WaveformEditor",
+			"Enabled": true
+		},
+		{
+			"Name": "OnlineSubsystemSteam",
 			"Enabled": true
 		}
 	]

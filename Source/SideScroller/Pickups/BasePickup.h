@@ -18,6 +18,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UPaperFlipbook* IdleAnimation;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPaperFlipbook* ItemTakenAnimation;
+
 	// Sets default values for this actor's properties
 	ABasePickup();
 
@@ -30,12 +33,20 @@ public:
 	UPROPERTY(EditAnywhere)
 	USoundBase* PickupSound;
 
+	UFUNCTION(BlueprintCallable)
+	virtual void DestroyActor();
+
 private:
 	UPROPERTY(VisibleAnywhere, Category = Actor)
 	class UPaperFlipbookComponent* PickupFlipbook;
 
 	UPROPERTY(VisibleAnywhere, Category = Collision)
 	class UBoxComponent* PickupBox;
+
+	UPROPERTY(EditAnywhere)
+	float ItemTakenAnimationTime = 0.5;
+
+	FTimerHandle ItemTakenTimerHandle;
 
 protected:
 	UFUNCTION()
