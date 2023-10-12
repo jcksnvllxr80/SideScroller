@@ -10,7 +10,7 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 	UE_LOG(LogTemp, Display, TEXT("There are %i players in the lobby."), NumberOfPlayers);
 	if(NumberOfPlayers >= MinPlayersToStartGame)
 	{
-		UE_LOG(LogTemp, Display, TEXT("Leaving lobby to start game..."), NumberOfPlayers);
+		UE_LOG(LogTemp, Display, TEXT("Leaving lobby to start game..."));
 		UWorld* World = GetWorld();
 		if (!World) return;
 		bUseSeamlessTravel = true;

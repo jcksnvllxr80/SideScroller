@@ -12,6 +12,7 @@
 #include "Interfaces/OnlineSessionInterface.h"
 #include "MenuSystem/MainMenu.h"
 #include "MenuSystem/MenuWidget.h"
+#include "Online/OnlineSessionNames.h"
 #include "UObject/ConstructorHelpers.h"
 
 const static FName SESSION_NAME = NAME_GameSession;
