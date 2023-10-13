@@ -30,8 +30,13 @@ class SIDESCROLLER_API USideScrollerGameInstance : public UGameInstance, public 
 
 public:
 	USideScrollerGameInstance(const FObjectInitializer & ObjectInitializer);
+	
 	virtual void Init();
+
+	UFUNCTION(BlueprintCallable)
 	virtual void LoadMainMenu() override;
+
+	UFUNCTION(BlueprintCallable)
 	void RefreshServerList() override;
 
 	UFUNCTION(Exec)

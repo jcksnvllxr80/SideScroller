@@ -37,6 +37,10 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "HUD")
 	void SetMoneyStash(const int MoneyAmount);
+	void PlayerDeath();
+
+	UFUNCTION(BlueprintCallable, Category = "Fall")
+	void HandleFallOffLevel();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UPaperFlipbook* RunAnimation;
@@ -71,7 +75,7 @@ public:
 	APC_PlayerFox();
 	
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
-
+	
 	virtual void BeginPlay() override;
 
 	virtual void Jump() override;
@@ -99,9 +103,15 @@ public:
 		const ABaseProjectile* Projectile
 	) override;
 
+	UFUNCTION(BlueprintCallable)
+	void SetCheckpointLocation(const FVector& CheckpointLocation);
+
 private:
 	USideScrollerGameInstance* GameInstance;
 	
+	UPROPERTY(EditAnywhere)
+	FVector LastCheckpointLocation;
+
 	UPROPERTY(EditAnywhere)
 	int NumberOfLives = 5;
 
@@ -197,7 +207,13 @@ private:
 
 	UFUNCTION(BlueprintCallable)
 	void DoClimbAnimAndSound();
-	
+
+	UFUNCTION(BlueprintCallable)
+	void AddToPlayersArray(APC_PlayerFox* Apc_PlayerFox);
+
+	UFUNCTION(BlueprintCallable)
+	void RemoveFromPlayersArray(APC_PlayerFox* Apc_PlayerFox);
+
 	UPROPERTY(EditAnywhere)
 	FVector CrouchProjectileSpawnPoint = FVector(0.f, 0.f, 5.f);
 

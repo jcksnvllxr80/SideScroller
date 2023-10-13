@@ -151,8 +151,14 @@ float ABasePaperCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Da
 				Cast<IPointsInterface>(this)->GivePoints(PlayerFoxDamageCauser);
 			}
 		}
-		
-		DoDeath();
+
+		APC_PlayerFox* PlayerFoxVictim = dynamic_cast<APC_PlayerFox*>(this);
+		if (PlayerFoxVictim)
+		{
+			PlayerFoxVictim->PlayerDeath();
+		} else {
+			DoDeath();
+		}
 	} else {
 		DoHurt(DamageCauser);
 	}

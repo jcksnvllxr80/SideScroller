@@ -5,9 +5,11 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
+#include "GameFramework/GameModeBase.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "SideScroller/SideScrollerGameInstance.h"
+#include "SideScroller/SideScrollerGameModeBase.h"
 
 APC_PlayerFox::APC_PlayerFox()
 {
@@ -54,6 +56,10 @@ void APC_PlayerFox::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 void APC_PlayerFox::BeginPlay()
 {
 	Super::BeginPlay();
+
+	AddToPlayersArray(this);
+	
+	this->LastCheckpointLocation = this->GetSprite()->GetComponentLocation(); 
 	this->StandingFriction = this->GetCharacterMovement()->BrakingFrictionFactor;
 	this->NormalWalkingSpeed = this->GetCharacterMovement()->MaxWalkSpeed;
 }
@@ -115,6 +121,36 @@ void APC_PlayerFox::SetMoneyStash(const int MoneyAmount)
 	this->MoneyStash = MoneyAmount;
 }
 
+void APC_PlayerFox::SetCheckpointLocation(const FVector& Location)
+{
+	this->LastCheckpointLocation = Location;
+}
+
+void APC_PlayerFox::PlayerDeath()
+{
+	if (this->NumberOfLives > 0)
+	{
+		// take a life away
+		this->NumberOfLives -= 1;
+		
+		// set location back to last checkpoint
+		this->SetActorLocation(
+			LastCheckpointLocation, false, nullptr, ETeleportType::ResetPhysics
+		);
+	} else {
+		RemoveFromPlayersArray(this);
+		
+		this->DoDeath();
+		// TODO: get another player to spectate
+	}
+}
+
+void APC_PlayerFox::HandleFallOffLevel()
+{
+	// Maybe one color character doesnt die when it falls off, wrap PlayerDeath in that case.
+	PlayerDeath();
+}
+
 void APC_PlayerFox::DoWalkAnimAndSound()
 {
 	if (this->GetSprite()->GetFlipbook() != RunAnimation) {
@@ -147,6 +183,24 @@ void APC_PlayerFox::DoClimbAnimAndSound()
 				TEXT("ClimbingSound")
 			);
 		}
+	}
+}
+
+void APC_PlayerFox::AddToPlayersArray(APC_PlayerFox* Apc_PlayerFox)
+{
+	if (ASideScrollerGameModeBase* GameMode = dynamic_cast<ASideScrollerGameModeBase*>(
+		GetWorld()->GetAuthGameMode())
+	) {
+		GameMode->AddPlayer(this);	
+	}
+}
+
+void APC_PlayerFox::RemoveFromPlayersArray(APC_PlayerFox* Apc_PlayerFox)
+{
+	if (ASideScrollerGameModeBase* GameMode = dynamic_cast<ASideScrollerGameModeBase*>(
+		GetWorld()->GetAuthGameMode())
+	) {
+		GameMode->RemovePlayer(this);	
 	}
 }
 
