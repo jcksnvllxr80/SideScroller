@@ -49,5 +49,6 @@ void UInGameMenu::BackToMainMenu()
 void UInGameMenu::BackToGame()
 {
 	OnLevelRemovedFromWorld();
+	GetWorld()->GetFirstPlayerController()->SetPause(false);
 }
 

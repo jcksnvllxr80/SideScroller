@@ -1,6 +1,7 @@
 #include "PC_PlayerFox.h"
 
 #include "PaperFlipbookComponent.h"
+#include "Blueprint/UserWidget.h"
 #include "Components/InputComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -58,6 +59,7 @@ void APC_PlayerFox::BeginPlay()
 	Super::BeginPlay();
 
 	AddToPlayersArray(this);
+	PlayerHUDSetup();
 	
 	this->LastCheckpointLocation = this->GetSprite()->GetComponentLocation(); 
 	this->StandingFriction = this->GetCharacterMovement()->BrakingFrictionFactor;
@@ -139,7 +141,8 @@ void APC_PlayerFox::PlayerDeath()
 		);
 	} else {
 		RemoveFromPlayersArray(this);
-		
+		// detach HUD
+		this->WidgetPlayerHUDInstance->RemoveFromParent();
 		this->DoDeath();
 		// TODO: get another player to spectate
 	}
@@ -202,6 +205,12 @@ void APC_PlayerFox::RemoveFromPlayersArray(APC_PlayerFox* Apc_PlayerFox)
 	) {
 		GameMode->RemovePlayer(this);	
 	}
+}
+
+void APC_PlayerFox::PlayerHUDSetup()
+{
+	WidgetPlayerHUDInstance = CreateWidget<UUserWidget>(GetWorld(), WidgetPlayerHUD);
+	WidgetPlayerHUDInstance->AddToViewport();
 }
 
 void APC_PlayerFox::UpdateAnimation()
@@ -514,6 +523,7 @@ void APC_PlayerFox::OpenInGameMenu()
 {
 	GameInstance = dynamic_cast<USideScrollerGameInstance*>(GetGameInstance());
 	if (GameInstance != nullptr) {
+		GetWorld()->GetFirstPlayerController()->SetPause(true);
 		GameInstance->InGameLoadMenu();
 	}
 	else {

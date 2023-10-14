@@ -6,6 +6,7 @@
 #include "VectorTypes.h"
 #include "Characters/Players/PC_PlayerFox.h"
 #include "Kismet/GameplayStatics.h"
+#include "MenuSystem/MainMenu.h"
 #include "UObject/ConstructorHelpers.h"
 
 ASideScrollerGameModeBase::ASideScrollerGameModeBase()
@@ -33,14 +34,17 @@ void ASideScrollerGameModeBase::BeginPlay()
 void ASideScrollerGameModeBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (  // early return if in main menu
+		const AGameModeBase* CurrentGameMode = Cast<AGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+		CurrentGameMode != nullptr && CurrentGameMode->GetName().Contains("MainMenu")
+	) return;
 	
 	if (Players.Num() < 1)
 	{
 		UE_LOG(LogGameMode, Warning, TEXT("All players out of lives, quiting game!"));
 
-		// TODO: go to game over screen/level where you can either start over or exit.
-
-		// for now quiting the game
+		// TODO: go to game over screen/level where you can either start over or exit. for now quit the game
 		const TEnumAsByte<EQuitPreference::Type> QuitPreference = EQuitPreference::Quit;
 		UKismetSystemLibrary::QuitGame(
 			GetWorld(),

@@ -108,6 +108,9 @@ public:
 
 private:
 	USideScrollerGameInstance* GameInstance;
+
+	UPROPERTY(EditAnywhere) TSubclassOf<UUserWidget> WidgetPlayerHUD;
+	UUserWidget* WidgetPlayerHUDInstance;
 	
 	UPROPERTY(EditAnywhere)
 	FVector LastCheckpointLocation;
@@ -214,6 +217,9 @@ private:
 	UFUNCTION(BlueprintCallable)
 	void RemoveFromPlayersArray(APC_PlayerFox* Apc_PlayerFox);
 
+	UFUNCTION(BlueprintCallable)
+	void PlayerHUDSetup();
+	
 	UPROPERTY(EditAnywhere)
 	FVector CrouchProjectileSpawnPoint = FVector(0.f, 0.f, 5.f);
 
