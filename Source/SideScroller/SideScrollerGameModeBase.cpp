@@ -3,7 +3,6 @@
 
 #include "SideScrollerGameModeBase.h"
 
-#include "VectorTypes.h"
 #include "Characters/Players/PC_PlayerFox.h"
 #include "Kismet/GameplayStatics.h"
 #include "MenuSystem/MainMenu.h"
@@ -15,7 +14,7 @@ ASideScrollerGameModeBase::ASideScrollerGameModeBase()
 	
 	// set default pawn class to our Blueprinted character
 	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/Blueprints/Characters/BP_PC_PlayerFox"));
-	if (PlayerPawnBPClass.Class != NULL)
+	if (PlayerPawnBPClass.Class != nullptr)
 	{
 		DefaultPawnClass = PlayerPawnBPClass.Class;
 	}
@@ -31,27 +30,45 @@ void ASideScrollerGameModeBase::BeginPlay()
 	UGameplayStatics::PlaySound2D(AActor::GetWorld(), BackgroundMusic);
 }
 
+void ASideScrollerGameModeBase::QuitGameHard() const
+{
+	// hard coded quit game 
+	const TEnumAsByte<EQuitPreference::Type> QuitPreference = EQuitPreference::Quit;
+	UKismetSystemLibrary::QuitGame(
+		GetWorld(),
+		UGameplayStatics::GetPlayerController(GetWorld(), 0),
+		QuitPreference,
+		true
+	);
+}
+
 void ASideScrollerGameModeBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (  // early return if in main menu
-		const AGameModeBase* CurrentGameMode = Cast<AGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
-		CurrentGameMode != nullptr && CurrentGameMode->GetName().Contains("MainMenu")
-	) return;
+	if (const AGameModeBase* CurrentGameMode = Cast<AGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+		CurrentGameMode != nullptr && (
+			CurrentGameMode->GetName().Contains("MainMenu") ||
+			CurrentGameMode->GetName().Contains("GameOver")
+		)
+	) return;  // early return if in mainmenu or gameover menu
 	
 	if (Players.Num() < 1)
 	{
-		UE_LOG(LogGameMode, Warning, TEXT("All players out of lives, quiting game!"));
-
-		// TODO: go to game over screen/level where you can either start over or exit. for now quit the game
-		const TEnumAsByte<EQuitPreference::Type> QuitPreference = EQuitPreference::Quit;
-		UKismetSystemLibrary::QuitGame(
-			GetWorld(),
-			UGameplayStatics::GetPlayerController(GetWorld(), 0),
-			QuitPreference,
-			true
-		);
+		const UWorld* World = GetWorld();
+		if (!World) return;
+		
+		// go to game over screen/level where you can either start over or exit.
+		if (USideScrollerGameInstance* SideScrollerGameInstance =
+			Cast<USideScrollerGameInstance>(World->GetGameInstance())
+		) {
+			SideScrollerGameInstance->LoadGameOverMenu();
+		} else {
+			UE_LOG(LogGameMode, Display,
+				TEXT("ASideScrollerGameModeBase::Tick - Cant find sidescroller game instance; quitting game!")
+			);
+			QuitGameHard();
+		}
 	}
 }
 

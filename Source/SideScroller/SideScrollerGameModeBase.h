@@ -19,6 +19,8 @@ public:
 	ASideScrollerGameModeBase();
 	
 	virtual void BeginPlay() override;
+	
+	void QuitGameHard() const;
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

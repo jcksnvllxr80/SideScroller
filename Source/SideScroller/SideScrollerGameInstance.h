@@ -54,10 +54,17 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void InGameLoadMenu();
 
+	UFUNCTION(BlueprintCallable)
+	void GameOverLoadMenu();
+	
+	UFUNCTION(BlueprintCallable)
+	void LoadGameOverMenu();
+
 private:
 	TSubclassOf<class UUserWidget> MainMenuClass = nullptr;
 	TSubclassOf<class UUserWidget> InGameMenuClass = nullptr;
 	TSubclassOf<class UUserWidget> SettingsMenuClass = nullptr;
+	TSubclassOf<class UUserWidget> GameOverMenuClass = nullptr;
 	class UMainMenu* Menu;
 	IOnlineSessionPtr SessionInterface;
 	TSharedPtr<class FOnlineSessionSearch> GameSessionSearch;

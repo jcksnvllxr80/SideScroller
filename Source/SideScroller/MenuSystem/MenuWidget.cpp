@@ -25,13 +25,13 @@ void UMenuWidget::Setup()
 		}
 		else
 		{
-			UE_LOG(LogTemp, Error, TEXT("Cant find player controller."));
+			UE_LOG(LogTemp, Error, TEXT("UMenuWidget::Setup - Cant find player controller."));
 			return;
 		}
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("Cant find World obj."));
+		UE_LOG(LogTemp, Error, TEXT("UMenuWidget::Setup - Cant find World obj."));
 		return;
 	}
 }
@@ -52,13 +52,13 @@ void UMenuWidget::OnLevelRemovedFromWorld()
 		}
 		else
 		{
-			UE_LOG(LogTemp, Error, TEXT("Cant find player controller."));
+			UE_LOG(LogTemp, Error, TEXT("UMenuWidget::OnLevelRemovedFromWorld - Cant find player controller."));
 			return;
 		}
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("Cant find World obj."));
+		UE_LOG(LogTemp, Error, TEXT("UMenuWidget::OnLevelRemovedFromWorld - Cant find World obj."));
 		return;
 	}
 }
