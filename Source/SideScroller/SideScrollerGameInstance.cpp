@@ -9,7 +9,9 @@
 #include "OnlineSubsystem.h"
 #include "Blueprint/UserWidget.h"
 #include "Engine/Engine.h"
+#include "GameFramework/GameModeBase.h"
 #include "Interfaces/OnlineSessionInterface.h"
+#include "Kismet/GameplayStatics.h"
 #include "MenuSystem/MainMenu.h"
 #include "MenuSystem/MenuWidget.h"
 #include "Online/OnlineSessionNames.h"
@@ -65,14 +67,22 @@ void USideScrollerGameInstance::LoadMainMenu()
 {
 	APlayerController* PlayerController = GetFirstLocalPlayerController();
 	if (!PlayerController) return;
+	
+	UE_LOG(LogTemp, Display, TEXT("USideScrollerGameInstance::LoadMainMenu - Loading MainMenu map."));
 	PlayerController->ClientTravel("/Game/Maps/Map_MainMenu", ETravelType::TRAVEL_Absolute);
 }
 
 void USideScrollerGameInstance::LoadGameOverMenu()
 {
-	APlayerController* PlayerController = GetFirstLocalPlayerController();
-	if (!PlayerController) return;
-	PlayerController->ClientTravel("/Game/Maps/Map_GameOverMenu", ETravelType::TRAVEL_Absolute);
+	AGameModeBase* CurrentGameMode = Cast<AGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+	if (CurrentGameMode != nullptr)
+	{
+		CurrentGameMode->bUseSeamlessTravel = true;
+		APlayerController* PlayerController = GetFirstLocalPlayerController();
+		if (!PlayerController) return;
+		UE_LOG(LogTemp, Display, TEXT("USideScrollerGameInstance::LoadGameOverMenu - Loading GameOver map."));
+		PlayerController->ClientTravel("/Game/Maps/Map_GameOverMenu", ETravelType::TRAVEL_Absolute);
+	}
 }
 
 void USideScrollerGameInstance::RefreshServerList()
@@ -196,7 +206,6 @@ void USideScrollerGameInstance::InGameLoadMenu()
 
 void USideScrollerGameInstance::GameOverLoadMenu()
 {
-	LoadGameOverMenu();
 	if (GameOverMenuClass)
 	{
 		UE_LOG(LogTemp, Display, TEXT("Found GameOver Menu blueprint class %s."), *GameOverMenuClass->GetName());

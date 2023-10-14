@@ -46,26 +46,26 @@ void ASideScrollerGameModeBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (  // early return if in main menu
-		const AGameModeBase* CurrentGameMode = Cast<AGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+	if (const AGameModeBase* CurrentGameMode = Cast<AGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 		CurrentGameMode != nullptr && (
 			CurrentGameMode->GetName().Contains("MainMenu") ||
 			CurrentGameMode->GetName().Contains("GameOver")
 		)
-	) return;
+	) return;  // early return if in mainmenu or gameover menu
 	
 	if (Players.Num() < 1)
 	{
+		const UWorld* World = GetWorld();
+		if (!World) return;
+		
 		// go to game over screen/level where you can either start over or exit.
-		if (USideScrollerGameInstance* SideScrollerGameInstance = Cast<USideScrollerGameInstance>(
-			GetWorld()->GetGameInstance()
-		))
-		{
-			UE_LOG(LogGameMode, Display, TEXT("All players out of lives, switching to game over menu!"));
-			SideScrollerGameInstance->GameOverLoadMenu();
+		if (USideScrollerGameInstance* SideScrollerGameInstance =
+			Cast<USideScrollerGameInstance>(World->GetGameInstance())
+		) {
+			SideScrollerGameInstance->LoadGameOverMenu();
 		} else {
 			UE_LOG(LogGameMode, Display,
-				TEXT("ASideScrollerGameModeBase::Tick - Cant find sidescroller game instance; quiting game!")
+				TEXT("ASideScrollerGameModeBase::Tick - Cant find sidescroller game instance; quitting game!")
 			);
 			QuitGameHard();
 		}
