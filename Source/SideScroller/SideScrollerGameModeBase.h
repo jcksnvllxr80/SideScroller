@@ -20,7 +20,7 @@ public:
 	
 	virtual void BeginPlay() override;
 	
-	void QuitGameHard();
+	void QuitGameHard() const;
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

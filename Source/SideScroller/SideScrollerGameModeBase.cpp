@@ -3,7 +3,6 @@
 
 #include "SideScrollerGameModeBase.h"
 
-#include "VectorTypes.h"
 #include "Characters/Players/PC_PlayerFox.h"
 #include "Kismet/GameplayStatics.h"
 #include "MenuSystem/MainMenu.h"
@@ -15,7 +14,7 @@ ASideScrollerGameModeBase::ASideScrollerGameModeBase()
 	
 	// set default pawn class to our Blueprinted character
 	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/Blueprints/Characters/BP_PC_PlayerFox"));
-	if (PlayerPawnBPClass.Class != NULL)
+	if (PlayerPawnBPClass.Class != nullptr)
 	{
 		DefaultPawnClass = PlayerPawnBPClass.Class;
 	}
@@ -31,7 +30,7 @@ void ASideScrollerGameModeBase::BeginPlay()
 	UGameplayStatics::PlaySound2D(AActor::GetWorld(), BackgroundMusic);
 }
 
-void ASideScrollerGameModeBase::QuitGameHard()
+void ASideScrollerGameModeBase::QuitGameHard() const
 {
 	// hard coded quit game 
 	const TEnumAsByte<EQuitPreference::Type> QuitPreference = EQuitPreference::Quit;
@@ -55,10 +54,9 @@ void ASideScrollerGameModeBase::Tick(float DeltaTime)
 	if (Players.Num() < 1)
 	{
 		// go to game over screen/level where you can either start over or exit.
-		USideScrollerGameInstance* SideScrollerGameInstance = Cast<USideScrollerGameInstance>(
+		if (USideScrollerGameInstance* SideScrollerGameInstance = Cast<USideScrollerGameInstance>(
 			GetWorld()->GetGameInstance()
-		);
-		if (SideScrollerGameInstance)
+		))
 		{
 			UE_LOG(LogGameMode, Display, TEXT("All players out of lives, switching to game over menu!"));
 			SideScrollerGameInstance->LoadGameOverMenu();
