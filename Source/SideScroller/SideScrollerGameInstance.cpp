@@ -27,6 +27,10 @@ USideScrollerGameInstance::USideScrollerGameInstance(const FObjectInitializer & 
 	ConstructorHelpers::FClassFinder<UUserWidget> InGameMenuBPClass(TEXT("/Game/MenuSystem/WBP_InGameMenu"));
 	if (!InGameMenuBPClass.Class) return;
 	InGameMenuClass = InGameMenuBPClass.Class;
+
+	ConstructorHelpers::FClassFinder<UUserWidget> GameOverMenuBPClass(TEXT("/Game/MenuSystem/WBP_GameOverMenu"));
+	if (!GameOverMenuBPClass.Class) return;
+	InGameMenuClass = GameOverMenuBPClass.Class;
 }
 
 void USideScrollerGameInstance::Init()
@@ -62,6 +66,13 @@ void USideScrollerGameInstance::LoadMainMenu()
 	APlayerController* PlayerController = GetFirstLocalPlayerController();
 	if (!PlayerController) return;
 	PlayerController->ClientTravel("/Game/Maps/Map_MainMenu", ETravelType::TRAVEL_Absolute);
+}
+
+void USideScrollerGameInstance::LoadGameOverMenu()
+{
+	APlayerController* PlayerController = GetFirstLocalPlayerController();
+	if (!PlayerController) return;
+	PlayerController->ClientTravel("/Game/Maps/Map_GameOverMenu", ETravelType::TRAVEL_Absolute);
 }
 
 void USideScrollerGameInstance::RefreshServerList()

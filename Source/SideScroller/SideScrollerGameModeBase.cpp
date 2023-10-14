@@ -31,6 +31,18 @@ void ASideScrollerGameModeBase::BeginPlay()
 	UGameplayStatics::PlaySound2D(AActor::GetWorld(), BackgroundMusic);
 }
 
+void ASideScrollerGameModeBase::QuitGameHard()
+{
+	// hard coded quit game 
+	const TEnumAsByte<EQuitPreference::Type> QuitPreference = EQuitPreference::Quit;
+	UKismetSystemLibrary::QuitGame(
+		GetWorld(),
+		UGameplayStatics::GetPlayerController(GetWorld(), 0),
+		QuitPreference,
+		true
+	);
+}
+
 void ASideScrollerGameModeBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -42,16 +54,20 @@ void ASideScrollerGameModeBase::Tick(float DeltaTime)
 	
 	if (Players.Num() < 1)
 	{
-		UE_LOG(LogGameMode, Warning, TEXT("All players out of lives, quiting game!"));
-
-		// TODO: go to game over screen/level where you can either start over or exit. for now quit the game
-		const TEnumAsByte<EQuitPreference::Type> QuitPreference = EQuitPreference::Quit;
-		UKismetSystemLibrary::QuitGame(
-			GetWorld(),
-			UGameplayStatics::GetPlayerController(GetWorld(), 0),
-			QuitPreference,
-			true
+		// go to game over screen/level where you can either start over or exit.
+		USideScrollerGameInstance* SideScrollerGameInstance = Cast<USideScrollerGameInstance>(
+			GetWorld()->GetGameInstance()
 		);
+		if (SideScrollerGameInstance)
+		{
+			UE_LOG(LogGameMode, Display, TEXT("All players out of lives, switching to game over menu!"));
+			SideScrollerGameInstance->LoadGameOverMenu();
+		} else {
+			UE_LOG(LogGameMode, Display,
+				TEXT("ASideScrollerGameModeBase::Tick - Cant find sidescroller game instance; quiting game!")
+			);
+			QuitGameHard();
+		}
 	}
 }
 
