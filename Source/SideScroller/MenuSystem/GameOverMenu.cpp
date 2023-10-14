@@ -47,7 +47,7 @@ bool UGameOverMenu::Initialize()
 		return false;
 	}
 
-	UE_LOG(LogTemp, Display, TEXT("In Game Menu Init complete!"));
+	UE_LOG(LogTemp, Display, TEXT("UGameOverMenu::Initialize - GameOver Menu Init complete!"));
 	return true;
 }
 
@@ -68,7 +68,7 @@ void UGameOverMenu::BackToMainMenu()
 
 void UGameOverMenu::RestartGame()
 {
-	UE_LOG(LogTemp, Display, TEXT("Leaving GameOver Menu to start game..."));
+	UE_LOG(LogTemp, Display, TEXT("UGameOverMenu::RestartGame - Leaving GameOver Menu to start game..."));
 	UWorld* World = GetWorld();
 	if (!World) return;
 	GetWorld()->GetAuthGameMode()->bUseSeamlessTravel = true;

@@ -55,6 +55,9 @@ public:
 	void InGameLoadMenu();
 
 	UFUNCTION(BlueprintCallable)
+	void GameOverLoadMenu();
+	
+	UFUNCTION(BlueprintCallable)
 	void LoadGameOverMenu();
 
 private:

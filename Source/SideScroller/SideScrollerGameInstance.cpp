@@ -30,7 +30,7 @@ USideScrollerGameInstance::USideScrollerGameInstance(const FObjectInitializer & 
 
 	ConstructorHelpers::FClassFinder<UUserWidget> GameOverMenuBPClass(TEXT("/Game/MenuSystem/WBP_GameOverMenu"));
 	if (!GameOverMenuBPClass.Class) return;
-	InGameMenuClass = GameOverMenuBPClass.Class;
+	GameOverMenuClass = GameOverMenuBPClass.Class;
 }
 
 void USideScrollerGameInstance::Init()
@@ -104,8 +104,7 @@ void USideScrollerGameInstance::Host(FString ServerName)
 		UE_LOG(LogTemp, Error, TEXT("There is no SessionInterface, exiting Host func early."));
 		return;
 	}
-	auto ExistingSession = SessionInterface->GetNamedSession(SESSION_NAME);
-	if (!ExistingSession)
+	if (auto ExistingSession = SessionInterface->GetNamedSession(SESSION_NAME); !ExistingSession)
 	{
 		CreateSession();
 		return;
@@ -176,22 +175,45 @@ void USideScrollerGameInstance::InGameLoadMenu()
 {
 	if (InGameMenuClass)
 	{
-		UE_LOG(LogTemp, Display, TEXT("Found In Game Menu blueprint class %s."), *InGameMenuClass->GetName());
-		UMenuWidget* InGameMenu = CreateWidget<UMenuWidget>(this, InGameMenuClass);
-		if (InGameMenu)
+		UE_LOG(LogTemp, Display, TEXT("Found InGame Menu blueprint class %s."), *InGameMenuClass->GetName());
+		if (UMenuWidget* InGameMenu = CreateWidget<UMenuWidget>(this, InGameMenuClass))
 		{
 			InGameMenu->Setup();
 			InGameMenu->SetMenuInterface(this);
 		}
 		else
 		{
-			UE_LOG(LogTemp, Error, TEXT("Cant create UMenuWidget Menu from main menu blueprint class."));
+			UE_LOG(LogTemp, Error, TEXT("Cant create UMenuWidget Menu from InGame menu blueprint class."));
 			return;
 		}
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("Cant find the Main Menu blueprint class."));
+		UE_LOG(LogTemp, Error, TEXT("Cant find the InGame Menu blueprint class."));
+		return;
+	}
+}
+
+void USideScrollerGameInstance::GameOverLoadMenu()
+{
+	LoadGameOverMenu();
+	if (GameOverMenuClass)
+	{
+		UE_LOG(LogTemp, Display, TEXT("Found GameOver Menu blueprint class %s."), *GameOverMenuClass->GetName());
+		if (UMenuWidget* GameOverMenu = CreateWidget<UMenuWidget>(this, GameOverMenuClass))
+		{
+			GameOverMenu->Setup();
+			GameOverMenu->SetMenuInterface(this);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Cant create UMenuWidget Menu from GameOver menu blueprint class."));
+			return;
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Cant find the GameOver Menu blueprint class."));
 		return;
 	}
 }
