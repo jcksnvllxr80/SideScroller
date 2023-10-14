@@ -1,7 +1,7 @@
 #pragma once
 #include "CoreMinimal.h"
-#include "../../Climbables/BaseClimbable.h"
-#include "../BasePaperCharacter.h"
+#include "SideScroller/Climbables/BaseClimbable.h"
+#include "SideScroller/Characters/BasePaperCharacter.h"
 #include "PaperFlipbook.h"
 #include "SideScroller/Interfaces/ProjectileInterface.h"
 #include "PC_PlayerFox.generated.h"
@@ -104,7 +104,10 @@ public:
 	) override;
 
 	UFUNCTION(BlueprintCallable)
-	void SetCheckpointLocation(const FVector& CheckpointLocation);
+	void SetCheckpointLocation(const FVector& Location);
+
+	UFUNCTION(BlueprintCallable)
+	void ReviveAtCheckpoint();
 
 private:
 	USideScrollerGameInstance* GameInstance;

@@ -3,11 +3,11 @@
 
 #include "BasePickup.h"
 
-#include "../Characters/BasePaperCharacter.h"
+#include "Sidescroller/Characters/BasePaperCharacter.h"
 #include "PaperFlipbookComponent.h"
-#include "../Characters/Players/PC_PlayerFox.h"
+#include "Sidescroller/Characters/Players/PC_PlayerFox.h"
 #include "Engine/DamageEvents.h"
-#include "../Interfaces/PickupInterface.h"
+#include "Sidescroller/Interfaces/PickupInterface.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values

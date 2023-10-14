@@ -3,9 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "../Characters/BasePaperCharacter.h"
+#include "Sidescroller/Characters/BasePaperCharacter.h"
 #include "BasePickup.h"
-#include "../Interfaces/PickupInterface.h"
+#include "Sidescroller/Interfaces/PickupInterface.h"
 #include "Mushroom.generated.h"
 
 /**

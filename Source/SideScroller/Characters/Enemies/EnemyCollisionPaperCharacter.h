@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "../BasePaperCharacter.h"
+#include "SideScroller/Characters/BasePaperCharacter.h"
 #include "SideScroller/Interfaces/PointsInterface.h"
 #include "EnemyCollisionPaperCharacter.generated.h"
 

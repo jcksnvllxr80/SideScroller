@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "MenuWidget.h"
 #include "Components/Button.h"
-#include "../SideScrollerGameInstance.h"
+#include "Sidescroller/SideScrollerGameInstance.h"
 #include "MainMenu.generated.h"
 
 /**

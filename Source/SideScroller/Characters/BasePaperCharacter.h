@@ -111,9 +111,6 @@ private:
 	FTimerHandle DeathTimerHandle;
 	
 	FTimerHandle HurtTimerHandle;
-
-	UPROPERTY(EditAnywhere)
-	float DefaultHealth = 100.0;
 	
 	UPROPERTY(EditAnywhere)
 	float Damage = 10.0;
@@ -125,4 +122,8 @@ private:
 	float HurtPushAmount = 20.f;
 
 	bool IsDead = false;
+
+protected:
+	UPROPERTY(EditAnywhere)
+	float DefaultHealth = 100.0;
 };

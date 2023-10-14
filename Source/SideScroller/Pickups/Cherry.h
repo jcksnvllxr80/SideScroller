@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "BasePickup.h"
 #include "GameFramework/Actor.h"
-#include "../Interfaces/PickupInterface.h"
+#include "Sidescroller/Interfaces/PickupInterface.h"
 #include "Cherry.generated.h"
 
 UCLASS()

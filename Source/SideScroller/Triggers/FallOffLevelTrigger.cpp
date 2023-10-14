@@ -3,7 +3,7 @@
 
 #include "FallOffLevelTrigger.h"
 
-#include "Characters/Players/PC_PlayerFox.h"
+#include "SideScroller/Characters/Players/PC_PlayerFox.h"
 
 void AFallOffLevelTrigger::NotifyActorBeginOverlap(AActor* OtherActor)
 {

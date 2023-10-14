@@ -3,7 +3,7 @@
 
 #include "Cherry.h"
 
-#include "../Characters/Players/PC_PlayerFox.h"
+#include "SideScroller/Characters/Players/PC_PlayerFox.h"
 
 // Sets default values
 AACherry::AACherry()

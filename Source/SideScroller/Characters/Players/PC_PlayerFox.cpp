@@ -127,6 +127,15 @@ void APC_PlayerFox::SetCheckpointLocation(const FVector& Location)
 	this->LastCheckpointLocation = Location;
 }
 
+void APC_PlayerFox::ReviveAtCheckpoint()
+{
+	// set location back to last checkpoint
+	this->SetHealth(this->DefaultHealth);
+	this->SetActorLocation(
+		LastCheckpointLocation, false, nullptr, ETeleportType::ResetPhysics
+	);
+}
+
 void APC_PlayerFox::PlayerDeath()
 {
 	if (this->NumberOfLives > 0)
@@ -134,10 +143,7 @@ void APC_PlayerFox::PlayerDeath()
 		// take a life away
 		this->NumberOfLives -= 1;
 		
-		// set location back to last checkpoint
-		this->SetActorLocation(
-			LastCheckpointLocation, false, nullptr, ETeleportType::ResetPhysics
-		);
+		ReviveAtCheckpoint();
 	} else {
 		RemoveFromPlayersArray(this);
 		// detach HUD

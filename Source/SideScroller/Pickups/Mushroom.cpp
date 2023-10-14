@@ -3,7 +3,7 @@
 
 #include "Mushroom.h"
 
-#include "../Characters/Players/PC_PlayerFox.h"
+#include "Sidescroller/Characters/Players/PC_PlayerFox.h"
 
 // Sets default values
 AMushroom::AMushroom()
