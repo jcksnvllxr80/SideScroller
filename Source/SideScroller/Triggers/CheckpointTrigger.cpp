@@ -8,7 +8,7 @@
 
 ACheckpointTrigger::ACheckpointTrigger()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	CheckpointFlipbook = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("CheckpointPaperFlipbook"));
 	CheckpointFlipbook->SetupAttachment(RootComponent);
@@ -18,6 +18,21 @@ ACheckpointTrigger::ACheckpointTrigger()
 	this->CheckpointBox->SetHiddenInGame(true);
 	this->CheckpointBox->SetRelativeScale3D(FVector(0.4,0.4,0.4));
 	this->CheckpointBox->SetRelativeLocation(FVector(0.0,0.0,0.0));
+}
+
+void ACheckpointTrigger::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	
+	if (CheckpointFlipbook && this->bSpin)
+	{
+		CheckpointFlipbook->AddLocalRotation(
+			FRotator(0.f, CheckPointSpinForce * DeltaTime, 0.f),
+			false,
+			nullptr,
+			ETeleportType::None
+		);
+	}
 }
 
 void ACheckpointTrigger::BeginPlay()
@@ -34,13 +49,13 @@ void ACheckpointTrigger::BeginPlay()
 
 void ACheckpointTrigger::SpinFlipbook()
 {
-	// TODO: get the checkpoint spinning
-	CheckpointFlipbook->AddRadialImpulse(
-		GetActorLocation(),
-		10.f,
-		1000.f,
-		RIF_Linear,
-		true
+	this->bSpin = true;
+	GetWorld()->GetTimerManager().SetTimer(
+		this->SpinTimerHandle,
+		this,
+		&ACheckpointTrigger::DestroyActor,
+		SpinTime,
+		false
 	);
 }
 
@@ -77,4 +92,11 @@ void ACheckpointTrigger::CheckpointFeedback(UPrimitiveComponent* OverlappedCompo
 		OverlappedComponent,
 		TEXT("BasePickupSound")
 	);
+}
+
+void ACheckpointTrigger::DestroyActor()
+{
+	UE_LOG(LogTemp, Display, TEXT("Destroying %s!"), *this->GetName());
+	this->Destroy();
+	GetWorld()->GetTimerManager().ClearTimer(this->SpinTimerHandle);
 }

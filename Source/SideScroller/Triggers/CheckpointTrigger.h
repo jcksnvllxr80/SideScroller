@@ -18,6 +18,9 @@ class SIDESCROLLER_API ACheckpointTrigger : public AActor
 public:
 	ACheckpointTrigger();
 
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UPaperFlipbook* IdleCheckpoint;
 
@@ -27,15 +30,29 @@ public:
 	UPROPERTY(EditAnywhere, Category = Sound)
 	USoundBase* CheckpointSound;
 
+	UPROPERTY(EditAnywhere, Category = Actor)
+	float CheckPointSpinForce = 1000.f;
+
+	UPROPERTY(EditAnywhere, Category = Actor)
+	float SpinTime = 1.f;
+	
+	UFUNCTION(BlueprintCallable)
+	virtual void DestroyActor();
+	
 private:
 	UPROPERTY()
 	bool bHasGivenFeedback = false;
+
+	FTimerHandle SpinTimerHandle;
 
 	UPROPERTY(VisibleAnywhere, Category = Actor)
 	UPaperFlipbookComponent* CheckpointFlipbook;
 	
 	UFUNCTION(BlueprintCallable, Category = Actor)
 	void SpinFlipbook();
+
+	UPROPERTY(VisibleAnywhere, Category = Actor)
+	bool bSpin = false;
 	
 	UFUNCTION(BlueprintCallable)
 	void CheckpointFeedback(UPrimitiveComponent* OverlappedComponent);

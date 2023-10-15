@@ -31,6 +31,6 @@ void ALobbyGameMode::BeginPlay()
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	if (PlayerController == nullptr) return;
 
-	PlayerController->SetShowMouseCursor(true);
+	PlayerController->SetShowMouseCursor(false);
 	PlayerController->SetInputMode(FInputModeGameOnly());
 }

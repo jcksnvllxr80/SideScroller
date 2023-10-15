@@ -9,7 +9,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "SideScroller/SideScrollerGameInstance.h"
-#include "SideScroller/SideScrollerGameModeBase.h"
+#include "SideScroller/GameModes/SideScrollerGameModeBase.h"
 
 APC_PlayerFox::APC_PlayerFox()
 {

@@ -68,7 +68,7 @@ void UGameOverMenu::BackToMainMenu()
 
 void UGameOverMenu::RestartGame()
 {
-	UE_LOG(LogTemp, Display, TEXT("UGameOverMenu::RestartGame - Leaving GameOver Menu to start game..."));
+	UE_LOG(LogTemp, Display, TEXT("UGameOverMenu::RestartGame - Leaving GameOver Menu to restart game..."));
 	UWorld* World = GetWorld();
 	if (!World) return;
 	GetWorld()->GetAuthGameMode()->bUseSeamlessTravel = true;

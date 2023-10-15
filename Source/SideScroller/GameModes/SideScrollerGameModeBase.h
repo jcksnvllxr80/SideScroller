@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Characters/Players/PC_PlayerFox.h"
+#include "SideScroller/Characters/Players/PC_PlayerFox.h"
 #include "GameFramework/GameModeBase.h"
 #include "SideScrollerGameModeBase.generated.h"
 

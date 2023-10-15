@@ -3,9 +3,9 @@
 
 #include "SideScrollerGameModeBase.h"
 
-#include "Characters/Players/PC_PlayerFox.h"
+#include "SideScroller/Characters/Players/PC_PlayerFox.h"
 #include "Kismet/GameplayStatics.h"
-#include "MenuSystem/MainMenu.h"
+#include "SideScroller/MenuSystem/MainMenu.h"
 #include "UObject/ConstructorHelpers.h"
 
 ASideScrollerGameModeBase::ASideScrollerGameModeBase()
