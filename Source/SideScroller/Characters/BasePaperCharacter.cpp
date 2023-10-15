@@ -143,17 +143,18 @@ float ABasePaperCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Da
 	
 	if (this->GetHealth() <= 0)
 	{
-		APC_PlayerFox* PlayerFoxDamageCauser = dynamic_cast<APC_PlayerFox*>(DamageCauser);
-		if (PlayerFoxDamageCauser) {
+		if (APC_PlayerFox* PlayerFoxDamageCauser = dynamic_cast<APC_PlayerFox*>(DamageCauser)) {
 			// the damage causer is the player, so give the player points if the object implements points interface
 			if (EventInstigator->GetPawn()->GetClass()->ImplementsInterface(UPointsInterface::StaticClass()))
 			{
 				Cast<IPointsInterface>(this)->GivePoints(PlayerFoxDamageCauser);
 			}
+		} else if (APC_PlayerFox* ParentOfDamageCauser = dynamic_cast<APC_PlayerFox*>(DamageCauser->GetOwner()))
+		{   // if projectile was damage causer, and the parent is a PlayerFox
+			Cast<IPointsInterface>(this)->GivePoints(ParentOfDamageCauser);
 		}
 
-		APC_PlayerFox* PlayerFoxVictim = dynamic_cast<APC_PlayerFox*>(this);
-		if (PlayerFoxVictim)
+		if (APC_PlayerFox* PlayerFoxVictim = dynamic_cast<APC_PlayerFox*>(this))
 		{
 			PlayerFoxVictim->PlayerDeath();
 		} else {
