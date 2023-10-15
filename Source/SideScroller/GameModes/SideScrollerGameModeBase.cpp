@@ -88,3 +88,8 @@ void ASideScrollerGameModeBase::RemovePlayer(APC_PlayerFox* PlayerFox)
 		);
 	}
 }
+
+TArray<APC_PlayerFox*> ASideScrollerGameModeBase::GetPlayers() const
+{
+	return Players;
+}

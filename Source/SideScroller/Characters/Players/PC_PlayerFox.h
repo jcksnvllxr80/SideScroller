@@ -7,6 +7,7 @@
 #include "PC_PlayerFox.generated.h"
 
 class USideScrollerGameInstance;
+class SideScrollerGameModeBase;
 
 UCLASS()
 class SIDESCROLLER_API APC_PlayerFox : public ABasePaperCharacter, public IProjectileInterface
@@ -73,6 +74,12 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	APC_PlayerFox();
+
+	UFUNCTION(BlueprintCallable)
+	void SpectateNextPlayer();
+
+	UFUNCTION(BlueprintCallable)
+	void SpectatePrevPlayer();
 	
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	
@@ -107,7 +114,16 @@ public:
 	void SetCheckpointLocation(const FVector& Location);
 
 	UFUNCTION(BlueprintCallable)
+	void BeginSpectating(const ASideScrollerGameModeBase* GameMode);
+
+	UFUNCTION(BlueprintCallable)
+	void SpectateOtherPlayer();
+
+	UFUNCTION(BlueprintCallable)
 	void ReviveAtCheckpoint();
+
+	UFUNCTION(BlueprintCallable)
+	void DeathCleanUp();
 
 private:
 	USideScrollerGameInstance* GameInstance;
@@ -117,6 +133,9 @@ private:
 	
 	UPROPERTY(EditAnywhere)
 	FVector LastCheckpointLocation;
+
+	UPROPERTY(EditAnywhere)
+	int CurrentSpectatorIndex = 0;
 
 	UPROPERTY(EditAnywhere)
 	int NumberOfLives = 5;
@@ -134,6 +153,8 @@ private:
 	float CrouchSlideFriction = 0.175;
 
 	float StandingFriction;
+
+	bool bIsOutOfLives = false;
 
 	float NormalWalkingSpeed;
 
@@ -222,7 +243,10 @@ private:
 
 	UFUNCTION(BlueprintCallable)
 	void PlayerHUDSetup();
-	
+
+	UFUNCTION(BlueprintCallable)
+	void PlayerHUDTeardown();
+
 	UPROPERTY(EditAnywhere)
 	FVector CrouchProjectileSpawnPoint = FVector(0.f, 0.f, 5.f);
 
@@ -236,7 +260,7 @@ protected:
 	/*True means that we're currently in air - or falling*/
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bIsFalling;
-
+	
 	/*Updates the above properties*/
 	UFUNCTION(BlueprintCallable, Category = "UpdateAnimationProperties")
 	void UpdateAnimation();

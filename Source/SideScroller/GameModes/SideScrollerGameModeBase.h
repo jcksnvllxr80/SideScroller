@@ -35,6 +35,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Audio)
 	USoundBase* BackgroundMusic = nullptr;
 
+	UFUNCTION(BlueprintCallable, Category = Game)
+	TArray<APC_PlayerFox*> GetPlayers() const;
+
 private:
 	UPROPERTY(EditAnywhere, Category = Game)
 	TArray<APC_PlayerFox*> Players;
