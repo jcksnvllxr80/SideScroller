@@ -190,6 +190,7 @@ void APC_PlayerFox::ReviveAtCheckpoint()
 	this->SetActorLocation(
 		LastCheckpointLocation, false, nullptr, ETeleportType::ResetPhysics
 	);
+	this->GetMovementComponent()->StopMovementImmediately();
 }
 
 void APC_PlayerFox::PlayerDeath()
@@ -274,6 +275,19 @@ void APC_PlayerFox::PlayerHUDSetup()
 {
 	WidgetPlayerHUDInstance = CreateWidget<UUserWidget>(GetWorld(), WidgetPlayerHUD);
 	WidgetPlayerHUDInstance->AddToViewport();
+}
+
+void APC_PlayerFox::PlayerHUDTeardown()
+{
+	if (WidgetPlayerHUDInstance)
+	{
+		WidgetPlayerHUDInstance->RemoveFromParent();
+	}
+}
+
+void APC_PlayerFox::DeathCleanUp()
+{
+	this->PlayerHUDTeardown();
 }
 
 void APC_PlayerFox::UpdateAnimation()

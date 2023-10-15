@@ -279,6 +279,14 @@ void ABasePaperCharacter::Shoot()
 void ABasePaperCharacter::DestroyActor()
 {
 	UE_LOG(LogTemp, Display, TEXT("Destroying %s!"), *this->GetName());
+	// early return if this is a PlayFox because we dont want to destroy players so they can spectate
+	if (APC_PlayerFox* PlayerFox = UECasts_Private::DynamicCast<APC_PlayerFox*>(this);
+		PlayerFox != nullptr
+	) {
+		PlayerFox->DeathCleanUp();
+		return;
+	}
+	
 	this->Destroy();
 	GetWorld()->GetTimerManager().ClearTimer(this->DeathTimerHandle);
 	GetWorld()->GetTimerManager().ClearTimer(this->HurtTimerHandle);

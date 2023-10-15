@@ -122,6 +122,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ReviveAtCheckpoint();
 
+	UFUNCTION(BlueprintCallable)
+	void DeathCleanUp();
+
 private:
 	USideScrollerGameInstance* GameInstance;
 
@@ -240,7 +243,10 @@ private:
 
 	UFUNCTION(BlueprintCallable)
 	void PlayerHUDSetup();
-	
+
+	UFUNCTION(BlueprintCallable)
+	void PlayerHUDTeardown();
+
 	UPROPERTY(EditAnywhere)
 	FVector CrouchProjectileSpawnPoint = FVector(0.f, 0.f, 5.f);
 
@@ -254,7 +260,7 @@ protected:
 	/*True means that we're currently in air - or falling*/
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bIsFalling;
-
+	
 	/*Updates the above properties*/
 	UFUNCTION(BlueprintCallable, Category = "UpdateAnimationProperties")
 	void UpdateAnimation();
