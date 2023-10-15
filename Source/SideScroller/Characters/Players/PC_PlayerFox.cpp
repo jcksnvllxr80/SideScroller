@@ -50,7 +50,8 @@ void APC_PlayerFox::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAction("Run", IE_Pressed, this, &APC_PlayerFox::SetRunVelocity);
 	PlayerInputComponent->BindAction("Run", IE_Released, this, &APC_PlayerFox::SetWalkVelocity);
 	PlayerInputComponent->BindAction("InGameMenu", IE_Pressed, this, &APC_PlayerFox::OpenInGameMenu);
-
+	PlayerInputComponent->BindAction("SpectateNextPlayer", IE_Pressed, this, &APC_PlayerFox::SpectateNextPlayer);
+	PlayerInputComponent->BindAction("SpectatePrevPlayer", IE_Pressed, this, &APC_PlayerFox::SpectatePrevPlayer);
 }
 
 void APC_PlayerFox::BeginPlay()
@@ -127,6 +128,61 @@ void APC_PlayerFox::SetCheckpointLocation(const FVector& Location)
 	this->LastCheckpointLocation = Location;
 }
 
+void APC_PlayerFox::BeginSpectating(const ASideScrollerGameModeBase* GameMode)
+{
+	if (TArray<APC_PlayerFox*> PlayersArray = GameMode->GetPlayers(); PlayersArray.Num() > 0)
+	{
+		if (CurrentSpectatorIndex > PlayersArray.Num())
+		{
+			CurrentSpectatorIndex -= PlayersArray.Num();
+		} else if (CurrentSpectatorIndex < 0) {
+			CurrentSpectatorIndex += PlayersArray.Num();
+		}
+		const APC_PlayerFox* PlayerToSpectate = PlayersArray[CurrentSpectatorIndex];
+		this->GetLocalViewingPlayerController()->SetViewTarget(
+			PlayerToSpectate->GetController()->GetViewTarget()
+		);
+	}
+}
+
+void APC_PlayerFox::SpectateOtherPlayer()
+{
+	if (const ASideScrollerGameModeBase* GameMode = dynamic_cast<ASideScrollerGameModeBase*>(
+		GetWorld()->GetAuthGameMode()
+		)
+	) {
+		BeginSpectating(GameMode);
+	}
+}
+
+void APC_PlayerFox::SpectateNextPlayer()
+{
+	if (const ASideScrollerGameModeBase* GameMode = dynamic_cast<ASideScrollerGameModeBase*>(
+		GetWorld()->GetAuthGameMode()
+		)
+	) {
+		if (this->bIsOutOfLives)
+		{
+			CurrentSpectatorIndex++;
+			BeginSpectating(GameMode);
+		}
+	}
+}
+
+void APC_PlayerFox::SpectatePrevPlayer()
+{
+	if (const ASideScrollerGameModeBase* GameMode = dynamic_cast<ASideScrollerGameModeBase*>(
+		GetWorld()->GetAuthGameMode()
+		)
+	) {
+		if (this->bIsOutOfLives)
+		{
+			CurrentSpectatorIndex--;
+			BeginSpectating(GameMode);
+		}
+	}
+}
+
 void APC_PlayerFox::ReviveAtCheckpoint()
 {
 	// set location back to last checkpoint
@@ -149,7 +205,9 @@ void APC_PlayerFox::PlayerDeath()
 		// detach HUD
 		this->WidgetPlayerHUDInstance->RemoveFromParent();
 		this->DoDeath();
-		// TODO: get another player to spectate
+
+		this->bIsOutOfLives = true;
+		SpectateOtherPlayer();
 	}
 }
 
