@@ -247,7 +247,7 @@ void USideScrollerGameInstance::OnDestroySessionComplete(FName SessionName, bool
 {
 	if (Success)
 	{
-		UE_LOG(LogTemp, Display, TEXT("Session, %s, Destroyed successfully."));
+		UE_LOG(LogTemp, Display, TEXT("Session, %s, Destroyed successfully."), *SessionName.ToString());
 		CreateSession();
 	}
 }
