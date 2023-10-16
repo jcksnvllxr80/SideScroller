@@ -128,7 +128,10 @@ public:
 private:
 	USideScrollerGameInstance* GameInstance;
 
-	UPROPERTY(EditAnywhere) TSubclassOf<UUserWidget> WidgetPlayerHUD;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UUserWidget> WidgetPlayerHUD;
+
+	UPROPERTY(EditAnywhere)
 	UUserWidget* WidgetPlayerHUDInstance;
 	
 	UPROPERTY(EditAnywhere)

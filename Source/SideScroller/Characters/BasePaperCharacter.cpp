@@ -103,8 +103,9 @@ void ABasePaperCharacter::PushHurtCharacter(AActor* DamageCauser)
 
 void ABasePaperCharacter::DoHurt(AActor* DamageCauser)
 {
-	if (this->GetName().Contains("Player"))
-	{
+	if (const APC_PlayerFox* PlayerFox = dynamic_cast<APC_PlayerFox*>(this);
+		PlayerFox != nullptr
+	) {
 		this->GetSprite()->SetFlipbook(HurtAnimation);
 		
 		GetWorld()->GetTimerManager().SetTimer(
@@ -135,6 +136,20 @@ float ABasePaperCharacter::GetShootDelayTime() const
 	return ShootDelayTime;
 }
 
+void ABasePaperCharacter::TryGivingPoints(APC_PlayerFox* DamageCauser)
+{
+	// if the subject (this) of damage is not a Player give points
+	if (const APC_PlayerFox* PlayerFox = UECasts_Private::DynamicCast<APC_PlayerFox*>(this);
+		PlayerFox == nullptr
+	) {
+		if (this->GetController()->GetPawn()->GetClass()->ImplementsInterface(UPointsInterface::StaticClass()))
+		{
+			Cast<IPointsInterface>(this)->GivePoints(DamageCauser);
+			DoDeath();
+		}
+	}
+}
+
 float ABasePaperCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
                                       AActor* DamageCauser)
 {
@@ -145,20 +160,15 @@ float ABasePaperCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Da
 	{
 		if (APC_PlayerFox* PlayerFoxDamageCauser = dynamic_cast<APC_PlayerFox*>(DamageCauser)) {
 			// the damage causer is the player, so give the player points if the object implements points interface
-			if (EventInstigator->GetPawn()->GetClass()->ImplementsInterface(UPointsInterface::StaticClass()))
-			{
-				Cast<IPointsInterface>(this)->GivePoints(PlayerFoxDamageCauser);
+			TryGivingPoints(PlayerFoxDamageCauser);
+		} else if (APC_PlayerFox* ParentOfDamageCauser = dynamic_cast<APC_PlayerFox*>(DamageCauser->GetOwner())) {
+			// if a PlayerFox's projectile was the damage causer
+			TryGivingPoints(ParentOfDamageCauser);
+		} else {  // not a player doing the damage
+			// if player is the victim
+			if (APC_PlayerFox* PlayerFoxVictim = dynamic_cast<APC_PlayerFox*>(this)) {
+				PlayerFoxVictim->PlayerDeath();
 			}
-		} else if (APC_PlayerFox* ParentOfDamageCauser = dynamic_cast<APC_PlayerFox*>(DamageCauser->GetOwner()))
-		{   // if projectile was damage causer, and the parent is a PlayerFox
-			Cast<IPointsInterface>(this)->GivePoints(ParentOfDamageCauser);
-		}
-
-		if (APC_PlayerFox* PlayerFoxVictim = dynamic_cast<APC_PlayerFox*>(this))
-		{
-			PlayerFoxVictim->PlayerDeath();
-		} else {
-			DoDeath();
 		}
 	} else {
 		DoHurt(DamageCauser);

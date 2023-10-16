@@ -8,6 +8,8 @@
 #include "SideScroller/Projectiles/BaseProjectile.h"
 #include "BasePaperCharacter.generated.h"
 
+class APC_PlayerFox;
+
 /**
  * 
  */
@@ -35,7 +37,10 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	float GetShootDelayTime() const;
-	
+
+	UFUNCTION(BlueprintCallable)
+	void TryGivingPoints(APC_PlayerFox* DamageCauser);
+
 	UFUNCTION(BlueprintCallable)
 	virtual void Shoot();
 	
