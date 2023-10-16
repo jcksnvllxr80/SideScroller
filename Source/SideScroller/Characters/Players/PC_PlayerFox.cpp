@@ -58,7 +58,7 @@ void APC_PlayerFox::BeginPlay()
 {
 	Super::BeginPlay();
 
-	AddToPlayersArray(this);
+	AddToPlayersArray();
 	PlayerHUDSetup();
 	
 	this->LastCheckpointLocation = this->GetSprite()->GetComponentLocation(); 
@@ -202,7 +202,7 @@ void APC_PlayerFox::PlayerDeath()
 		
 		ReviveAtCheckpoint();
 	} else {
-		RemoveFromPlayersArray(this);
+		RemoveFromPlayersArray();
 		// detach HUD
 		this->WidgetPlayerHUDInstance->RemoveFromParent();
 		this->DoDeath();
@@ -253,7 +253,7 @@ void APC_PlayerFox::DoClimbAnimAndSound()
 	}
 }
 
-void APC_PlayerFox::AddToPlayersArray(APC_PlayerFox* Apc_PlayerFox)
+void APC_PlayerFox::AddToPlayersArray()
 {
 	if (ASideScrollerGameModeBase* GameMode = dynamic_cast<ASideScrollerGameModeBase*>(
 		GetWorld()->GetAuthGameMode())
@@ -262,7 +262,7 @@ void APC_PlayerFox::AddToPlayersArray(APC_PlayerFox* Apc_PlayerFox)
 	}
 }
 
-void APC_PlayerFox::RemoveFromPlayersArray(APC_PlayerFox* Apc_PlayerFox)
+void APC_PlayerFox::RemoveFromPlayersArray()
 {
 	if (ASideScrollerGameModeBase* GameMode = dynamic_cast<ASideScrollerGameModeBase*>(
 		GetWorld()->GetAuthGameMode())
@@ -282,11 +282,13 @@ void APC_PlayerFox::PlayerHUDTeardown()
 	if (WidgetPlayerHUDInstance)
 	{
 		WidgetPlayerHUDInstance->RemoveFromParent();
+		// WidgetPlayerHUD->RemoveFromRoot();  // TODO: Is this right?
 	}
 }
 
 void APC_PlayerFox::DeathCleanUp()
 {
+	RemoveFromPlayersArray();
 	this->PlayerHUDTeardown();
 }
 
@@ -578,7 +580,9 @@ void APC_PlayerFox::LogSpeed()
 
 void APC_PlayerFox::LogRotation()
 {
-	UE_LOG(LogTemp, VeryVerbose, TEXT("%s's rotation is %s!"), *this->GetName(), *GetSprite()->GetRelativeRotation().ToString());
+	UE_LOG(LogTemp, VeryVerbose,
+		TEXT("%s's rotation is %s!"), *this->GetName(), *GetSprite()->GetRelativeRotation().ToString()
+	);
 }
 
 void APC_PlayerFox::SetRunVelocity()

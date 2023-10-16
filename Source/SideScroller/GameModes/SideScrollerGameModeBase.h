@@ -41,4 +41,7 @@ public:
 private:
 	UPROPERTY(EditAnywhere, Category = Game)
 	TArray<APC_PlayerFox*> Players;
+
+protected:
+	static void EnablePlayerGameModeInput(APlayerController* NewPlayer);
 };

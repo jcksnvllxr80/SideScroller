@@ -186,7 +186,6 @@ void ABasePaperCharacter::PrepProjectileLaunch(bool bIsPLayer = true)
 	}
 	else
 	{
-		// TODO: This check keeps enemies from ever firing anymore. not sure whats going on
 		if (this->GetArrowComponent() == nullptr) return;
 		Yaw = abs(round(this->GetArrowComponent()->GetComponentRotation().Yaw));
 	}
@@ -288,15 +287,17 @@ void ABasePaperCharacter::Shoot()
 
 void ABasePaperCharacter::DestroyActor()
 {
-	UE_LOG(LogTemp, Display, TEXT("Destroying %s!"), *this->GetName());
+	
 	// early return if this is a PlayFox because we dont want to destroy players so they can spectate
 	if (APC_PlayerFox* PlayerFox = UECasts_Private::DynamicCast<APC_PlayerFox*>(this);
 		PlayerFox != nullptr
 	) {
+		UE_LOG(LogTemp, Display, TEXT("Cleaning up, not detroying, %s!"), *this->GetName());
 		PlayerFox->DeathCleanUp();
 		return;
 	}
-	
+
+	UE_LOG(LogTemp, Display, TEXT("Destroying %s!"), *this->GetName());
 	this->Destroy();
 	GetWorld()->GetTimerManager().ClearTimer(this->DeathTimerHandle);
 	GetWorld()->GetTimerManager().ClearTimer(this->HurtTimerHandle);

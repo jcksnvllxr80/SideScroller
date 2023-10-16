@@ -239,10 +239,10 @@ private:
 	void DoClimbAnimAndSound();
 
 	UFUNCTION(BlueprintCallable)
-	void AddToPlayersArray(APC_PlayerFox* Apc_PlayerFox);
+	void AddToPlayersArray();
 
 	UFUNCTION(BlueprintCallable)
-	void RemoveFromPlayersArray(APC_PlayerFox* Apc_PlayerFox);
+	void RemoveFromPlayersArray();
 
 	UFUNCTION(BlueprintCallable)
 	void PlayerHUDSetup();

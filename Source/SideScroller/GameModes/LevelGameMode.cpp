@@ -3,13 +3,9 @@
 
 #include "LevelGameMode.h"
 
+#include "Kismet/GameplayStatics.h"
+
 void ALevelGameMode::BeginPlay()
 {
 	Super::BeginPlay();
-
-	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	if (PlayerController == nullptr) return;
-
-	PlayerController->SetShowMouseCursor(false);
-	PlayerController->SetInputMode(FInputModeGameOnly());
 }

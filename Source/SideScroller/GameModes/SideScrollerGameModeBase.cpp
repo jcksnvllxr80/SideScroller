@@ -13,7 +13,9 @@ ASideScrollerGameModeBase::ASideScrollerGameModeBase()
 	PrimaryActorTick.bCanEverTick = true;
 	
 	// set default pawn class to our Blueprinted character
-	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/Blueprints/Characters/BP_PC_PlayerFox"));
+	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(
+		TEXT("/Game/Blueprints/Characters/Players/BP_PC_PlayerFox")
+	);
 	if (PlayerPawnBPClass.Class != nullptr)
 	{
 		DefaultPawnClass = PlayerPawnBPClass.Class;
@@ -92,4 +94,14 @@ void ASideScrollerGameModeBase::RemovePlayer(APC_PlayerFox* PlayerFox)
 TArray<APC_PlayerFox*> ASideScrollerGameModeBase::GetPlayers() const
 {
 	return Players;
+}
+
+void ASideScrollerGameModeBase::EnablePlayerGameModeInput(APlayerController* NewPlayer)
+{
+	if (NewPlayer != nullptr)
+	{
+		UE_LOG(LogGameMode, Display, TEXT("Setting input mode for Player, %s!"), *NewPlayer->GetName());
+		NewPlayer->SetShowMouseCursor(false);
+		NewPlayer->SetInputMode(FInputModeGameOnly());
+	}
 }
