@@ -3,8 +3,6 @@
 
 #include "LevelGameMode.h"
 
-#include "Kismet/GameplayStatics.h"
-
 void ALevelGameMode::BeginPlay()
 {
 	Super::BeginPlay();
