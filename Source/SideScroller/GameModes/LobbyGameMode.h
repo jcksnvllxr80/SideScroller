@@ -15,15 +15,17 @@ class SIDESCROLLER_API ALobbyGameMode : public ASideScrollerGameModeBase
 	GENERATED_BODY()
 
 public:
+	void LogPlayerCount() const;
 	void PostLogin(APlayerController* NewPlayer) override;
 	void Logout(AController* Exiting) override;
+
+	UFUNCTION(BlueprintCallable)
+	void GetNumPlayersToStart();
 
 protected:
 	virtual void BeginPlay() override;
 
 private:
-	uint32 NumberOfPlayers = 0;
-
-	UPROPERTY(EditAnywhere)
-	uint32 MinPlayersToStartGame = 3;
+	int NumberOfPlayers = 0;
+	int MinPlayersToStartGame = 6;
 };

@@ -15,8 +15,6 @@ UCLASS()
 class SIDESCROLLER_API UMainMenu : public UMenuWidget
 {
 	GENERATED_BODY()
-protected:
-	virtual bool Initialize() override;
 	
 public:
 	UMainMenu(const FObjectInitializer & ObjectInitializer);
@@ -24,6 +22,9 @@ public:
 	TOptional<uint32> GetSelectedIndex() const;
 	void SetSelectedIndex(const TOptional<uint32>& SelectedIndex);
 
+	UFUNCTION(BlueprintCallable)
+	int GetNumberOfPlayers();
+	
 private:
 	TSubclassOf<class UUserWidget> ServerRowClass = nullptr;
 
@@ -69,6 +70,9 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	class UButton* BackButtonJoinMenu;
 
+	UPROPERTY(meta = (BindWidget))
+	class USpinBox* NumPlayersSpinBox;
+	
 	UFUNCTION()
 	void HostServer();
 
@@ -90,4 +94,7 @@ private:
 	TOptional<uint32> SelectedIndex;
 
 	void UpdateChildrenRows();
+
+protected:
+	virtual bool Initialize() override;
 };

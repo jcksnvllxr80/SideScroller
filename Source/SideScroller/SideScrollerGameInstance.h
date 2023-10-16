@@ -60,6 +60,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void LoadGameOverMenu();
 
+	UFUNCTION(BlueprintCallable)
+	int GetNumPlayersToStartGame() const;
+
 private:
 	TSubclassOf<class UUserWidget> MainMenuClass = nullptr;
 	TSubclassOf<class UUserWidget> InGameMenuClass = nullptr;
@@ -68,6 +71,7 @@ private:
 	class UMainMenu* Menu;
 	IOnlineSessionPtr SessionInterface;
 	TSharedPtr<class FOnlineSessionSearch> GameSessionSearch;
+	int NumPlayers = 1;
 	void OnGameSessionComplete(FName SessionName, bool Success);
 	void OnDestroySessionComplete(FName SessionName, bool Success);
 	void OnFindSessionsComplete(bool Success);

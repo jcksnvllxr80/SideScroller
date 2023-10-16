@@ -7,6 +7,7 @@
 #include "Components/WidgetSwitcher.h"
 #include "Components/EditableText.h"
 #include "ServerRow.h"
+#include "Components/SpinBox.h"
 #include "Components/TextBlock.h"
 
 bool UMainMenu::Initialize()
@@ -149,6 +150,11 @@ void UMainMenu::SetServerList(TArray<FServerData> ServersData)
 		UE_LOG(LogTemp, Error, TEXT("Cant find the Main Menu blueprint class."));
 		return;
 	}
+}
+
+int UMainMenu::GetNumberOfPlayers()
+{
+	return NumPlayersSpinBox->GetValue();
 }
 
 void UMainMenu::HostServer()

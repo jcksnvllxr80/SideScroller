@@ -10,6 +10,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Engine/Engine.h"
 #include "GameFramework/GameModeBase.h"
+#include "GameModes/LobbyGameMode.h"
 #include "Interfaces/OnlineSessionInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "MenuSystem/MainMenu.h"
@@ -227,6 +228,11 @@ void USideScrollerGameInstance::GameOverLoadMenu()
 	}
 }
 
+int USideScrollerGameInstance::GetNumPlayersToStartGame() const
+{
+	return NumPlayers;
+}
+
 void USideScrollerGameInstance::OnGameSessionComplete(FName SessionName, bool Success)
 {
 	if (!Success)
@@ -361,10 +367,16 @@ void USideScrollerGameInstance::CreateSession()
 {
 	if (SessionInterface.IsValid())
 	{
-		UE_LOG(LogTemp, Display, TEXT("Creating session, %s."), *SESSION_NAME.ToString());
+		if (Menu) NumPlayers = Menu->GetNumberOfPlayers();
+		
+		UE_LOG(LogTemp, Display,
+			TEXT("Creating session, %s, for %i players."),
+			*SESSION_NAME.ToString(),
+			NumPlayers
+		);
 		FOnlineSessionSettings SessionSettings;
 		SessionSettings.bIsLANMatch = (IOnlineSubsystem::Get()->GetSubsystemName().ToString() == "NULL");
-		SessionSettings.NumPublicConnections = 3;
+		SessionSettings.NumPublicConnections = NumPlayers;
 		SessionSettings.bShouldAdvertise = true;
 		SessionSettings.bUsesPresence = true;
 		SessionSettings.bUseLobbiesIfAvailable = true;

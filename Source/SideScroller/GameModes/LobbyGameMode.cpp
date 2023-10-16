@@ -3,11 +3,15 @@
 
 #include "LobbyGameMode.h"
 
+#include "SideScroller/SideScrollerGameInstance.h"
+
 void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 	++NumberOfPlayers;
-	UE_LOG(LogTemp, Display, TEXT("There are %i players in the lobby."), NumberOfPlayers);
+	GetNumPlayersToStart();
+	LogPlayerCount();
+	
 	if(NumberOfPlayers >= MinPlayersToStartGame)
 	{
 		UE_LOG(LogTemp, Display, TEXT("Leaving lobby to start game..."));
@@ -18,19 +22,38 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 	}
 }
 
-void ALobbyGameMode::Logout(AController* Exiting)
-{
-	Super::Logout(Exiting);
-	--NumberOfPlayers;
-	UE_LOG(LogTemp, Display, TEXT("There are %i players in the lobby."), NumberOfPlayers);
-}
-
 void ALobbyGameMode::BeginPlay()
 {
 	Super::BeginPlay();
+	
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	if (PlayerController == nullptr) return;
 
 	PlayerController->SetShowMouseCursor(false);
 	PlayerController->SetInputMode(FInputModeGameOnly());
+}
+
+void ALobbyGameMode::Logout(AController* Exiting)
+{
+	Super::Logout(Exiting);
+	--NumberOfPlayers;
+	LogPlayerCount();
+}
+
+void ALobbyGameMode::GetNumPlayersToStart()
+{
+	const USideScrollerGameInstance* GameInstance = Cast<USideScrollerGameInstance>(GetWorld()->GetGameInstance());
+	if (GameInstance != nullptr)
+	{
+		this->MinPlayersToStartGame = GameInstance->GetNumPlayersToStartGame();
+	}
+}
+
+void ALobbyGameMode::LogPlayerCount() const
+{
+	UE_LOG(LogTemp, Display,
+		   TEXT("There are %i players in the lobby (out of %i needed)."),
+		   NumberOfPlayers,
+		   MinPlayersToStartGame
+	);
 }
