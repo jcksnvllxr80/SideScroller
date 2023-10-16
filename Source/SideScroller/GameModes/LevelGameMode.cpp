@@ -8,4 +8,5 @@
 void ALevelGameMode::BeginPlay()
 {
 	Super::BeginPlay();
+	EnableAllPlayersGameModeInput();
 }

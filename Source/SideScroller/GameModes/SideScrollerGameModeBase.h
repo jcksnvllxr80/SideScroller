@@ -44,4 +44,6 @@ private:
 
 protected:
 	static void EnablePlayerGameModeInput(APlayerController* NewPlayer);
+	
+	void EnableAllPlayersGameModeInput() const;
 };
