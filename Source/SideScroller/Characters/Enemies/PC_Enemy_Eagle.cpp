@@ -53,7 +53,9 @@ float APC_Enemy_Eagle::GetEnemyToPlayerPitchRadians(
 	FRotator& OwnerRotation,
 	float Direction
 ) const {
-	OwnerRotation = BaseChar->GetArrowComponent()->GetComponentRotation();
+	// OwnerRotation = BaseChar->GetArrowComponent()->GetComponentRotation();
+	OwnerRotation = BaseChar->GetActorRotation();
+
 	// UE_LOG(LogTemp, VeryVerbose,
 	// 	TEXT("ABaseProjectile::GetEnemyPlayerPitch - %s's (owner) rotation is %s."),
 	// 	*BaseChar->GetName(), *OwnerRotation.ToString()

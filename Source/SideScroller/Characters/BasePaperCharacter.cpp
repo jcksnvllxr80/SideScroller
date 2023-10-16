@@ -186,8 +186,9 @@ void ABasePaperCharacter::PrepProjectileLaunch(bool bIsPLayer = true)
 	}
 	else
 	{
-		if (this->GetArrowComponent() == nullptr) return;
-		Yaw = abs(round(this->GetArrowComponent()->GetComponentRotation().Yaw));
+		if (this->GetSprite() == nullptr) return;
+		// Yaw = abs(round(this->GetArrowComponent()->GetComponentRotation().Yaw));
+		Yaw = abs(round(this->GetActorRotation().Yaw));
 	}
 	
 	float Direction = 1.f;

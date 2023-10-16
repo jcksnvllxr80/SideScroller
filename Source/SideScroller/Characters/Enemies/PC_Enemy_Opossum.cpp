@@ -34,7 +34,8 @@ void APC_Enemy_Opossum::SetProjectileTransform(
 	const ABasePaperCharacter* BaseChar,
 	const ABaseProjectile* Projectile
 ) {
-	Projectile->GetProjectileFlipbook()->SetRelativeRotation(BaseChar->GetArrowComponent()->GetComponentRotation());
+	// Projectile->GetProjectileFlipbook()->SetRelativeRotation(BaseChar->GetArrowComponent()->GetComponentRotation());
+	Projectile->GetProjectileFlipbook()->SetRelativeRotation(BaseChar->GetActorRotation());
 	Projectile->GetProjectileMovementComp()->Velocity = FVector(
 		Direction * Projectile->GetMovementSpeed(), 0.f, 0.f
 	);
