@@ -105,19 +105,3 @@ void ASideScrollerGameModeBase::EnablePlayerGameModeInput(APlayerController* New
 		NewPlayer->SetInputMode(FInputModeGameOnly());
 	}
 }
-
-void ASideScrollerGameModeBase::EnableAllPlayersGameModeInput() const
-{
-	for (FConstPlayerControllerIterator PlayerControllersIterator = GetWorld()->GetPlayerControllerIterator();
-		PlayerControllersIterator; ++PlayerControllersIterator
-	) {
-		if (TWeakObjectPtr<APlayerController> WeakPlayerController = *PlayerControllersIterator;
-			WeakPlayerController.Get()
-		) {
-			APlayerController* PlayerController = WeakPlayerController.Get();
-			UE_LOG(LogGameMode, Display, TEXT("Setting input mode for Player, %s!"), *PlayerController->GetName());
-			PlayerController->SetShowMouseCursor(false);
-			PlayerController->SetInputMode(FInputModeGameOnly());
-		}	
-	}
-}
