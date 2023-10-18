@@ -4,7 +4,7 @@ Just messing around with Unreal Engine and C++ to create a Mario-like game.
 
 ![Game Image](Content/Assets/Images/SideScroller.png)
 
-## Contributing
+## Contributing / Collaborating
 
 ```mermaid
 flowchart TD;
