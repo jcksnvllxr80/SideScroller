@@ -10,14 +10,14 @@ APC_Enemy_Eagle::APC_Enemy_Eagle()
 {
 	PrimaryActorTick.bCanEverTick = false;
 	
-	this->GetDamageBox()->SetRelativeLocation(FVector(1.600000, 0.000000, 7.800000));
-	this->GetDamageBox()->SetRelativeScale3D(FVector(0.2,0.12,0.12));
+	this->GetDamageBox()->SetRelativeLocation(FVector(-0.873273,0.000000,2.947091));
+	this->GetDamageBox()->SetRelativeScale3D(FVector(0.168750,0.463882,0.365065));
 
-	this->GetLeftHurtBox()->SetRelativeLocation(FVector(7.000000,0.000000,-4.000000));
-	this->GetLeftHurtBox()->SetRelativeScale3D(FVector(0.225698,0.161768,0.211180));
+	this->GetLeftHurtBox()->SetRelativeLocation(FVector(-10.564844,-0.000000,1.837726));
+	this->GetLeftHurtBox()->SetRelativeScale3D(FVector(0.100698,0.161768,0.211180));
 
-	this->GetRightHurtBox()->SetRelativeLocation(FVector(-8.000000,0.000000,-1.000000));
-	this->GetRightHurtBox()->SetRelativeScale3D(FVector(0.125698,0.161768,0.179930));
+	this->GetRightHurtBox()->SetRelativeLocation(FVector(7.632283,-0.000000,2.335176));
+	this->GetRightHurtBox()->SetRelativeScale3D(FVector(0.125698,0.161768,0.242430));
 
 	this->SetDamage(20.0);
 }
@@ -60,7 +60,7 @@ float APC_Enemy_Eagle::GetEnemyToPlayerPitchRadians(
 	// );
 
 	const APawn* PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
-	if (PlayerPawn == nullptr) return 0.0;  // player not in existanct anymore, return 0.0 radians
+	if (PlayerPawn == nullptr) return 0.0;  // player not in existence anymore, return 0.0 radians
 
 	const FVector PlayerLocation = PlayerPawn->GetTargetLocation();
 	// UE_LOG(LogTemp, VeryVerbose,
