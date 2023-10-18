@@ -4,7 +4,6 @@
 #include "BaseProjectile.h"
 
 #include "PaperFlipbookComponent.h"
-#include "Components/ArrowComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Engine/DamageEvents.h"
 #include "GameFramework/ProjectileMovementComponent.h"

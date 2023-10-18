@@ -3,7 +3,6 @@
 
 #include "PC_Enemy_Eagle.h"
 
-#include "Components/ArrowComponent.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -53,7 +52,6 @@ float APC_Enemy_Eagle::GetEnemyToPlayerPitchRadians(
 	FRotator& OwnerRotation,
 	float Direction
 ) const {
-	// OwnerRotation = BaseChar->GetArrowComponent()->GetComponentRotation();
 	OwnerRotation = BaseChar->GetActorRotation();
 
 	// UE_LOG(LogTemp, VeryVerbose,

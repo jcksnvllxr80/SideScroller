@@ -5,7 +5,6 @@
 
 #include "Enemies/EnemyCollisionPaperCharacter.h"
 #include "PaperFlipbookComponent.h"
-#include "Components/ArrowComponent.h"
 #include "Engine/DamageEvents.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -187,7 +186,6 @@ void ABasePaperCharacter::PrepProjectileLaunch(bool bIsPLayer = true)
 	else
 	{
 		if (this->GetSprite() == nullptr) return;
-		// Yaw = abs(round(this->GetArrowComponent()->GetComponentRotation().Yaw));
 		Yaw = abs(round(this->GetActorRotation().Yaw));
 	}
 	
