@@ -56,3 +56,9 @@ example command:
 3. download and install Unreal Engine (for this project, we use 5.2.1)
 4. crank up UE5 and direct it to the project
 5. Hit the little `play` button to run the game
+
+---
+
+## Asset Pack used
+
+https://drive.google.com/file/d/1YFvWsiDKBotM7sMRIEvBJmszVkTc90zK/view
