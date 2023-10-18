@@ -32,18 +32,17 @@ flowchart TD;
 ## Testing
 
 Testing can be done one of three ways:
-1. Compile the code (`ctrl+alt+F11`)
-2. Use the little `tetris-icon` button at the bottom-right in unreal editor
-3. run the game 
-   a. in the editor and test your functionality
-   b. as standalone from powershell (can have multiple instances)
-   c. packaged as `development` package and run the executable
 
-### Packaging
+a. Compile the code (`ctrl+alt+F11`)  
+b. Use the little `tetris-icon` button at the bottom-right in unreal editor  
 
-using the packaging selections in UE (Unreal Editor), choose the proper platform for your dev machine.
+### 1. Run it in the Editor
 
-### Running in PowerShell
+### 2. Package it
+
+using the packaging selections (`deleopment`` for quick packing) in UE (Unreal Editor), choose the proper platform for your dev machine.
+
+### 3. Run it in PowerShell
 
 example command:
 ```shell
