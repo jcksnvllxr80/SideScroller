@@ -51,6 +51,9 @@ private:
 	UFUNCTION(BlueprintCallable, Category = Actor)
 	void SpinFlipbook();
 
+	UFUNCTION(BlueprintCallable, Category = Actor)
+	void SetAllPlayersCheckpointLocations() const;
+
 	UPROPERTY(VisibleAnywhere, Category = Actor)
 	bool bSpin = false;
 	

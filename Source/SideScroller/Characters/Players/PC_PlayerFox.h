@@ -111,10 +111,10 @@ public:
 	) override;
 
 	UFUNCTION(BlueprintCallable)
-	void SetCheckpointLocation(const FVector& Location);
+	void SetLastCheckpointLocation(const FVector& Location);
 
 	UFUNCTION(BlueprintCallable)
-	void BeginSpectating(const ASideScrollerGameModeBase* GameMode);
+	void BeginSpectating(const ASideScrollerGameModeBase* GameMode, bool SearchInReverse);
 
 	UFUNCTION(BlueprintCallable)
 	void SpectateOtherPlayer();
@@ -124,6 +124,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void DeathCleanUp();
+
+	UFUNCTION(BlueprintCallable)
+	void PrintPlayersList(TArray<APC_PlayerFox*> PlayersArray);
 
 private:
 	USideScrollerGameInstance* GameInstance;

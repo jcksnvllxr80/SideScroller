@@ -3,11 +3,9 @@
 
 #include "BaseClimbable.h"
 
-#include "SideScroller/Characters/BasePaperCharacter.h"
 #include "PaperSpriteComponent.h"
 #include "SideScroller/Characters/Players/PC_PlayerFox.h"
 #include "Components/BoxComponent.h"
-#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ABaseClimbable::ABaseClimbable()
@@ -84,7 +82,7 @@ void ABaseClimbable::OnEndOverlapDelegate(
 	UE_LOG(LogTemp, Verbose, TEXT("%s is no longer overlapping %s!"),
 	   *OverlappingActor->GetName(),
 	   *OverlappedComponent->GetOwner()->GetName()
-);
+	);
 	OverlappingActor->SetOverlappingClimbable(false, OverlappedClimbableComponent);
 }
 

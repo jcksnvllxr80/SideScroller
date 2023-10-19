@@ -123,25 +123,49 @@ void APC_PlayerFox::SetMoneyStash(const int MoneyAmount)
 	this->MoneyStash = MoneyAmount;
 }
 
-void APC_PlayerFox::SetCheckpointLocation(const FVector& Location)
+void APC_PlayerFox::SetLastCheckpointLocation(const FVector& Location)
 {
 	this->LastCheckpointLocation = Location;
 }
 
-void APC_PlayerFox::BeginSpectating(const ASideScrollerGameModeBase* GameMode)
+void APC_PlayerFox::PrintPlayersList(TArray<APC_PlayerFox*> PlayersArray)
 {
-	if (TArray<APC_PlayerFox*> PlayersArray = GameMode->GetPlayers(); PlayersArray.Num() > 0)
+	FString PlayerArrayStr = "";
+	for (const APC_PlayerFox* Player : PlayersArray)
 	{
-		if (CurrentSpectatorIndex > PlayersArray.Num())
+		PlayerArrayStr += Player->GetName();
+	}
+	UE_LOG(LogActor, Display, TEXT("List of Players is %s"), *PlayerArrayStr);
+}
+
+void APC_PlayerFox::BeginSpectating(const ASideScrollerGameModeBase* GameMode, const bool SearchInReverse = false)
+{
+	TArray<APC_PlayerFox*> PlayersArray = GameMode->GetPlayers();
+	PrintPlayersList(PlayersArray);
+	
+	if (!SearchInReverse)
+	{
+		for (APC_PlayerFox* Player : PlayersArray)
 		{
-			CurrentSpectatorIndex -= PlayersArray.Num();
-		} else if (CurrentSpectatorIndex < 0) {
-			CurrentSpectatorIndex += PlayersArray.Num();
+			if (Player != nullptr && Player != this && !Player->IsDead()) {
+				this->GetLocalViewingPlayerController()->SetViewTarget(
+					Player->GetController()->GetViewTarget()
+				);
+				CurrentSpectatorIndex = PlayersArray.IndexOfByKey(Player);
+				break;
+			}
 		}
-		const APC_PlayerFox* PlayerToSpectate = PlayersArray[CurrentSpectatorIndex];
-		this->GetLocalViewingPlayerController()->SetViewTarget(
-			PlayerToSpectate->GetController()->GetViewTarget()
-		);
+	} else {
+		for (CurrentSpectatorIndex = PlayersArray.Num() - 1; CurrentSpectatorIndex >= 0; CurrentSpectatorIndex--)
+		{
+			APC_PlayerFox* Player = PlayersArray[CurrentSpectatorIndex];
+			if (Player != nullptr && Player != this && !Player->IsDead()) {
+				this->GetLocalViewingPlayerController()->SetViewTarget(
+					Player->GetController()->GetViewTarget()
+				);
+				break;
+			}
+		}
 	}
 }
 
@@ -161,10 +185,22 @@ void APC_PlayerFox::SpectateNextPlayer()
 		GetWorld()->GetAuthGameMode()
 		)
 	) {
-		if (this->bIsOutOfLives)
+		if (this->IsDead())
 		{
 			CurrentSpectatorIndex++;
-			BeginSpectating(GameMode);
+			
+			TArray<APC_PlayerFox*> PlayersArray = GameMode->GetPlayers();
+			if (CurrentSpectatorIndex < PlayersArray.Num())
+			{
+				const APC_PlayerFox* Player = PlayersArray[CurrentSpectatorIndex];
+				if (Player != nullptr && Player != this && !Player->IsDead()) {
+					this->GetLocalViewingPlayerController()->SetViewTarget(
+						Player->GetController()->GetViewTarget()
+					);
+				}
+			} else {
+				BeginSpectating(GameMode);
+			}
 		}
 	}
 }
@@ -175,10 +211,22 @@ void APC_PlayerFox::SpectatePrevPlayer()
 		GetWorld()->GetAuthGameMode()
 		)
 	) {
-		if (this->bIsOutOfLives)
+		if (this->IsDead())
 		{
 			CurrentSpectatorIndex--;
-			BeginSpectating(GameMode);
+			
+			TArray<APC_PlayerFox*> PlayersArray = GameMode->GetPlayers();
+			if (CurrentSpectatorIndex >= 0)
+			{
+				const APC_PlayerFox* Player = PlayersArray[CurrentSpectatorIndex];
+				if (Player != nullptr && Player != this && !Player->IsDead()) {
+					this->GetLocalViewingPlayerController()->SetViewTarget(
+						Player->GetController()->GetViewTarget()
+					);
+				}
+			} else {
+				BeginSpectating(GameMode, true);
+			}
 		}
 	}
 }
@@ -202,9 +250,6 @@ void APC_PlayerFox::PlayerDeath()
 		
 		ReviveAtCheckpoint();
 	} else {
-		RemoveFromPlayersArray();
-		// detach HUD
-		this->WidgetPlayerHUDInstance->RemoveFromParent();
 		this->DoDeath();
 
 		this->bIsOutOfLives = true;
@@ -282,13 +327,11 @@ void APC_PlayerFox::PlayerHUDTeardown()
 	if (WidgetPlayerHUDInstance)
 	{
 		WidgetPlayerHUDInstance->RemoveFromParent();
-		// WidgetPlayerHUD->RemoveFromRoot();  // TODO: Is this right?
 	}
 }
 
 void APC_PlayerFox::DeathCleanUp()
 {
-	RemoveFromPlayersArray();
 	this->PlayerHUDTeardown();
 }
 

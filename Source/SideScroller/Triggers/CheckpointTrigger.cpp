@@ -5,6 +5,7 @@
 
 #include "Kismet/GameplayStatics.h"
 #include "SideScroller/Characters/Players/PC_PlayerFox.h"
+#include "SideScroller/GameModes/SideScrollerGameModeBase.h"
 
 ACheckpointTrigger::ACheckpointTrigger()
 {
@@ -59,6 +60,21 @@ void ACheckpointTrigger::SpinFlipbook()
 	);
 }
 
+void ACheckpointTrigger::SetAllPlayersCheckpointLocations() const
+{
+	const ASideScrollerGameModeBase* GameMode = UECasts_Private::DynamicCast<ASideScrollerGameModeBase*>(
+		GetWorld()->GetAuthGameMode()
+	);
+	if (GameMode != nullptr)
+	{
+		TArray<APC_PlayerFox*> CurrentPlayers = GameMode->GetPlayers();
+		for (APC_PlayerFox* CurrentPlayer : CurrentPlayers)
+		{
+			CurrentPlayer->SetLastCheckpointLocation(this->CheckpointFlipbook->GetComponentLocation());
+		}
+	}
+}
+
 void ACheckpointTrigger::OnBeginOverlapDelegate(
 	UPrimitiveComponent* OverlappedComponent,
 	AActor* OtherActor,
@@ -67,7 +83,7 @@ void ACheckpointTrigger::OnBeginOverlapDelegate(
 	bool bFromSweep,
 	const FHitResult& SweepResult
 ) {
-	APC_PlayerFox* Player = dynamic_cast<APC_PlayerFox*>(OtherActor);
+	const APC_PlayerFox* Player = dynamic_cast<APC_PlayerFox*>(OtherActor);
 	if (Player == nullptr)
 	{
 		UE_LOG(LogTemp, Display, TEXT("Overlap of CheckpointTrigger is not PC_PlayerFox."));
@@ -79,7 +95,8 @@ void ACheckpointTrigger::OnBeginOverlapDelegate(
 		this->bHasGivenFeedback = true;
 		CheckpointFeedback(OverlappedComponent);
 		UE_LOG(LogTemp, Display, TEXT("PC_PlayerFox, %s, overlapping CheckpointTrigger."), *Player->GetName());
-		Player->SetCheckpointLocation(this->CheckpointFlipbook->GetComponentLocation());
+
+		SetAllPlayersCheckpointLocations();
 	}
 }
 
