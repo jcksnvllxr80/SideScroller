@@ -17,6 +17,14 @@ flowchart TD;
     E --> F[End]
 ```
 
+### Installing Unreal Editor (Pre-req)
+
+1. Download Epic Games Launcher for the inter-webs
+2. Will have to sign up for an account
+3. download and install Unreal Engine (for this project, we use 5.2.1)
+4. crank up UE5 and direct it to the project
+5. Hit the little `play` button to run the game
+
 ### Getting Started
 
 1. Clone the repo
@@ -48,14 +56,6 @@ example command:
 ```shell
  & F:\UE_5.2\Engine\Binaries\Win64\UnrealEditor.exe C:\Users\A-A-Ron\git\SideScroller\SideScroller.uproject /Game/Maps/Map_MainMenu -game -log -v -windowed resx=1280 resy=720
 ```
-
-## Installing Unreal Editor
-
-1. Download Epic Games Launcher for the inter-webs
-2. Will have to sign up for an account
-3. download and install Unreal Engine (for this project, we use 5.2.1)
-4. crank up UE5 and direct it to the project
-5. Hit the little `play` button to run the game
 
 ---
 
