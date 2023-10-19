@@ -22,8 +22,6 @@ flowchart TD;
 1. Download Epic Games Launcher for the inter-webs
 2. Will have to sign up for an account
 3. download and install Unreal Engine (for this project, we use 5.2.1)
-4. crank up UE5 and direct it to the project
-5. Hit the little `play` button to run the game
 
 ### Getting Started
 
@@ -37,14 +35,21 @@ flowchart TD;
 1. Add changes to a branch other than `main` (good practice to add a task number in the branch title)
 2. once tested and working, make a pull request to main (see flowchart above)
 
-## Testing
+### Compile the changes
 
-Testing can be done one of three ways:
+Each time you want to test a change, the code must be compiled.
 
 a. Compile the code (`ctrl+alt+F11`)  
 b. Use the little `tetris-icon` button at the bottom-right in unreal editor  
 
+## Testing
+
+Testing can be done one of three ways:
+
 ### 1. Run it in the Editor
+
+1. crank up UE5 and direct it to the project
+2. Hit the little `play` button to run the game
 
 ### 2. Package it
 
