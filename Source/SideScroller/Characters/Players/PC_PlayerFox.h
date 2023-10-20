@@ -6,8 +6,9 @@
 #include "SideScroller/Interfaces/ProjectileInterface.h"
 #include "PC_PlayerFox.generated.h"
 
+
+class ASideScrollerGameModeBase;
 class USideScrollerGameInstance;
-class SideScrollerGameModeBase;
 
 UCLASS()
 class SIDESCROLLER_API APC_PlayerFox : public ABasePaperCharacter, public IProjectileInterface
@@ -38,6 +39,17 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "HUD")
 	void SetMoneyStash(const int MoneyAmount);
+
+	UFUNCTION(BlueprintCallable, Category = "HUD")
+	TArray<APC_PlayerFox*> GetSpectators() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Spectators")
+	void AddToSpectators(APC_PlayerFox* Spectator);
+
+	UFUNCTION(BlueprintCallable, Category = "Spectators")
+	void RemoveFromSpectators(APC_PlayerFox* Spectator);
+
+	UFUNCTION(BlueprintCallable, Category = "Death")
 	void PlayerDeath();
 
 	UFUNCTION(BlueprintCallable, Category = "Fall")
@@ -121,7 +133,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void ReviveAtCheckpoint();
-
+	
 	UFUNCTION(BlueprintCallable)
 	void DeathCleanUp();
 
@@ -139,9 +151,6 @@ private:
 	
 	UPROPERTY(EditAnywhere)
 	FVector LastCheckpointLocation;
-
-	UPROPERTY(EditAnywhere)
-	int CurrentSpectatorIndex = 0;
 
 	UPROPERTY(EditAnywhere)
 	int NumberOfLives = 5;
@@ -193,6 +202,12 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	bool bOnLadder = false;
+
+	UPROPERTY(EditAnywhere)
+	TArray<APC_PlayerFox*> Spectators;
+
+	UPROPERTY(EditAnywhere)
+	APC_PlayerFox* PlayerBeingSpectated;
 	
 	UPROPERTY(EditAnywhere)
 	bool bOverlappingClimbable;
@@ -208,6 +223,12 @@ private:
 	UPROPERTY(EditAnywhere)
 	float CumulativeTime = 0.f;
 
+	UFUNCTION(BlueprintCallable)
+	void MoveSpectatorsToNewPlayer() const;
+	
+	UFUNCTION(BlueprintCallable)
+	bool FoundPlayerToSpectate(APC_PlayerFox* Player);
+	
 	UFUNCTION(BlueprintCallable)
 	void ClimbUpAxisInputCallback(float Z);
 	

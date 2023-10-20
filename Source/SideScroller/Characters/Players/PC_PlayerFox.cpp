@@ -133,9 +133,23 @@ void APC_PlayerFox::PrintPlayersList(TArray<APC_PlayerFox*> PlayersArray)
 	FString PlayerArrayStr = "";
 	for (const APC_PlayerFox* Player : PlayersArray)
 	{
-		PlayerArrayStr += Player->GetName();
+		PlayerArrayStr += (Player->GetName() + (Player->IsDead() ? ": Dead; " : ": Alive; "));
 	}
-	UE_LOG(LogActor, Display, TEXT("List of Players is %s"), *PlayerArrayStr);
+	UE_LOG(LogTemp, Display, TEXT("List of Players is %s"), *PlayerArrayStr);
+}
+
+bool APC_PlayerFox::FoundPlayerToSpectate(APC_PlayerFox* Player)
+{
+	if (Player != nullptr && Player != this && !Player->IsDead()) {
+		if (this->PlayerBeingSpectated != nullptr)
+		{
+			this->PlayerBeingSpectated->RemoveFromSpectators(this);
+		}
+		this->PlayerBeingSpectated = Player;
+		this->GetLocalViewingPlayerController()->SetViewTargetWithBlend(Player->GetController()->GetViewTarget());
+		return true;
+	}
+	return false;
 }
 
 void APC_PlayerFox::BeginSpectating(const ASideScrollerGameModeBase* GameMode, const bool SearchInReverse = false)
@@ -147,24 +161,13 @@ void APC_PlayerFox::BeginSpectating(const ASideScrollerGameModeBase* GameMode, c
 	{
 		for (APC_PlayerFox* Player : PlayersArray)
 		{
-			if (Player != nullptr && Player != this && !Player->IsDead()) {
-				this->GetLocalViewingPlayerController()->SetViewTarget(
-					Player->GetController()->GetViewTarget()
-				);
-				CurrentSpectatorIndex = PlayersArray.IndexOfByKey(Player);
-				break;
-			}
+			if (FoundPlayerToSpectate(Player)) break;
 		}
 	} else {
-		for (CurrentSpectatorIndex = PlayersArray.Num() - 1; CurrentSpectatorIndex >= 0; CurrentSpectatorIndex--)
+		for (int i = PlayersArray.Num() - 1; i >= 0; i--)
 		{
-			APC_PlayerFox* Player = PlayersArray[CurrentSpectatorIndex];
-			if (Player != nullptr && Player != this && !Player->IsDead()) {
-				this->GetLocalViewingPlayerController()->SetViewTarget(
-					Player->GetController()->GetViewTarget()
-				);
-				break;
-			}
+			APC_PlayerFox* Player = PlayersArray[i];
+			if (FoundPlayerToSpectate(Player)) break;
 		}
 	}
 }
@@ -187,18 +190,21 @@ void APC_PlayerFox::SpectateNextPlayer()
 	) {
 		if (this->IsDead())
 		{
-			CurrentSpectatorIndex++;
-			
+			const APC_PlayerFox* LastSpectatedPlayer = this->PlayerBeingSpectated;
 			TArray<APC_PlayerFox*> PlayersArray = GameMode->GetPlayers();
-			if (CurrentSpectatorIndex < PlayersArray.Num())
-			{
-				const APC_PlayerFox* Player = PlayersArray[CurrentSpectatorIndex];
-				if (Player != nullptr && Player != this && !Player->IsDead()) {
-					this->GetLocalViewingPlayerController()->SetViewTarget(
-						Player->GetController()->GetViewTarget()
-					);
-				}
-			} else {
+			PrintPlayersList(PlayersArray);
+			
+			if (int CurrentlySpectatingIndex = PlayersArray.IndexOfByKey(LastSpectatedPlayer);
+				++CurrentlySpectatingIndex < PlayersArray.Num()
+			) {
+				do
+				{
+					APC_PlayerFox* Player = PlayersArray[CurrentlySpectatingIndex];
+					if (FoundPlayerToSpectate(Player)) break;
+				} while (++CurrentlySpectatingIndex < PlayersArray.Num());
+			}
+			
+			if (LastSpectatedPlayer == this->PlayerBeingSpectated) {
 				BeginSpectating(GameMode);
 			}
 		}
@@ -213,21 +219,33 @@ void APC_PlayerFox::SpectatePrevPlayer()
 	) {
 		if (this->IsDead())
 		{
-			CurrentSpectatorIndex--;
-			
+			const APC_PlayerFox* LastSpectatedPlayer = this->PlayerBeingSpectated;
 			TArray<APC_PlayerFox*> PlayersArray = GameMode->GetPlayers();
-			if (CurrentSpectatorIndex >= 0)
-			{
-				const APC_PlayerFox* Player = PlayersArray[CurrentSpectatorIndex];
-				if (Player != nullptr && Player != this && !Player->IsDead()) {
-					this->GetLocalViewingPlayerController()->SetViewTarget(
-						Player->GetController()->GetViewTarget()
-					);
-				}
-			} else {
+			PrintPlayersList(PlayersArray);
+			
+			if (int CurrentlySpectatingIndex = PlayersArray.IndexOfByKey(LastSpectatedPlayer);
+				--CurrentlySpectatingIndex >= 0
+			) {
+				do
+				{
+					APC_PlayerFox* Player = PlayersArray[CurrentlySpectatingIndex];
+					if (FoundPlayerToSpectate(Player)) break;
+				} while (--CurrentlySpectatingIndex < PlayersArray.Num());
+			} 
+
+			if (LastSpectatedPlayer == this->PlayerBeingSpectated) {
 				BeginSpectating(GameMode, true);
 			}
 		}
+	}
+}
+
+void APC_PlayerFox::MoveSpectatorsToNewPlayer() const
+{
+	TArray<APC_PlayerFox*> PlayerSpectators = this->GetSpectators();
+	for (APC_PlayerFox* PlayerSpectator : PlayerSpectators)
+	{
+		PlayerSpectator->SpectateNextPlayer();
 	}
 }
 
@@ -250,6 +268,7 @@ void APC_PlayerFox::PlayerDeath()
 		
 		ReviveAtCheckpoint();
 	} else {
+		RemoveFromPlayersArray();
 		this->DoDeath();
 
 		this->bIsOutOfLives = true;
@@ -333,6 +352,7 @@ void APC_PlayerFox::PlayerHUDTeardown()
 void APC_PlayerFox::DeathCleanUp()
 {
 	this->PlayerHUDTeardown();
+	this->MoveSpectatorsToNewPlayer();
 }
 
 void APC_PlayerFox::UpdateAnimation()
@@ -524,6 +544,24 @@ void APC_PlayerFox::StopClimb()
 		this->GetMovementComponent()->StopMovementImmediately();
 	}
 	this->bIsClimbing = false;
+}
+
+TArray<APC_PlayerFox*> APC_PlayerFox::GetSpectators() const
+{
+	return this->Spectators;
+}
+
+void APC_PlayerFox::AddToSpectators(APC_PlayerFox* Spectator)
+{
+	this->Spectators.Add(Spectator);
+}
+
+void APC_PlayerFox::RemoveFromSpectators(APC_PlayerFox* const Spectator)
+{
+	if (this->Spectators.Contains(Spectator))
+	{
+		this->Spectators.Remove(Spectator);
+	}
 }
 
 void APC_PlayerFox::ClimbUpAxisInputCallback(const float Z)
