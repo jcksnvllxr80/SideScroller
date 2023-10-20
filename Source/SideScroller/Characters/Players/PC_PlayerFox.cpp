@@ -6,6 +6,7 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
+#include "GameFramework/PlayerState.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "SideScroller/SideScrollerGameInstance.h"
@@ -146,7 +147,8 @@ bool APC_PlayerFox::FoundPlayerToSpectate(APC_PlayerFox* Player)
 			this->PlayerBeingSpectated->RemoveFromSpectators(this);
 		}
 		this->PlayerBeingSpectated = Player;
-		this->GetLocalViewingPlayerController()->SetViewTargetWithBlend(Player->GetController()->GetViewTarget());
+		Spectate();
+		// this->GetLocalViewingPlayerController()->SetViewTargetWithBlend(Player->GetController()->GetViewTarget());
 		return true;
 	}
 	return false;
@@ -211,6 +213,46 @@ void APC_PlayerFox::SpectateNextPlayer()
 	}
 }
 
+void APC_PlayerFox::Spectate() const
+{
+	AController* ThisController = this->GetController();
+	if (ThisController == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("APC_PlayerFox::Spectate - Cant find ThisController"))
+		return;
+	}
+	
+	APlayerController* PlayerController = dynamic_cast<APlayerController*>(ThisController);
+	if (PlayerController == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("APC_PlayerFox::Spectate - Cant cast Controller to PlayerController"))
+		return;
+	}
+
+	const AController* SpectableController = this->PlayerBeingSpectated->GetController();
+	if (SpectableController == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("APC_PlayerFox::Spectate - Cant find SpectableController"))
+		return;
+	}
+
+	AActor* SpectableActor = SpectableController->GetViewTarget();
+	if (SpectableActor == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("APC_PlayerFox::Spectate - Cant find SpectableActor"))
+		return;
+	}
+
+	try
+	{
+		PlayerController->SetViewTargetWithBlend(SpectableActor);
+	}
+	catch (...)
+	{
+		UE_LOG(LogTemp, Error, TEXT("APC_PlayerFox::Spectate - Catch block - cant SetViewTargetWithBlend"))
+	}
+}
+
 void APC_PlayerFox::SpectatePrevPlayer()
 {
 	if (const ASideScrollerGameModeBase* GameMode = dynamic_cast<ASideScrollerGameModeBase*>(
@@ -232,7 +274,7 @@ void APC_PlayerFox::SpectatePrevPlayer()
 					if (FoundPlayerToSpectate(Player)) break;
 				} while (--CurrentlySpectatingIndex < PlayersArray.Num());
 			} 
-
+	
 			if (LastSpectatedPlayer == this->PlayerBeingSpectated) {
 				BeginSpectating(GameMode, true);
 			}
@@ -272,7 +314,7 @@ void APC_PlayerFox::PlayerDeath()
 		this->DoDeath();
 
 		this->bIsOutOfLives = true;
-		SpectateOtherPlayer();
+		SpectateNextPlayer();  // SpectateOtherPlayer();
 	}
 }
 
@@ -346,6 +388,10 @@ void APC_PlayerFox::PlayerHUDTeardown()
 	if (WidgetPlayerHUDInstance)
 	{
 		WidgetPlayerHUDInstance->RemoveFromParent();
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("APC_PlayerFox::PlayerHUDTeardown - WidgetPlayerHUDInstance is null"))
 	}
 }
 

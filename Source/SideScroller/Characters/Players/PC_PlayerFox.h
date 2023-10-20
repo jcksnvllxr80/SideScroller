@@ -89,6 +89,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SpectateNextPlayer();
+	void Spectate() const;
 
 	UFUNCTION(BlueprintCallable)
 	void SpectatePrevPlayer();
