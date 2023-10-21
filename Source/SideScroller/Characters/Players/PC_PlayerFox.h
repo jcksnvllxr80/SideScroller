@@ -41,6 +41,9 @@ public:
 	void SetMoneyStash(const int MoneyAmount);
 
 	UFUNCTION(BlueprintCallable, Category = "HUD")
+	FString GetSpectatorsAsStr() const;
+	
+	UFUNCTION(BlueprintCallable, Category = "Spectators")
 	TArray<APC_PlayerFox*> GetSpectators() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Spectators")

@@ -594,7 +594,18 @@ void APC_PlayerFox::StopClimb()
 
 TArray<APC_PlayerFox*> APC_PlayerFox::GetSpectators() const
 {
+	
 	return this->Spectators;
+}
+
+FString APC_PlayerFox::GetSpectatorsAsStr() const
+{
+	FString SpectatorsStr = "";
+	for (const APC_PlayerFox* Spectator : this->Spectators)
+	{
+		SpectatorsStr += (Spectator->GetName() + "\n");
+	}
+	return SpectatorsStr;
 }
 
 void APC_PlayerFox::AddToSpectators(APC_PlayerFox* Spectator)
