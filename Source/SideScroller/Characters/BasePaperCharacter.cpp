@@ -65,7 +65,7 @@ USceneComponent* ABasePaperCharacter::GetProjectileSpawnPoint() const
 
 void ABasePaperCharacter::DoDeath()
 {
-	this->IsDead = true;
+	this->bIsDead = true;
 	UE_LOG(LogTemp, Display, TEXT("%s's health depleted!"), *this->GetName());
 	this->SetActorEnableCollision(false);
 	this->GetSprite()->SetLooping(false);
@@ -128,6 +128,11 @@ void ABasePaperCharacter::DoHurt(AActor* DamageCauser)
 void ABasePaperCharacter::HurtFinishedCallback()
 {
 	this->GetSprite()->SetFlipbook(IdleAnimation);
+}
+
+bool ABasePaperCharacter::IsDead() const
+{
+	return this->bIsDead;
 }
 
 float ABasePaperCharacter::GetShootDelayTime() const
@@ -255,7 +260,7 @@ bool ABasePaperCharacter::EnemyCanShoot()
 	AEnemyCollisionPaperCharacter* EnemyAI = UECasts_Private::DynamicCast<AEnemyCollisionPaperCharacter*>(this);
 	if (EnemyAI)
 	{
-		if (EnemyAI->IsDead)
+		if (EnemyAI->bIsDead)
 		{
 			UE_LOG(LogTemp, Verbose, TEXT("ABasePaperCharacter::EnemyCanShoot - %s is deadand cannot shoot."), *EnemyAI->GetName());
 			return false;
@@ -286,7 +291,6 @@ void ABasePaperCharacter::Shoot()
 
 void ABasePaperCharacter::DestroyActor()
 {
-	
 	// early return if this is a PlayFox because we dont want to destroy players so they can spectate
 	if (APC_PlayerFox* PlayerFox = UECasts_Private::DynamicCast<APC_PlayerFox*>(this);
 		PlayerFox != nullptr

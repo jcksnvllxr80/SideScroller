@@ -6,6 +6,7 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
+#include "GameFramework/PlayerState.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "SideScroller/SideScrollerGameInstance.h"
@@ -123,25 +124,53 @@ void APC_PlayerFox::SetMoneyStash(const int MoneyAmount)
 	this->MoneyStash = MoneyAmount;
 }
 
-void APC_PlayerFox::SetCheckpointLocation(const FVector& Location)
+void APC_PlayerFox::SetLastCheckpointLocation(const FVector& Location)
 {
 	this->LastCheckpointLocation = Location;
 }
 
-void APC_PlayerFox::BeginSpectating(const ASideScrollerGameModeBase* GameMode)
+void APC_PlayerFox::PrintPlayersList(TArray<APC_PlayerFox*> PlayersArray)
 {
-	if (TArray<APC_PlayerFox*> PlayersArray = GameMode->GetPlayers(); PlayersArray.Num() > 0)
+	FString PlayerArrayStr = "";
+	for (const APC_PlayerFox* Player : PlayersArray)
 	{
-		if (CurrentSpectatorIndex > PlayersArray.Num())
+		PlayerArrayStr += (Player->GetName() + (Player->IsDead() ? ": Dead; " : ": Alive; "));
+	}
+	UE_LOG(LogTemp, Display, TEXT("List of Players is %s"), *PlayerArrayStr);
+}
+
+bool APC_PlayerFox::FoundPlayerToSpectate(APC_PlayerFox* Player)
+{
+	if (Player != nullptr && Player != this && !Player->IsDead()) {
+		if (this->PlayerBeingSpectated != nullptr)
 		{
-			CurrentSpectatorIndex -= PlayersArray.Num();
-		} else if (CurrentSpectatorIndex < 0) {
-			CurrentSpectatorIndex += PlayersArray.Num();
+			this->PlayerBeingSpectated->RemoveFromSpectators(this);
 		}
-		const APC_PlayerFox* PlayerToSpectate = PlayersArray[CurrentSpectatorIndex];
-		this->GetLocalViewingPlayerController()->SetViewTarget(
-			PlayerToSpectate->GetController()->GetViewTarget()
-		);
+		this->PlayerBeingSpectated = Player;
+		Spectate();
+		// this->GetLocalViewingPlayerController()->SetViewTargetWithBlend(Player->GetController()->GetViewTarget());
+		return true;
+	}
+	return false;
+}
+
+void APC_PlayerFox::BeginSpectating(const ASideScrollerGameModeBase* GameMode, const bool SearchInReverse = false)
+{
+	TArray<APC_PlayerFox*> PlayersArray = GameMode->GetPlayers();
+	PrintPlayersList(PlayersArray);
+	
+	if (!SearchInReverse)
+	{
+		for (APC_PlayerFox* Player : PlayersArray)
+		{
+			if (FoundPlayerToSpectate(Player)) break;
+		}
+	} else {
+		for (int i = PlayersArray.Num() - 1; i >= 0; i--)
+		{
+			APC_PlayerFox* Player = PlayersArray[i];
+			if (FoundPlayerToSpectate(Player)) break;
+		}
 	}
 }
 
@@ -161,11 +190,66 @@ void APC_PlayerFox::SpectateNextPlayer()
 		GetWorld()->GetAuthGameMode()
 		)
 	) {
-		if (this->bIsOutOfLives)
+		if (this->IsDead())
 		{
-			CurrentSpectatorIndex++;
-			BeginSpectating(GameMode);
+			const APC_PlayerFox* LastSpectatedPlayer = this->PlayerBeingSpectated;
+			TArray<APC_PlayerFox*> PlayersArray = GameMode->GetPlayers();
+			PrintPlayersList(PlayersArray);
+			
+			if (int CurrentlySpectatingIndex = PlayersArray.IndexOfByKey(LastSpectatedPlayer);
+				++CurrentlySpectatingIndex < PlayersArray.Num()
+			) {
+				do
+				{
+					APC_PlayerFox* Player = PlayersArray[CurrentlySpectatingIndex];
+					if (FoundPlayerToSpectate(Player)) break;
+				} while (++CurrentlySpectatingIndex < PlayersArray.Num());
+			}
+			
+			if (LastSpectatedPlayer == this->PlayerBeingSpectated) {
+				BeginSpectating(GameMode);
+			}
 		}
+	}
+}
+
+void APC_PlayerFox::Spectate() const
+{
+	AController* ThisController = this->GetController();
+	if (ThisController == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("APC_PlayerFox::Spectate - Cant find ThisController"))
+		return;
+	}
+	
+	APlayerController* PlayerController = dynamic_cast<APlayerController*>(ThisController);
+	if (PlayerController == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("APC_PlayerFox::Spectate - Cant cast Controller to PlayerController"))
+		return;
+	}
+
+	const AController* SpectableController = this->PlayerBeingSpectated->GetController();
+	if (SpectableController == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("APC_PlayerFox::Spectate - Cant find SpectableController"))
+		return;
+	}
+
+	AActor* SpectableActor = SpectableController->GetViewTarget();
+	if (SpectableActor == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("APC_PlayerFox::Spectate - Cant find SpectableActor"))
+		return;
+	}
+
+	try
+	{
+		PlayerController->SetViewTargetWithBlend(SpectableActor);
+	}
+	catch (...)
+	{
+		UE_LOG(LogTemp, Error, TEXT("APC_PlayerFox::Spectate - Catch block - cant SetViewTargetWithBlend"))
 	}
 }
 
@@ -175,11 +259,35 @@ void APC_PlayerFox::SpectatePrevPlayer()
 		GetWorld()->GetAuthGameMode()
 		)
 	) {
-		if (this->bIsOutOfLives)
+		if (this->IsDead())
 		{
-			CurrentSpectatorIndex--;
-			BeginSpectating(GameMode);
+			const APC_PlayerFox* LastSpectatedPlayer = this->PlayerBeingSpectated;
+			TArray<APC_PlayerFox*> PlayersArray = GameMode->GetPlayers();
+			PrintPlayersList(PlayersArray);
+			
+			if (int CurrentlySpectatingIndex = PlayersArray.IndexOfByKey(LastSpectatedPlayer);
+				--CurrentlySpectatingIndex >= 0
+			) {
+				do
+				{
+					APC_PlayerFox* Player = PlayersArray[CurrentlySpectatingIndex];
+					if (FoundPlayerToSpectate(Player)) break;
+				} while (--CurrentlySpectatingIndex < PlayersArray.Num());
+			} 
+	
+			if (LastSpectatedPlayer == this->PlayerBeingSpectated) {
+				BeginSpectating(GameMode, true);
+			}
 		}
+	}
+}
+
+void APC_PlayerFox::MoveSpectatorsToNewPlayer() const
+{
+	TArray<APC_PlayerFox*> PlayerSpectators = this->GetSpectators();
+	for (APC_PlayerFox* PlayerSpectator : PlayerSpectators)
+	{
+		PlayerSpectator->SpectateNextPlayer();
 	}
 }
 
@@ -203,12 +311,10 @@ void APC_PlayerFox::PlayerDeath()
 		ReviveAtCheckpoint();
 	} else {
 		RemoveFromPlayersArray();
-		// detach HUD
-		this->WidgetPlayerHUDInstance->RemoveFromParent();
 		this->DoDeath();
 
 		this->bIsOutOfLives = true;
-		SpectateOtherPlayer();
+		SpectateNextPlayer();  // SpectateOtherPlayer();
 	}
 }
 
@@ -282,14 +388,17 @@ void APC_PlayerFox::PlayerHUDTeardown()
 	if (WidgetPlayerHUDInstance)
 	{
 		WidgetPlayerHUDInstance->RemoveFromParent();
-		// WidgetPlayerHUD->RemoveFromRoot();  // TODO: Is this right?
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("APC_PlayerFox::PlayerHUDTeardown - WidgetPlayerHUDInstance is null"))
 	}
 }
 
 void APC_PlayerFox::DeathCleanUp()
 {
-	RemoveFromPlayersArray();
 	this->PlayerHUDTeardown();
+	this->MoveSpectatorsToNewPlayer();
 }
 
 void APC_PlayerFox::UpdateAnimation()
@@ -481,6 +590,24 @@ void APC_PlayerFox::StopClimb()
 		this->GetMovementComponent()->StopMovementImmediately();
 	}
 	this->bIsClimbing = false;
+}
+
+TArray<APC_PlayerFox*> APC_PlayerFox::GetSpectators() const
+{
+	return this->Spectators;
+}
+
+void APC_PlayerFox::AddToSpectators(APC_PlayerFox* Spectator)
+{
+	this->Spectators.Add(Spectator);
+}
+
+void APC_PlayerFox::RemoveFromSpectators(APC_PlayerFox* const Spectator)
+{
+	if (this->Spectators.Contains(Spectator))
+	{
+		this->Spectators.Remove(Spectator);
+	}
 }
 
 void APC_PlayerFox::ClimbUpAxisInputCallback(const float Z)

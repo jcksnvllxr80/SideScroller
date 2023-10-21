@@ -90,6 +90,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void HurtFinishedCallback();
 
+	UFUNCTION(BlueprintCallable)
+	bool IsDead() const;
+
 	UPROPERTY(EditAnywhere)
 	USoundBase* DeathSound;
 
@@ -126,7 +129,7 @@ private:
 	UPROPERTY(EditAnywhere)
 	float HurtPushAmount = 20.f;
 
-	bool IsDead = false;
+	bool bIsDead = false;
 
 protected:
 	UPROPERTY(EditAnywhere)
