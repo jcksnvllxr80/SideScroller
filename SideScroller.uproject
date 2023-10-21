@@ -1,8 +1,8 @@
 {
 	"FileVersion": 3,
 	"EngineAssociation": "5.2",
-	"Category": "",
-	"Description": "",
+	"Category": "Game",
+	"Description": "2-D, side scrolling, Mario-like",
 	"Modules": [
 		{
 			"Name": "SideScroller",
