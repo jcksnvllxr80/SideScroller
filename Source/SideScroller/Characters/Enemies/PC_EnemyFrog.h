@@ -21,6 +21,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UPaperFlipbook* JumpAnimation;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPaperFlipbook* FallAnimation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USoundBase* FrogJumpSound;
+
 	APC_EnemyFrog();
 
 	virtual void BeginPlay() override;
@@ -32,4 +38,18 @@ public:
 		const ABasePaperCharacter* BaseChar,
 		const ABaseProjectile* Projectile
 	) override;
+	
+	virtual void Tick(float DeltaSeconds) override;
+
+private:
+	UPROPERTY(EditAnywhere)
+	int JumpPeriod = 5;
+
+	UFUNCTION(BlueprintCallable)
+	void UpdateAnimation();
+
+protected:
+	virtual void Jump() override;
+	
+	FTimerHandle JumpTimerHandle;
 };
