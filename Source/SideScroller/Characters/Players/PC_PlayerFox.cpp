@@ -144,11 +144,23 @@ bool APC_PlayerFox::FoundPlayerToSpectate(APC_PlayerFox* Player)
 	if (Player != nullptr && Player != this && !Player->IsDead()) {
 		if (this->PlayerBeingSpectated != nullptr)
 		{
+			UE_LOG(LogTemp, Display,
+				TEXT("Removing %s from %s's spectator list."),
+				*this->GetName(),
+				*this->PlayerBeingSpectated->GetName()
+			);
 			this->PlayerBeingSpectated->RemoveFromSpectators(this);
 		}
 		this->PlayerBeingSpectated = Player;
+		
+		UE_LOG(LogTemp, Display,
+			TEXT("Adding %s to %s's spectator list."),
+			*this->GetName(),
+			*this->PlayerBeingSpectated->GetName()
+		);
+
+		this->PlayerBeingSpectated->AddToSpectators(this);
 		Spectate();
-		// this->GetLocalViewingPlayerController()->SetViewTargetWithBlend(Player->GetController()->GetViewTarget());
 		return true;
 	}
 	return false;
@@ -598,19 +610,50 @@ TArray<APC_PlayerFox*> APC_PlayerFox::GetSpectators() const
 	return this->Spectators;
 }
 
-FString APC_PlayerFox::GetSpectatorsAsStr() const
+void APC_PlayerFox::SetSpectatorsStr()
 {
-	FString SpectatorsStr = "";
+	FString SpectatorsString = "";
 	for (const APC_PlayerFox* Spectator : this->Spectators)
 	{
-		SpectatorsStr += (Spectator->GetName() + "\n");
+		UE_LOG(
+			LogTemp, Display, TEXT("FOR LOOP: one of %s's spectators is: %s"),
+			*this->GetName(),
+			*Spectator->GetName()
+		);
+		SpectatorsString += Spectator->GetName() + "\n";
+		UE_LOG(
+			LogTemp, Display, TEXT("FOR LOOP: %s's spectators string is %s"),
+			*this->GetName(),
+			*SpectatorsString
+		);
 	}
-	return SpectatorsStr;
+	UE_LOG(
+		LogTemp, Display, TEXT("AFTER FOR LOOP: %s's complete spectator string is %s"),
+		*this->GetName(),
+		*SpectatorsString
+	);
+	this->SpectatorsStr = SpectatorsString;
+}
+
+FText APC_PlayerFox::GetSpectatorsAsStr() const
+{
+	// UE_LOG(
+	// 	LogTemp, Display, TEXT("%s's spectator string is: %s"),
+	// 	*this->GetName(),
+	// 	*this->SpectatorsStr
+	// );
+	return FText::FromString(this->SpectatorsStr);
+}
+
+FText APC_PlayerFox::GetPlayerName() const
+{
+	return FText::FromString(this->GetName());
 }
 
 void APC_PlayerFox::AddToSpectators(APC_PlayerFox* Spectator)
 {
 	this->Spectators.Add(Spectator);
+	this->SetSpectatorsStr();
 }
 
 void APC_PlayerFox::RemoveFromSpectators(APC_PlayerFox* const Spectator)
@@ -618,6 +661,7 @@ void APC_PlayerFox::RemoveFromSpectators(APC_PlayerFox* const Spectator)
 	if (this->Spectators.Contains(Spectator))
 	{
 		this->Spectators.Remove(Spectator);
+		this->SetSpectatorsStr();
 	}
 }
 

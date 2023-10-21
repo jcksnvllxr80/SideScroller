@@ -39,9 +39,15 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "HUD")
 	void SetMoneyStash(const int MoneyAmount);
+	
+	UFUNCTION(BlueprintCallable, Category = "HUD")
+	FText GetSpectatorsAsStr() const;
 
 	UFUNCTION(BlueprintCallable, Category = "HUD")
-	FString GetSpectatorsAsStr() const;
+	FText GetPlayerName() const;
+
+	UFUNCTION(BlueprintCallable, Category = "HUD")
+	void SetSpectatorsStr();
 	
 	UFUNCTION(BlueprintCallable, Category = "Spectators")
 	TArray<APC_PlayerFox*> GetSpectators() const;
@@ -92,6 +98,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SpectateNextPlayer();
+
+	UFUNCTION(BlueprintCallable)
 	void Spectate() const;
 
 	UFUNCTION(BlueprintCallable)
@@ -286,6 +294,9 @@ private:
 	
 	UPROPERTY(EditAnywhere)
 	bool ShootUpward = false;
+	
+	UPROPERTY(VisibleAnywhere)
+	FString SpectatorsStr;
 
 protected:
 	/*True means that we're currently in air - or falling*/
