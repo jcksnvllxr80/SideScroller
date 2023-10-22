@@ -85,6 +85,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float SlideAngleDeg = 15.f;
 
+
 	UFUNCTION(BlueprintCallable)
 	void TakeMoney(int MonetaryValue);
 

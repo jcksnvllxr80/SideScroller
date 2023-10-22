@@ -523,6 +523,8 @@ void APC_PlayerFox::CrouchClimbDown()
 	const float VelocityX = this->GetVelocity().X;
 	if (!this->bIsSliding && abs(VelocityX) > this->CrouchSlidingThresholdVelocity)
 	{
+		// UE_LOG(LogTemp, Warning, TEXT("X Vel = %f"), VelocityX);
+		// UE_LOG(LogTemp, Warning, TEXT("APC_PlayerFox::CrouchClimbDown - setting slide (run) to true"));
 		this->bIsSliding = true;
 		this->GetCharacterMovement()->BrakingFrictionFactor = this->CrouchSlideFriction;
 		return;
@@ -536,7 +538,9 @@ void APC_PlayerFox::CrouchClimbDown()
 			(FloorAngleDeg >= SlideAngleDeg && VelocityX < 0)
 		)
 	) {
-		UE_LOG(LogTemp, Warning, TEXT("X Vel = %f"), VelocityX);
+		// UE_LOG(LogTemp, Warning, TEXT("X Vel = %f"), VelocityX);
+		// UE_LOG(LogTemp, Warning, TEXT("Floor Angle = %f"), FloorAngleDeg);
+		// UE_LOG(LogTemp, Warning, TEXT("APC_PlayerFox::CrouchClimbDown - setting slide (hill) to true"));
 		this->bIsSliding = true;
 		this->GetCharacterMovement()->BrakingFrictionFactor = 0.f;  // this->CrouchSlideFriction;
 		return;
@@ -544,13 +548,15 @@ void APC_PlayerFox::CrouchClimbDown()
 	/////////////////////////
 
 	// Stop hill sliding ////////////
-	if (this->bIsSliding &&
+	if (this->bIsSliding && (abs(VelocityX) < CrouchSlidingThresholdVelocity) &&
 		(FloorAngleDeg < 1.f && FloorAngleDeg > -SlideAngleDeg && VelocityX > 0) ||
 		(FloorAngleDeg > -1.f && FloorAngleDeg < SlideAngleDeg && VelocityX < 0)
 	) {
+		// UE_LOG(LogTemp, Warning, TEXT("X Vel = %f"), VelocityX);
+		// UE_LOG(LogTemp, Warning, TEXT("Floor Angle = %f"), FloorAngleDeg);
+		// UE_LOG(LogTemp, Warning, TEXT("APC_PlayerFox::CrouchClimbDown - setting slide to false"));
 		this->bIsSliding = false;
 		this->GetCharacterMovement()->BrakingFrictionFactor = this->StandingFriction;
-		return;
 	}
 	/////////////////////////
 
