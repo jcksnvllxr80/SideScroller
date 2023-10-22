@@ -141,6 +141,15 @@ bool ABasePaperCharacter::IsDead() const
 	return this->bIsDead;
 }
 
+float ABasePaperCharacter::GetFloorAngle()
+{
+	const FFindFloorResult TheFloor = this->GetCharacterMovement()->CurrentFloor;
+	const FVector FloorNormal = TheFloor.HitResult.Normal;
+	const FVector CharUpVector = this->GetActorUpVector();
+	const float DeltaX = CharUpVector.X - FloorNormal.X;
+	return asin(DeltaX) * 180.f / PI;
+}
+
 float ABasePaperCharacter::GetShootDelayTime() const
 {
 	return ShootDelayTime;

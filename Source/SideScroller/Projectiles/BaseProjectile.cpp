@@ -26,10 +26,10 @@ ABaseProjectile::ABaseProjectile()
 
     ProjectileMovementComp = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
 
+	this->bReplicates = true;
     ProjectileFlipbook->SetIsReplicated(true);
     ProjectileBox->SetIsReplicated(true);
     ProjectileMovementComp->SetIsReplicated(true);
-    this->SetReplicates(true);
 }
 
 // Called when the game starts or when spawned

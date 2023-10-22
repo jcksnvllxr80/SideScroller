@@ -82,6 +82,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UPaperFlipbook* StopOnLadderAnimation;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float SlideAngleDeg = 15.f;
+
 	UFUNCTION(BlueprintCallable)
 	void TakeMoney(int MonetaryValue);
 

@@ -519,13 +519,41 @@ void APC_PlayerFox::SetProjectileTransform(
 
 void APC_PlayerFox::CrouchClimbDown()
 {
-	if (!this->bIsSliding && abs(this->GetVelocity().X) > this->CrouchSlidingThresholdVelocity)
+	// Run slide ////////////
+	const float VelocityX = this->GetVelocity().X;
+	if (!this->bIsSliding && abs(VelocityX) > this->CrouchSlidingThresholdVelocity)
 	{
 		this->bIsSliding = true;
 		this->GetCharacterMovement()->BrakingFrictionFactor = this->CrouchSlideFriction;
 		return;
 	}
+	/////////////////////////
 	
+	// Hill sliding ////////////
+	const float FloorAngleDeg = GetFloorAngle();
+	if (!this->bIsSliding && (
+			(FloorAngleDeg <= -SlideAngleDeg && VelocityX > 0) ||
+			(FloorAngleDeg >= SlideAngleDeg && VelocityX < 0)
+		)
+	) {
+		UE_LOG(LogTemp, Warning, TEXT("X Vel = %f"), VelocityX);
+		this->bIsSliding = true;
+		this->GetCharacterMovement()->BrakingFrictionFactor = 0.f;  // this->CrouchSlideFriction;
+		return;
+	}
+	/////////////////////////
+
+	// Stop hill sliding ////////////
+	if (this->bIsSliding &&
+		(FloorAngleDeg < 1.f && FloorAngleDeg > -SlideAngleDeg && VelocityX > 0) ||
+		(FloorAngleDeg > -1.f && FloorAngleDeg < SlideAngleDeg && VelocityX < 0)
+	) {
+		this->bIsSliding = false;
+		this->GetCharacterMovement()->BrakingFrictionFactor = this->StandingFriction;
+		return;
+	}
+	/////////////////////////
+
 	if (bOverlappingClimbable && !this->bIsSliding)
 	{
 		Climb(-ClimbSpeed);

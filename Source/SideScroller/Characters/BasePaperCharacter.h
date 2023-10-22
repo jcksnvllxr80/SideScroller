@@ -134,4 +134,7 @@ private:
 protected:
 	UPROPERTY(EditAnywhere)
 	float DefaultHealth = 100.0;
+
+	UFUNCTION(BlueprintCallable)
+	float GetFloorAngle();
 };
