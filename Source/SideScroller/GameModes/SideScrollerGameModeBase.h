@@ -38,6 +38,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Game)
 	TArray<APC_PlayerFox*> GetPlayers() const;
 
+	UFUNCTION(BlueprintCallable, Category = Travel)
+	void TravelToGameOverMenu();
+
 private:
 	UPROPERTY(EditAnywhere, Category = Game)
 	TArray<APC_PlayerFox*> Players;

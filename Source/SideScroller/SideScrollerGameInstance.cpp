@@ -10,6 +10,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Engine/Engine.h"
 #include "GameFramework/GameModeBase.h"
+#include "GameModes/LevelGameMode.h"
 #include "GameModes/LobbyGameMode.h"
 #include "Interfaces/OnlineSessionInterface.h"
 #include "Kismet/GameplayStatics.h"
@@ -78,11 +79,15 @@ void USideScrollerGameInstance::LoadGameOverMenu()
 	AGameModeBase* CurrentGameMode = Cast<AGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 	if (CurrentGameMode != nullptr)
 	{
-		CurrentGameMode->bUseSeamlessTravel = true;
-		APlayerController* PlayerController = GetFirstLocalPlayerController();
-		if (!PlayerController) return;
-		UE_LOG(LogTemp, Display, TEXT("USideScrollerGameInstance::LoadGameOverMenu - Loading GameOver map."));
-		PlayerController->ClientTravel("/Game/Maps/Map_GameOverMenu", ETravelType::TRAVEL_Absolute);
+		ALevelGameMode* LevelGameMode = Cast<ALevelGameMode>(CurrentGameMode);
+		if (LevelGameMode != nullptr)
+		{
+			UE_LOG(LogTemp, Display, TEXT("USideScrollerGameInstance::LoadGameOverMenu - Loading GameOver map."));
+			LevelGameMode->TravelToGameOverMenu();
+		} else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("USideScrollerGameInstance::LoadGameOverMenu - GameMode is not a level."));
+		}
 	}
 }
 

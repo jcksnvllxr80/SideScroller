@@ -158,7 +158,7 @@ private:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UUserWidget> WidgetPlayerHUD;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, replicated)
 	UUserWidget* WidgetPlayerHUDInstance;
 	
 	UPROPERTY(EditAnywhere)
@@ -185,7 +185,7 @@ private:
 
 	float NormalWalkingSpeed;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, replicated)
 	float MaxRunningSpeed = 500.f;
 	
 	UPROPERTY(EditAnywhere)
@@ -215,10 +215,10 @@ private:
 	UPROPERTY(EditAnywhere)
 	bool bOnLadder = false;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, replicated)
 	TArray<APC_PlayerFox*> Spectators;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, replicated)
 	APC_PlayerFox* PlayerBeingSpectated;
 	
 	UPROPERTY(EditAnywhere)
@@ -295,7 +295,7 @@ private:
 	UPROPERTY(EditAnywhere)
 	bool ShootUpward = false;
 	
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, replicated)
 	FString SpectatorsStr;
 
 protected:

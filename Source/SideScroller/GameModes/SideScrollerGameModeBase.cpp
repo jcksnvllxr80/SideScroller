@@ -96,6 +96,12 @@ TArray<APC_PlayerFox*> ASideScrollerGameModeBase::GetPlayers() const
 	return Players;
 }
 
+void ASideScrollerGameModeBase::TravelToGameOverMenu()
+{
+	bUseSeamlessTravel = true;
+	GetWorld()->ServerTravel("/Game/Maps/Map_GameOverMenu?listen");
+}
+
 void ASideScrollerGameModeBase::EnablePlayerGameModeInput(APlayerController* NewPlayer)
 {
 	if (NewPlayer != nullptr)

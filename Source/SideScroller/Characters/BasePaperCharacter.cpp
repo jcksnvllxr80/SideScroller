@@ -8,6 +8,7 @@
 #include "Engine/DamageEvents.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+
 #include "Players/PC_PlayerFox.h"
 
 ABasePaperCharacter::ABasePaperCharacter()
@@ -20,6 +21,11 @@ ABasePaperCharacter::ABasePaperCharacter()
 
 	ProjectileSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("Projectile Spawn Point"));
 	ProjectileSpawnPoint->SetupAttachment(RootComponent);
+
+	this->ProjectileSpawnPoint->SetIsReplicated(true);
+	this->GetCharacterMovement()->SetIsReplicated(true);
+	this->GetSprite()->SetIsReplicated(true);
+	this->SetReplicates(true);
 }
 
 void ABasePaperCharacter::BeginPlay()

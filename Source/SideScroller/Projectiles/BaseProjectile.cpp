@@ -20,11 +20,16 @@ ABaseProjectile::ABaseProjectile()
 	ProjectileFlipbook = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("ProjectileFlipbook"));
 	ProjectileFlipbook->SetupAttachment(RootComponent);
 
-	ProjectileBox = CreateDefaultSubobject<UCapsuleComponent>(TEXT("ProjectileCollision"));
-	ProjectileBox->SetupAttachment(ProjectileFlipbook);
-	ProjectileBox->SetHiddenInGame(true);
+    ProjectileBox = CreateDefaultSubobject<UCapsuleComponent>(TEXT("ProjectileCollision"));
+    ProjectileBox->SetupAttachment(ProjectileFlipbook);
+    ProjectileBox->SetHiddenInGame(true);
 
-	ProjectileMovementComp = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
+    ProjectileMovementComp = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
+
+    ProjectileFlipbook->SetIsReplicated(true);
+    ProjectileBox->SetIsReplicated(true);
+    ProjectileMovementComp->SetIsReplicated(true);
+    this->SetReplicates(true);
 }
 
 // Called when the game starts or when spawned

@@ -9,6 +9,7 @@
 #include "GameFramework/PlayerState.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 #include "SideScroller/SideScrollerGameInstance.h"
 #include "SideScroller/GameModes/SideScrollerGameModeBase.h"
 
@@ -38,6 +39,10 @@ APC_PlayerFox::APC_PlayerFox()
 	this->GetCharacterMovement()->SetWalkableFloorAngle(60.f);
 	this->GetCharacterMovement()->MaxAcceleration = 400.f;
 	this->GetCharacterMovement()->BrakingFrictionFactor = 0.65;
+	
+	this->GetSprite()->SetIsReplicated(true);
+	this->GetCharacterMovement()->SetIsReplicated(true);
+	this->SetReplicates(true);
 }
 
 void APC_PlayerFox::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -61,7 +66,7 @@ void APC_PlayerFox::BeginPlay()
 
 	AddToPlayersArray();
 	PlayerHUDSetup();
-	
+
 	this->LastCheckpointLocation = this->GetSprite()->GetComponentLocation(); 
 	this->StandingFriction = this->GetCharacterMovement()->BrakingFrictionFactor;
 	this->NormalWalkingSpeed = this->GetCharacterMovement()->MaxWalkSpeed;
@@ -82,6 +87,15 @@ void APC_PlayerFox::Tick(const float DeltaTime)
 	// }
 	
 	UpdateAnimation();
+}
+
+void APC_PlayerFox::GetLifetimeReplicatedProps( TArray< FLifetimeProperty > & OutLifetimeProps ) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(APC_PlayerFox, SpectatorsStr);
+	DOREPLIFETIME(APC_PlayerFox, PlayerBeingSpectated);
+	DOREPLIFETIME(APC_PlayerFox, Spectators);
+	DOREPLIFETIME(APC_PlayerFox, MaxRunningSpeed);
 }
 
 int APC_PlayerFox::GetAccumulatedPoints() const
@@ -391,15 +405,15 @@ void APC_PlayerFox::RemoveFromPlayersArray()
 
 void APC_PlayerFox::PlayerHUDSetup()
 {
-	WidgetPlayerHUDInstance = CreateWidget<UUserWidget>(GetWorld(), WidgetPlayerHUD);
-	WidgetPlayerHUDInstance->AddToViewport();
+	this->WidgetPlayerHUDInstance = CreateWidget<UUserWidget>(GetWorld(), WidgetPlayerHUD);
+	this->WidgetPlayerHUDInstance->AddToViewport();
 }
 
 void APC_PlayerFox::PlayerHUDTeardown()
 {
-	if (WidgetPlayerHUDInstance)
+	if (this->WidgetPlayerHUDInstance != nullptr)
 	{
-		WidgetPlayerHUDInstance->RemoveFromParent();
+		this->WidgetPlayerHUDInstance->RemoveFromParent();
 	}
 	else
 	{

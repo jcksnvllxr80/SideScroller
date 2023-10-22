@@ -19,6 +19,7 @@ APC_Enemy_Eagle::APC_Enemy_Eagle()
 	this->GetRightHurtBox()->SetRelativeLocation(FVector(7.632283,-0.000000,2.335176));
 	this->GetRightHurtBox()->SetRelativeScale3D(FVector(0.125698,0.161768,0.242430));
 
+	this->GetCharacterMovement()->GetNavAgentPropertiesRef().bCanFly = true;
 	this->SetDamage(20.0);
 }
 
