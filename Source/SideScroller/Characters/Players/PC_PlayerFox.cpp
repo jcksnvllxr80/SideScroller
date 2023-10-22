@@ -43,6 +43,7 @@ APC_PlayerFox::APC_PlayerFox()
 	this->GetSprite()->SetIsReplicated(true);
 	this->GetCharacterMovement()->SetIsReplicated(true);
 	this->SetReplicates(true);
+	this->CurrentRotation = MovingLeftRotation;
 }
 
 void APC_PlayerFox::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -96,6 +97,12 @@ void APC_PlayerFox::GetLifetimeReplicatedProps( TArray< FLifetimeProperty > & Ou
 	DOREPLIFETIME(APC_PlayerFox, PlayerBeingSpectated);
 	DOREPLIFETIME(APC_PlayerFox, Spectators);
 	DOREPLIFETIME(APC_PlayerFox, MaxRunningSpeed);
+	DOREPLIFETIME(APC_PlayerFox, bIsClimbing);
+	DOREPLIFETIME(APC_PlayerFox, bIsCrouching);
+	DOREPLIFETIME(APC_PlayerFox, bIsSliding);
+	DOREPLIFETIME(APC_PlayerFox, bOnLadder);
+	DOREPLIFETIME(APC_PlayerFox, CurrentRotation);
+	// DOREPLIFETIME(APC_PlayerFox, bIsClimbing);
 }
 
 int APC_PlayerFox::GetAccumulatedPoints() const
@@ -467,13 +474,15 @@ void APC_PlayerFox::UpdateRotation(const float Value)
 	const FVector ProjSpawnLoc = GetProjectileSpawnPoint()->GetRelativeLocation();
 	
 	if (Value < 0) {
-		this->GetSprite()->SetRelativeRotation(FRotator(0, 180.f, 0));
+		this->CurrentRotation = MovingLeftRotation;
+		this->GetSprite()->SetRelativeRotation(MovingLeftRotation);
 		GetProjectileSpawnPoint()->SetRelativeLocation(FVector(ProjectileSpawnLoc.X * -1.f, ProjSpawnLoc.Y, ProjSpawnLoc.Z));
 	}
 	else if (Value > 0){
-		this->GetSprite()->SetRelativeRotation(FRotator(0, 0, 0));
+		this->CurrentRotation = MovingRightRotation;
 		GetProjectileSpawnPoint()->SetRelativeLocation(FVector(ProjectileSpawnLoc.X, ProjSpawnLoc.Y, ProjSpawnLoc.Z));
 	}
+	this->GetSprite()->SetRelativeRotation(CurrentRotation);
 	
 	// UE_LOG(
 	// 	LogTemp, Warning, TEXT("%s's location is %s, and projectile spawn point is %s!"),
@@ -523,8 +532,8 @@ void APC_PlayerFox::CrouchClimbDown()
 	const float VelocityX = this->GetVelocity().X;
 	if (!this->bIsSliding && abs(VelocityX) > this->CrouchSlidingThresholdVelocity)
 	{
-		// UE_LOG(LogTemp, Warning, TEXT("X Vel = %f"), VelocityX);
-		// UE_LOG(LogTemp, Warning, TEXT("APC_PlayerFox::CrouchClimbDown - setting slide (run) to true"));
+		// UE_LOG(LogTemp, VeryVerbose, TEXT("X Vel = %f"), VelocityX);
+		// UE_LOG(LogTemp, VeryVerbose, TEXT("APC_PlayerFox::CrouchClimbDown - setting slide (run) to true"));
 		this->bIsSliding = true;
 		this->GetCharacterMovement()->BrakingFrictionFactor = this->CrouchSlideFriction;
 		return;
@@ -538,9 +547,9 @@ void APC_PlayerFox::CrouchClimbDown()
 			(FloorAngleDeg >= SlideAngleDeg && VelocityX < 0)
 		)
 	) {
-		// UE_LOG(LogTemp, Warning, TEXT("X Vel = %f"), VelocityX);
-		// UE_LOG(LogTemp, Warning, TEXT("Floor Angle = %f"), FloorAngleDeg);
-		// UE_LOG(LogTemp, Warning, TEXT("APC_PlayerFox::CrouchClimbDown - setting slide (hill) to true"));
+		// UE_LOG(LogTemp, VeryVerbose, TEXT("X Vel = %f"), VelocityX);
+		// UE_LOG(LogTemp, VeryVerbose, TEXT("Floor Angle = %f"), FloorAngleDeg);
+		// UE_LOG(LogTemp, VeryVerbose, TEXT("APC_PlayerFox::CrouchClimbDown - setting slide (hill) to true"));
 		this->bIsSliding = true;
 		this->GetCharacterMovement()->BrakingFrictionFactor = 0.f;  // this->CrouchSlideFriction;
 		return;
@@ -552,9 +561,9 @@ void APC_PlayerFox::CrouchClimbDown()
 		(FloorAngleDeg < 1.f && FloorAngleDeg > -SlideAngleDeg && VelocityX > 0) ||
 		(FloorAngleDeg > -1.f && FloorAngleDeg < SlideAngleDeg && VelocityX < 0)
 	) {
-		// UE_LOG(LogTemp, Warning, TEXT("X Vel = %f"), VelocityX);
-		// UE_LOG(LogTemp, Warning, TEXT("Floor Angle = %f"), FloorAngleDeg);
-		// UE_LOG(LogTemp, Warning, TEXT("APC_PlayerFox::CrouchClimbDown - setting slide to false"));
+		// UE_LOG(LogTemp, VeryVerbose, TEXT("X Vel = %f"), VelocityX);
+		// UE_LOG(LogTemp, VeryVerbose, TEXT("Floor Angle = %f"), FloorAngleDeg);
+		// UE_LOG(LogTemp, VeryVerbose, TEXT("APC_PlayerFox::CrouchClimbDown - setting slide to false"));
 		this->bIsSliding = false;
 		this->GetCharacterMovement()->BrakingFrictionFactor = this->StandingFriction;
 	}
@@ -574,7 +583,7 @@ void APC_PlayerFox::CrouchClimbDown()
 		);
 		
 		// UE_LOG(
-		// 	LogTemp, Warning, TEXT("%s's location is %s, and projectile spawn point is %s!"),
+		// 	LogTemp, VeryVerbose, TEXT("%s's location is %s, and projectile spawn point is %s!"),
 		// 	*this->GetName(),
 		// 	*this->GetActorLocation().ToString(),
 		// 	*this->GetProjectileSpawnPoint()->GetRelativeLocation().ToString()

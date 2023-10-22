@@ -207,16 +207,16 @@ private:
 	UPROPERTY(EditAnywhere)
 	USoundBase* WalkSound;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, replicated)
 	bool bIsCrouching = false;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, replicated)
 	bool bIsClimbing = false;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, replicated)
 	bool bIsSliding = false;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, replicated)
 	bool bOnLadder = false;
 
 	UPROPERTY(EditAnywhere, replicated)
@@ -238,6 +238,15 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	float CumulativeTime = 0.f;
+
+	UPROPERTY(EditAnywhere, replicated)
+	FRotator CurrentRotation;
+
+	UPROPERTY(EditAnywhere)
+	FRotator MovingLeftRotation = FRotator(0, 180.f, 0);
+
+	UPROPERTY(EditAnywhere)
+	FRotator MovingRightRotation = FRotator(0, 0, 0);
 
 	UFUNCTION(BlueprintCallable)
 	void MoveSpectatorsToNewPlayer() const;
