@@ -55,6 +55,9 @@ public:
 	void InGameLoadMenu();
 
 	UFUNCTION(BlueprintCallable)
+	void SelectCharacterLoadMenu();
+
+	UFUNCTION(BlueprintCallable)
 	void GameOverLoadMenu();
 	
 	UFUNCTION(BlueprintCallable)
@@ -66,6 +69,7 @@ public:
 private:
 	TSubclassOf<class UUserWidget> MainMenuClass = nullptr;
 	TSubclassOf<class UUserWidget> InGameMenuClass = nullptr;
+	TSubclassOf<class UUserWidget> SelectCharacterMenuClass = nullptr;
 	TSubclassOf<class UUserWidget> SettingsMenuClass = nullptr;
 	TSubclassOf<class UUserWidget> GameOverMenuClass = nullptr;
 	class UMainMenu* Menu;

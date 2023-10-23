@@ -35,6 +35,12 @@ USideScrollerGameInstance::USideScrollerGameInstance(const FObjectInitializer & 
 	ConstructorHelpers::FClassFinder<UUserWidget> GameOverMenuBPClass(TEXT("/Game/MenuSystem/WBP_GameOverMenu"));
 	if (!GameOverMenuBPClass.Class) return;
 	GameOverMenuClass = GameOverMenuBPClass.Class;
+
+	ConstructorHelpers::FClassFinder<UUserWidget> SelectCharacterMenuBPClass(
+		TEXT("/Game/MenuSystem/WBP_SelectCharacterMenu")
+	);
+	if (!SelectCharacterMenuBPClass.Class) return;
+	SelectCharacterMenuClass = SelectCharacterMenuBPClass.Class;
 }
 
 void USideScrollerGameInstance::Init()
@@ -206,6 +212,29 @@ void USideScrollerGameInstance::InGameLoadMenu()
 	else
 	{
 		UE_LOG(LogTemp, Error, TEXT("Cant find the InGame Menu blueprint class."));
+		return;
+	}
+}
+
+void USideScrollerGameInstance::SelectCharacterLoadMenu()
+{
+	if (SelectCharacterMenuClass)
+	{
+		UE_LOG(LogTemp, Display, TEXT("Found InGame Menu blueprint class %s."), *SelectCharacterMenuClass->GetName());
+		if (UMenuWidget* SelectCharacterMenu = CreateWidget<UMenuWidget>(this, SelectCharacterMenuClass))
+		{
+			SelectCharacterMenu->Setup();
+			SelectCharacterMenu->SetMenuInterface(this);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Cant create UMenuWidget Menu from SelectCharacter menu blueprint class."));
+			return;
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Cant find the SelectCharacter Menu blueprint class."));
 		return;
 	}
 }

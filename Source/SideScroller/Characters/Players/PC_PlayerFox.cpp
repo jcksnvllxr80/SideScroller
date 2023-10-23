@@ -64,6 +64,7 @@ void APC_PlayerFox::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 void APC_PlayerFox::BeginPlay()
 {
 	Super::BeginPlay();
+	OpenSelectCharacterMenu();
 
 	AddToPlayersArray();
 	PlayerHUDSetup();
@@ -848,5 +849,17 @@ void APC_PlayerFox::OpenInGameMenu()
 	}
 	else {
 		UE_LOG(LogTemp, Warning, TEXT("Can't open InGameMenu!"));
+	}
+}
+
+void APC_PlayerFox::OpenSelectCharacterMenu()
+{
+	GameInstance = dynamic_cast<USideScrollerGameInstance*>(GetGameInstance());
+	if (GameInstance != nullptr) {
+		// GetWorld()->GetFirstPlayerController()->SetPause(true);
+		GameInstance->SelectCharacterLoadMenu();
+	}
+	else {
+		UE_LOG(LogTemp, Warning, TEXT("Can't open SelectCharacterLoadMenu!"));
 	}
 }

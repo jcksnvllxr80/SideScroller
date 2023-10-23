@@ -282,6 +282,9 @@ private:
 	void OpenInGameMenu();
 
 	UFUNCTION(BlueprintCallable)
+	void OpenSelectCharacterMenu();
+
+	UFUNCTION(BlueprintCallable)
 	void DoWalkAnimAndSound();
 
 	UFUNCTION(BlueprintCallable)

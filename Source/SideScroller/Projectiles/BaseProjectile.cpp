@@ -25,7 +25,7 @@ ABaseProjectile::ABaseProjectile()
     ProjectileBox->SetHiddenInGame(true);
 
     ProjectileMovementComp = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
-
+	
 	this->bReplicates = true;
     ProjectileFlipbook->SetIsReplicated(true);
     ProjectileBox->SetIsReplicated(true);
