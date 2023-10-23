@@ -4,34 +4,73 @@
 #include "SelectCharacterMenu.h"
 #include "Components/Button.h"
 
+void USelectCharacterMenu::SelectPlayer(const TSubclassOf<APawn> PlayerBP, const FString& PlayerColorStr) const
+{
+	UE_LOG(LogTemp, Display,
+		TEXT("USelectCharacterMenu::%sPlayerSelect - Player Selected the %s Player."),
+		*PlayerColorStr, *PlayerColorStr
+	);
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	if (PlayerController != nullptr)
+	{
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = PlayerController->GetPawn();
+		const FVector PlayerLocation = PlayerController->GetPawn()->GetActorLocation();
+		const FRotator PlayerRotation = PlayerController->GetPawn()->GetActorRotation();
+		PlayerController->UnPossess();
+		
+		if (PlayerBP != nullptr)
+		{
+			APawn* NewCharacter = GetWorld()->SpawnActor<APawn>(
+				PlayerBP, PlayerLocation, PlayerRotation, SpawnParams
+			);
+			PlayerController->Possess(NewCharacter);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error,
+				TEXT("USelectCharacterMenu::%sPlayerSelect - Select Character Failed! No %sPlayerBP."),
+				*PlayerColorStr, *PlayerColorStr
+			);
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error,
+			TEXT("USelectCharacterMenu::%sPlayerSelect - Select Character Failed! No PlayerController."),
+			*PlayerColorStr
+		);
+	}
+}
+
 void USelectCharacterMenu::PinkPlayerSelect()
 {
-	UE_LOG(LogTemp, Display, TEXT("USelectCharacterMenu::PinkPlayerSelect - Player Selected the Pink Player."));
+	SelectPlayer(PinkPlayerBP, "Pink");
 }
 
 void USelectCharacterMenu::OrangePlayerSelect()
 {
-	UE_LOG(LogTemp, Display, TEXT("USelectCharacterMenu::OrangePlayerSelect - Player Selected the Orange Player."));
+	SelectPlayer(OrangePlayerBP, "Orange");
 }
 
 void USelectCharacterMenu::YellowPlayerSelect()
 {
-	UE_LOG(LogTemp, Display, TEXT("USelectCharacterMenu::YellowPlayerSelect - Player Selected the Yellow Player."));
+	SelectPlayer(YellowPlayerBP, "Yellow");
 }
 
 void USelectCharacterMenu::GreenPlayerSelect()
 {
-	UE_LOG(LogTemp, Display, TEXT("USelectCharacterMenu::GreenPlayerSelect - Player Selected the Green Player."));
+	SelectPlayer(GreenPlayerBP, "Green");
 }
 
 void USelectCharacterMenu::BluePlayerSelect()
 {
-	UE_LOG(LogTemp, Display, TEXT("USelectCharacterMenu::BluePlayerSelect - Player Selected the Blue Player."));
+	SelectPlayer(BluePlayerBP, "Blue");
 }
 
 void USelectCharacterMenu::BlackPlayerSelect()
 {
-	UE_LOG(LogTemp, Display, TEXT("USelectCharacterMenu::BlackPlayerSelect - Player Selected the Black Player.."));
+	SelectPlayer(BlackPlayerBP, "Black");
 }
 
 bool USelectCharacterMenu::Initialize()
@@ -119,7 +158,7 @@ bool USelectCharacterMenu::Initialize()
 		return false;
 	}
 
-	UE_LOG(LogTemp, Display, TEXT("In Game Menu Init complete!"));
+	UE_LOG(LogTemp, Display, TEXT("Select Character Menu Init complete!"));
 	return true;
 }
 

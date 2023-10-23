@@ -14,7 +14,28 @@ class SIDESCROLLER_API USelectCharacterMenu : public UMenuWidget
 {
 	GENERATED_BODY()
 
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Classes)
+	TSubclassOf<APawn> PinkPlayerBP = nullptr;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Classes)
+	TSubclassOf<APawn> OrangePlayerBP = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Classes)
+	TSubclassOf<APawn> YellowPlayerBP = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Classes)
+	TSubclassOf<APawn> GreenPlayerBP = nullptr;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Classes)
+	TSubclassOf<APawn> BluePlayerBP = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Classes)
+	TSubclassOf<APawn> BlackPlayerBP = nullptr;
+
 protected:
+	void SelectPlayer(TSubclassOf<APawn> PlayerBP, const FString& PlayerColorStr) const;
+	
 	UFUNCTION()
 	void PinkPlayerSelect();
 	
@@ -59,7 +80,7 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	class UButton* ExitButton;
-
+	
 	UFUNCTION()
 	void BackToMainMenu();
 
