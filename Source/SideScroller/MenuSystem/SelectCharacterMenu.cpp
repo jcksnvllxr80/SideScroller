@@ -3,6 +3,7 @@
 
 #include "SelectCharacterMenu.h"
 #include "Components/Button.h"
+#include "SideScroller/Characters/Players/PC_PlayerFox.h"
 
 void USelectCharacterMenu::SelectPlayer(const TSubclassOf<APawn> PlayerBP, const FString& PlayerColorStr) const
 {
@@ -14,17 +15,22 @@ void USelectCharacterMenu::SelectPlayer(const TSubclassOf<APawn> PlayerBP, const
 	if (PlayerController != nullptr)
 	{
 		FActorSpawnParameters SpawnParams;
-		SpawnParams.Owner = PlayerController->GetPawn();
-		const FVector PlayerLocation = PlayerController->GetPawn()->GetActorLocation();
-		const FRotator PlayerRotation = PlayerController->GetPawn()->GetActorRotation();
-		PlayerController->UnPossess();
-		
+		SpawnParams.Owner = PlayerController;
 		if (PlayerBP != nullptr)
 		{
-			APawn* NewCharacter = GetWorld()->SpawnActor<APawn>(
-				PlayerBP, PlayerLocation, PlayerRotation, SpawnParams
+			APC_PlayerFox* NewCharacter = GetWorld()->SpawnActor<APC_PlayerFox>(
+				PlayerBP->GetDefaultObject()->GetClass(),
+				PlayerController->GetPawn()->GetActorLocation(),
+				PlayerController->GetPawn()->GetActorRotation(),
+				SpawnParams
 			);
-			PlayerController->Possess(NewCharacter);
+			if (NewCharacter)
+			{
+				APawn* OldPawn = PlayerController->GetPawn();
+				PlayerController->UnPossess();
+				PlayerController->Possess(NewCharacter);
+				OldPawn->Destroy();
+			}
 		}
 		else
 		{

@@ -6,6 +6,7 @@
 #include "MenuWidget.h"
 #include "SelectCharacterMenu.generated.h"
 
+class APC_PlayerFox;
 /**
  * 
  */
@@ -16,22 +17,22 @@ class SIDESCROLLER_API USelectCharacterMenu : public UMenuWidget
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Classes)
-	TSubclassOf<APawn> PinkPlayerBP = nullptr;
+	TSubclassOf<APC_PlayerFox> PinkPlayerBP = nullptr;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Classes)
-	TSubclassOf<APawn> OrangePlayerBP = nullptr;
+	TSubclassOf<APC_PlayerFox> OrangePlayerBP = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Classes)
-	TSubclassOf<APawn> YellowPlayerBP = nullptr;
+	TSubclassOf<APC_PlayerFox> YellowPlayerBP = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Classes)
-	TSubclassOf<APawn> GreenPlayerBP = nullptr;
+	TSubclassOf<APC_PlayerFox> GreenPlayerBP = nullptr;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Classes)
-	TSubclassOf<APawn> BluePlayerBP = nullptr;
+	TSubclassOf<APC_PlayerFox> BluePlayerBP = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Classes)
-	TSubclassOf<APawn> BlackPlayerBP = nullptr;
+	TSubclassOf<APC_PlayerFox> BlackPlayerBP = nullptr;
 
 protected:
 	void SelectPlayer(TSubclassOf<APawn> PlayerBP, const FString& PlayerColorStr) const;

@@ -413,8 +413,10 @@ void APC_PlayerFox::RemoveFromPlayersArray()
 
 void APC_PlayerFox::PlayerHUDSetup()
 {
-	this->WidgetPlayerHUDInstance = CreateWidget<UUserWidget>(GetWorld(), WidgetPlayerHUD);
-	this->WidgetPlayerHUDInstance->AddToViewport();
+	if (WidgetPlayerHUD) {
+		this->WidgetPlayerHUDInstance = CreateWidget<UUserWidget>(GetWorld(), WidgetPlayerHUD);
+		this->WidgetPlayerHUDInstance->AddToViewport();
+	}
 }
 
 void APC_PlayerFox::PlayerHUDTeardown()
