@@ -41,9 +41,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Travel)
 	void TravelToGameOverMenu();
 
+	void SpawnPlayer(
+		TSubclassOf<APC_PlayerFox> PlayerBP,
+		const FString& PlayerColorStr,
+		APlayerController* PlayerController
+	);
+	
 private:
 	UPROPERTY(EditAnywhere, Category = Game)
 	TArray<APC_PlayerFox*> Players;
+	
+	UPROPERTY(EditAnywhere)
+	FVector PlayerSpawnDropInHeight {0.f, 0.f, 50.f};
 
 protected:
 	static void EnablePlayerGameModeInput(APlayerController* NewPlayer);

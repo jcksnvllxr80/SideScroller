@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <map>
+
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 #include "Interfaces/MenuInterface.h"
@@ -9,6 +11,8 @@
 #include "OnlineSubsystem.h"
 #include "Interfaces/OnlineSessionInterface.h"
 #include "SidescrollerGameInstance.generated.h"
+
+class APC_PlayerFox;
 
 USTRUCT()
 struct FServerData
@@ -65,6 +69,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	int GetNumPlayersToStartGame() const;
+	
+	UFUNCTION(BlueprintCallable)
+	TSubclassOf<APC_PlayerFox> GetChosenCharacter(APlayerController* PlayerController);
+
+	UFUNCTION(BlueprintCallable)
+	void SetChosenCharacter(APlayerController* PlayerController, TSubclassOf<APC_PlayerFox> ChosenCharacter);
 
 private:
 	TSubclassOf<class UUserWidget> MainMenuClass = nullptr;
@@ -80,7 +90,7 @@ private:
 	void OnDestroySessionComplete(FName SessionName, bool Success);
 	void OnFindSessionsComplete(bool Success);
 	void OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
-
+	std::map<FString, TSubclassOf<APC_PlayerFox>> PlayerControllerChosenCharMap;
 	FString DesiredServerName;
 	void CreateSession();
 };

@@ -267,6 +267,33 @@ int USideScrollerGameInstance::GetNumPlayersToStartGame() const
 	return NumPlayers;
 }
 
+TSubclassOf<APC_PlayerFox> USideScrollerGameInstance::GetChosenCharacter(APlayerController* PlayerController)
+{
+	if (PlayerControllerChosenCharMap.empty())
+	{
+		UE_LOG(LogTemp, Display,
+			TEXT("USideScrollerGameInstance::GetChosenCharacter - PlayerControllerChosenCharMap is empty.")
+		)
+	} else {
+		const auto ChosenCharacter = PlayerControllerChosenCharMap.find(PlayerController->GetName());
+		if (ChosenCharacter == PlayerControllerChosenCharMap.end())
+		{
+			UE_LOG(LogTemp, Display,
+				TEXT("USideScrollerGameInstance::GetChosenCharacter - Cant find Player controller in the map.")
+			)
+			return nullptr;
+		}
+		return ChosenCharacter->second;
+	}
+	return nullptr;
+}
+
+void USideScrollerGameInstance::SetChosenCharacter(APlayerController* PlayerController,
+                                                   TSubclassOf<APC_PlayerFox> ChosenCharacter)
+{
+	this->PlayerControllerChosenCharMap.insert({PlayerController->GetName(), ChosenCharacter});
+}
+
 void USideScrollerGameInstance::OnGameSessionComplete(FName SessionName, bool Success)
 {
 	if (!Success)

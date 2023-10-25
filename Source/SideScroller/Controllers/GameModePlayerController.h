@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "GameModePlayerController.generated.h"
 
+class APC_PlayerFox;
 /**
  * 
  */

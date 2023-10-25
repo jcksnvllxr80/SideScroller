@@ -4,50 +4,7 @@
 #include "SelectCharacterMenu.h"
 #include "Components/Button.h"
 #include "SideScroller/Characters/Players/PC_PlayerFox.h"
-
-void USelectCharacterMenu::SelectPlayer(const TSubclassOf<APawn> PlayerBP, const FString& PlayerColorStr) const
-{
-	UE_LOG(LogTemp, Display,
-		TEXT("USelectCharacterMenu::%sPlayerSelect - Player Selected the %s Player."),
-		*PlayerColorStr, *PlayerColorStr
-	);
-	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	if (PlayerController != nullptr)
-	{
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.Owner = PlayerController;
-		if (PlayerBP != nullptr)
-		{
-			APC_PlayerFox* NewCharacter = GetWorld()->SpawnActor<APC_PlayerFox>(
-				PlayerBP->GetDefaultObject()->GetClass(),
-				PlayerController->GetPawn()->GetActorLocation(),
-				PlayerController->GetPawn()->GetActorRotation(),
-				SpawnParams
-			);
-			if (NewCharacter)
-			{
-				APawn* OldPawn = PlayerController->GetPawn();
-				PlayerController->UnPossess();
-				PlayerController->Possess(NewCharacter);
-				OldPawn->Destroy();
-			}
-		}
-		else
-		{
-			UE_LOG(LogTemp, Error,
-				TEXT("USelectCharacterMenu::%sPlayerSelect - Select Character Failed! No %sPlayerBP."),
-				*PlayerColorStr, *PlayerColorStr
-			);
-		}
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error,
-			TEXT("USelectCharacterMenu::%sPlayerSelect - Select Character Failed! No PlayerController."),
-			*PlayerColorStr
-		);
-	}
-}
+#include "SideScroller/GameModes/LevelGameMode.h"
 
 void USelectCharacterMenu::PinkPlayerSelect()
 {
@@ -187,3 +144,36 @@ void USelectCharacterMenu::BackToGame()
 	GetWorld()->GetFirstPlayerController()->SetPause(false);
 }
 
+void USelectCharacterMenu::SelectPlayer(const TSubclassOf<APC_PlayerFox> PlayerBP, const FString& PlayerColorStr)
+{
+	UE_LOG(LogTemp, Display,
+		TEXT("USelectCharacterMenu::SelectPlayer - Player %s Selected the %s Player."),
+		*PlayerColorStr, *PlayerColorStr
+	);
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	if (PlayerController != nullptr)
+	{
+		ASideScrollerGameModeBase* SideScrollerGameMode = Cast<ASideScrollerGameModeBase>(
+			GetWorld()->GetAuthGameMode()
+		);
+		if (SideScrollerGameMode != nullptr)
+		{
+			SideScrollerGameMode->SpawnPlayer(PlayerBP, PlayerColorStr, PlayerController);
+			BackToGame();
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error,
+				TEXT("USelectCharacterMenu::SelectPlayer - Select %s Character Failed! No SideScrollerGameMode."),
+				*PlayerColorStr
+			);
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error,
+			TEXT("USelectCharacterMenu::SelectPlayer - Select %s Character Failed! No PlayerController."),
+			*PlayerColorStr
+		);
+	}
+}

@@ -6,17 +6,18 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
-#include "GameFramework/PlayerState.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "SideScroller/SideScrollerGameInstance.h"
+#include "SideScroller/GameModes/LevelGameMode.h"
+#include "SideScroller/GameModes/LobbyGameMode.h"
 #include "SideScroller/GameModes/SideScrollerGameModeBase.h"
 
 APC_PlayerFox::APC_PlayerFox()
 {
 	PrimaryActorTick.bCanEverTick = true;
-
+	
 	CameraArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraArm->SetupAttachment(RootComponent);
 	CameraArm->SetWorldLocationAndRotation(
@@ -56,7 +57,7 @@ void APC_PlayerFox::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAction("Shoot", IE_Pressed, this, &APC_PlayerFox::Shoot);
 	PlayerInputComponent->BindAction("Run", IE_Pressed, this, &APC_PlayerFox::SetRunVelocity);
 	PlayerInputComponent->BindAction("Run", IE_Released, this, &APC_PlayerFox::SetWalkVelocity);
-	PlayerInputComponent->BindAction("InGameMenu", IE_Pressed, this, &APC_PlayerFox::OpenInGameMenu);
+	PlayerInputComponent->BindAction("InGameMenu", IE_Pressed, this, &APC_PlayerFox::OpenMenu);
 	PlayerInputComponent->BindAction("SpectateNextPlayer", IE_Pressed, this, &APC_PlayerFox::SpectateNextPlayer);
 	PlayerInputComponent->BindAction("SpectatePrevPlayer", IE_Pressed, this, &APC_PlayerFox::SpectatePrevPlayer);
 }
@@ -64,8 +65,9 @@ void APC_PlayerFox::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 void APC_PlayerFox::BeginPlay()
 {
 	Super::BeginPlay();
-	OpenSelectCharacterMenu();
 
+	GameInstance = dynamic_cast<USideScrollerGameInstance*>(GetGameInstance());
+	PlayerSpawnCharacterSelect();
 	AddToPlayersArray();
 	PlayerHUDSetup();
 
@@ -104,6 +106,21 @@ void APC_PlayerFox::GetLifetimeReplicatedProps( TArray< FLifetimeProperty > & Ou
 	DOREPLIFETIME(APC_PlayerFox, bOnLadder);
 	DOREPLIFETIME(APC_PlayerFox, CurrentRotation);
 	// DOREPLIFETIME(APC_PlayerFox, bIsClimbing);
+}
+
+void APC_PlayerFox::PlayerSpawnCharacterSelect()
+{
+	if (GameInstance == nullptr) return;  // early return
+	
+	APlayerController* PlayerController = Cast<APlayerController>(GetWorld()->GetFirstPlayerController());
+	if (PlayerController != nullptr)
+	{
+		// if the player hasn't selected a character yet, open the character select window
+		if (GameInstance->GetChosenCharacter(PlayerController) == nullptr)
+		{
+			OpenSelectCharacterMenu();
+		}
+	}
 }
 
 int APC_PlayerFox::GetAccumulatedPoints() const
@@ -344,7 +361,7 @@ void APC_PlayerFox::PlayerDeath()
 		
 		ReviveAtCheckpoint();
 	} else {
-		RemoveFromPlayersArray();
+		this->RemoveFromPlayersArray();
 		this->DoDeath();
 
 		this->bIsOutOfLives = true;
@@ -433,6 +450,7 @@ void APC_PlayerFox::PlayerHUDTeardown()
 
 void APC_PlayerFox::DeathCleanUp()
 {
+	this->RemoveFromPlayersArray();
 	this->PlayerHUDTeardown();
 	this->MoveSpectatorsToNewPlayer();
 }
@@ -842,26 +860,40 @@ void APC_PlayerFox::LogLocation()
 	UE_LOG(LogTemp, VeryVerbose, TEXT("%s's location is %s!"), *this->GetName(), *this->GetActorLocation().ToString());
 }
 
+void APC_PlayerFox::OpenMenu()
+{
+	const ALevelGameMode* LevelGameMode = dynamic_cast<ALevelGameMode*>(GetWorld()->GetAuthGameMode());
+	if (LevelGameMode != nullptr)
+	{
+		OpenInGameMenu();
+		return;
+	}
+	
+	OpenSelectCharacterMenu();
+}
+
 void APC_PlayerFox::OpenInGameMenu()
 {
-	GameInstance = dynamic_cast<USideScrollerGameInstance*>(GetGameInstance());
 	if (GameInstance != nullptr) {
 		GetWorld()->GetFirstPlayerController()->SetPause(true);
 		GameInstance->InGameLoadMenu();
 	}
 	else {
-		UE_LOG(LogTemp, Warning, TEXT("Can't open InGameMenu!"));
+		UE_LOG(LogTemp, Warning, TEXT("APC_PlayerFox::OpenInGameMenu - Can't open InGameMenu. GameInstance is null!"));
 	}
 }
 
 void APC_PlayerFox::OpenSelectCharacterMenu()
 {
-	GameInstance = dynamic_cast<USideScrollerGameInstance*>(GetGameInstance());
-	if (GameInstance != nullptr) {
-		// GetWorld()->GetFirstPlayerController()->SetPause(true);
-		GameInstance->SelectCharacterLoadMenu();
-	}
-	else {
-		UE_LOG(LogTemp, Warning, TEXT("Can't open SelectCharacterLoadMenu!"));
+	const ALobbyGameMode* LobbyGameMode = dynamic_cast<ALobbyGameMode*>(GetWorld()->GetAuthGameMode());
+	if (LobbyGameMode != nullptr)
+	{
+		if (GameInstance != nullptr) {
+			GameInstance->SelectCharacterLoadMenu();
+		} else {
+			UE_LOG(LogTemp, Warning,
+				TEXT("APC_PlayerFox::OpenSelectCharacterMenu - Cant find GameInstance!")
+			);
+		}
 	}
 }

@@ -5,6 +5,7 @@
 
 #include "SideScroller/Characters/Players/PC_PlayerFox.h"
 #include "Kismet/GameplayStatics.h"
+#include "SideScroller/Controllers/GameModePlayerController.h"
 #include "SideScroller/MenuSystem/MainMenu.h"
 #include "UObject/ConstructorHelpers.h"
 
@@ -109,5 +110,49 @@ void ASideScrollerGameModeBase::EnablePlayerGameModeInput(APlayerController* New
 		UE_LOG(LogGameMode, Display, TEXT("Setting input mode for Player, %s!"), *NewPlayer->GetName());
 		NewPlayer->SetShowMouseCursor(false);
 		NewPlayer->SetInputMode(FInputModeGameOnly());
+	}
+}
+
+
+void ASideScrollerGameModeBase::SpawnPlayer(
+	TSubclassOf<APC_PlayerFox> PlayerBP,
+	const FString& PlayerColorStr,
+	APlayerController* PlayerController
+) {
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = PlayerController;
+	if (PlayerBP != nullptr)
+	{
+		if (USideScrollerGameInstance* SideScrollerGameInstance =
+			Cast<USideScrollerGameInstance>(GetWorld()->GetGameInstance());
+			SideScrollerGameInstance != nullptr
+		) {
+			SideScrollerGameInstance->SetChosenCharacter(PlayerController, PlayerBP);
+		} else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("ASideScrollerGameModeBase::SpawnPlayer - Cant find GameInstance"))
+		}
+		
+		APC_PlayerFox* NewCharacter = GetWorld()->SpawnActor<APC_PlayerFox>(
+			PlayerBP->GetDefaultObject()->GetClass(),
+			PlayerController->GetPawn()->GetActorLocation() + PlayerSpawnDropInHeight,
+			PlayerController->GetPawn()->GetActorRotation(),
+			SpawnParams
+		);
+		
+		if (NewCharacter)
+		{
+			APawn* OldPawn = PlayerController->GetPawn();
+			PlayerController->UnPossess();
+			PlayerController->Possess(NewCharacter);
+			if (OldPawn) OldPawn->Destroy();
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error,
+			   TEXT("ASideScrollerGameModeBase::SpawnPlayer - Select %s Character Failed! No %sPlayerBP."),
+			   *PlayerColorStr, *PlayerColorStr
+		);
 	}
 }

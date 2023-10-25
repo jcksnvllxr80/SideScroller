@@ -110,7 +110,8 @@ public:
 	void SpectatePrevPlayer();
 	
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
-	
+	void PlayerSpawnCharacterSelect();
+
 	virtual void BeginPlay() override;
 
 	virtual void Jump() override;
@@ -278,6 +279,9 @@ private:
 	UFUNCTION(BlueprintCallable)
 	void LogLocation();
 
+	UFUNCTION(BlueprintCallable)
+	void OpenMenu();
+	
 	UFUNCTION(BlueprintCallable)
 	void OpenInGameMenu();
 

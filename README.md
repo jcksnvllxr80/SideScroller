@@ -69,7 +69,7 @@ example command:
 If unreal crashes and it isn't apparent as to why, the quickest way to troubleshoot is...
 
 1. go to the following directory (or similar)  
-   `%USERPROFILE%\AppData\Local\UnrealEngine\5.2\Saved\Crashes`
+   `%LocalAppData%\UnrealEngine\5.2\Saved\Crashes`
 2. sort by date
 3. look for the folder with a date nearest the crash time
 4. read the last entries in the `*.log` file

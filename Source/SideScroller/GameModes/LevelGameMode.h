@@ -14,6 +14,13 @@ class SIDESCROLLER_API ALevelGameMode : public ASideScrollerGameModeBase
 {
 	GENERATED_BODY()
 
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Classes)
+	TSubclassOf<APC_PlayerFox> DefaultCharacterBP = nullptr;
+
+private:
+	void SpawnPlayerChosenCharacters();
+	
 protected:
 	virtual void BeginPlay() override;
 };

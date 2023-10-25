@@ -35,8 +35,6 @@ public:
 	TSubclassOf<APC_PlayerFox> BlackPlayerBP = nullptr;
 
 protected:
-	void SelectPlayer(TSubclassOf<APawn> PlayerBP, const FString& PlayerColorStr) const;
-	
 	UFUNCTION()
 	void PinkPlayerSelect();
 	
@@ -58,6 +56,8 @@ protected:
 	virtual bool Initialize() override;
 	
 private:
+	void SelectPlayer(TSubclassOf<APC_PlayerFox> PlayerBP, const FString& PlayerColorStr);
+	
 	UPROPERTY(meta = (BindWidget))
 	class UButton* PinkPlayerButton;
 	
@@ -82,10 +82,10 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	class UButton* ExitButton;
 	
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void BackToMainMenu();
 
-	UFUNCTION()
-	void BackToGame();
+	UFUNCTION(BlueprintCallable)
+	virtual void BackToGame();
 	
 };
