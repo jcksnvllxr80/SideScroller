@@ -4,7 +4,9 @@
 #include "SelectCharacterMenu.h"
 #include "Components/Button.h"
 #include "SideScroller/Characters/Players/PC_PlayerFox.h"
+#include "SideScroller/Controllers/GameModePlayerController.h"
 #include "SideScroller/GameModes/LevelGameMode.h"
+#include "SideScroller/GameStates/LobbyGameState.h"
 
 void USelectCharacterMenu::PinkPlayerSelect()
 {
@@ -153,18 +155,16 @@ void USelectCharacterMenu::SelectPlayer(const TSubclassOf<APC_PlayerFox> PlayerB
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	if (PlayerController != nullptr)
 	{
-		ASideScrollerGameModeBase* SideScrollerGameMode = Cast<ASideScrollerGameModeBase>(
-			GetWorld()->GetAuthGameMode()
-		);
-		if (SideScrollerGameMode != nullptr)
+		AGameModePlayerController* GameModePlayerController = Cast<AGameModePlayerController>(PlayerController);
+		if (GameModePlayerController != nullptr)
 		{
-			SideScrollerGameMode->SpawnPlayer(PlayerBP, PlayerColorStr, PlayerController);
+			GameModePlayerController->SpawnPlayer(PlayerBP, PlayerColorStr, PlayerController);
 			BackToGame();
 		}
 		else
 		{
 			UE_LOG(LogTemp, Error,
-				TEXT("USelectCharacterMenu::SelectPlayer - Select %s Character Failed! No SideScrollerGameMode."),
+				TEXT("USelectCharacterMenu::SelectPlayer - Select %s Character Failed! No GameState."),
 				*PlayerColorStr
 			);
 		}

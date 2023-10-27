@@ -13,6 +13,7 @@
 #include "SideScroller/GameModes/LevelGameMode.h"
 #include "SideScroller/GameModes/LobbyGameMode.h"
 #include "SideScroller/GameModes/SideScrollerGameModeBase.h"
+#include "SideScroller/GameStates/LobbyGameState.h"
 
 APC_PlayerFox::APC_PlayerFox()
 {
@@ -57,7 +58,7 @@ void APC_PlayerFox::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAction("Shoot", IE_Pressed, this, &APC_PlayerFox::Shoot);
 	PlayerInputComponent->BindAction("Run", IE_Pressed, this, &APC_PlayerFox::SetRunVelocity);
 	PlayerInputComponent->BindAction("Run", IE_Released, this, &APC_PlayerFox::SetWalkVelocity);
-	PlayerInputComponent->BindAction("InGameMenu", IE_Pressed, this, &APC_PlayerFox::OpenMenu);
+	PlayerInputComponent->BindAction("InGameContextMenu", IE_Pressed, this, &APC_PlayerFox::OpenMenu);
 	PlayerInputComponent->BindAction("SpectateNextPlayer", IE_Pressed, this, &APC_PlayerFox::SpectateNextPlayer);
 	PlayerInputComponent->BindAction("SpectatePrevPlayer", IE_Pressed, this, &APC_PlayerFox::SpectatePrevPlayer);
 }
@@ -115,7 +116,7 @@ void APC_PlayerFox::PlayerSpawnCharacterSelect()
 	APlayerController* PlayerController = Cast<APlayerController>(GetWorld()->GetFirstPlayerController());
 	if (PlayerController != nullptr)
 	{
-		// if the player hasn't selected a character yet, open the character select window
+		// if the player hasn't selected and stored a character yet, open the character select window
 		if (GameInstance->GetChosenCharacter(PlayerController) == nullptr)
 		{
 			OpenSelectCharacterMenu();
@@ -885,8 +886,8 @@ void APC_PlayerFox::OpenInGameMenu()
 
 void APC_PlayerFox::OpenSelectCharacterMenu()
 {
-	const ALobbyGameMode* LobbyGameMode = dynamic_cast<ALobbyGameMode*>(GetWorld()->GetAuthGameMode());
-	if (LobbyGameMode != nullptr)
+	const ALobbyGameState* LobbyGameState = dynamic_cast<ALobbyGameState*>(GetWorld()->GetGameState());
+	if (LobbyGameState != nullptr)
 	{
 		if (GameInstance != nullptr) {
 			GameInstance->SelectCharacterLoadMenu();

@@ -15,6 +15,18 @@ class SIDESCROLLER_API AGameModePlayerController : public APlayerController
 {
 	GENERATED_BODY()
 
+public:
+	UFUNCTION(Server, Reliable)
+	void SpawnPlayer(
+		TSubclassOf<class APC_PlayerFox> PlayerBP,
+		const FString& PlayerColorStr,
+		APlayerController* PlayerController
+	);
+
+private:
+	UPROPERTY(EditAnywhere)
+	FVector PlayerSpawnDropInHeight {0.f, 0.f, 50.f};
+	
 protected:
 	virtual void BeginPlay() override;
 };

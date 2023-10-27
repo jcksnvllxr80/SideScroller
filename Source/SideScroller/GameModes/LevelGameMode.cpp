@@ -4,6 +4,8 @@
 #include "LevelGameMode.h"
 
 #include "SideScroller/SideScrollerGameInstance.h"
+#include "SideScroller/Controllers/GameModePlayerController.h"
+#include "SideScroller/GameStates/Level1GameState.h"
 
 void ALevelGameMode::BeginPlay()
 {
@@ -29,25 +31,29 @@ void ALevelGameMode::SpawnPlayerChosenCharacters()
 				USideScrollerGameInstance* GameInstance = Cast<USideScrollerGameInstance>(GetGameInstance());
 				if (GameInstance != nullptr)
 				{
-					const TSubclassOf<APC_PlayerFox> ChosenCharacterBP = GameInstance->GetChosenCharacter(
-						PlayerController
-					);
-					
-					if (ChosenCharacterBP != nullptr)
+					AGameModePlayerController* GameModePlayerController = Cast<AGameModePlayerController>(PlayerController);
+					if (GameModePlayerController != nullptr)
 					{
-						SpawnPlayer(ChosenCharacterBP, "", PlayerController);
-						UE_LOG(LogTemp, Warning,
-							TEXT("ALevelGameMode::SpawnPlayerChosenCharacters - Spawning saved chosen player char.")
-						)
-					}
-					else
-					{
-						if (DefaultCharacterBP != nullptr)
+						const TSubclassOf<APC_PlayerFox> ChosenCharacterBP = GameInstance->GetChosenCharacter(
+							PlayerController
+						);
+						
+						if (ChosenCharacterBP != nullptr)
 						{
-							SpawnPlayer(DefaultCharacterBP, "", PlayerController);
+							GameModePlayerController->SpawnPlayer(ChosenCharacterBP, "", PlayerController);
 							UE_LOG(LogTemp, Warning,
-								TEXT("ALevelGameMode::SpawnPlayerChosenCharacters - Spawning default player char.")
+								TEXT("ALevelGameMode::SpawnPlayerChosenCharacters - Spawning saved chosen player char.")
 							)
+						}
+						else
+						{
+							if (DefaultCharacterBP != nullptr)
+							{
+								GameModePlayerController->SpawnPlayer(DefaultCharacterBP, "", PlayerController);
+								UE_LOG(LogTemp, Warning,
+									TEXT("ALevelGameMode::SpawnPlayerChosenCharacters - Spawning default player char.")
+								)
+							}
 						}
 					}
 				}
