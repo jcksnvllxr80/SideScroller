@@ -75,6 +75,8 @@ void ABasePickup::OnBeginOverlapDelegate(
 		TEXT("BasePickupSound")
 	);
 
+	// dont allow this pickup to be taken more than once
+	this->PickupBox->SetGenerateOverlapEvents(false);
 	PickupFlipbook->SetFlipbook(ItemTakenAnimation);
 	GetWorld()->GetTimerManager().SetTimer(
 		this->ItemTakenTimerHandle,
