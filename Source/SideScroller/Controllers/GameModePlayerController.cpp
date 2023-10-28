@@ -55,7 +55,10 @@ void AGameModePlayerController::SpawnPlayer_Implementation(TSubclassOf<APC_Playe
 }
 
 
-bool SpawnPlayer_Validate()
-{
-	return true;                              // This will allow the RPC to be called
+bool AGameModePlayerController::SpawnPlayer_Validate(
+	TSubclassOf<APC_PlayerFox> PlayerBP,
+	const FString& PlayerColorStr,
+	APlayerController* PlayerController
+) {
+	return true;  // This will allow the RPC to be called
 }

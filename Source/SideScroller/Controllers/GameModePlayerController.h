@@ -16,7 +16,7 @@ class SIDESCROLLER_API AGameModePlayerController : public APlayerController
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(Server, Reliable)
+	UFUNCTION(Server, Reliable, WithValidation )
 	void SpawnPlayer(
 		TSubclassOf<class APC_PlayerFox> PlayerBP,
 		const FString& PlayerColorStr,
