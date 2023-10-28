@@ -275,7 +275,7 @@ TSubclassOf<APC_PlayerFox> USideScrollerGameInstance::GetChosenCharacter(APlayer
 			TEXT("USideScrollerGameInstance::GetChosenCharacter - PlayerControllerChosenCharMap is empty.")
 		)
 	} else {
-		const auto ChosenCharacter = PlayerControllerChosenCharMap.find(PlayerController->GetName());
+		const auto ChosenCharacter = PlayerControllerChosenCharMap.find(PlayerController->GetUniqueID());
 		if (ChosenCharacter == PlayerControllerChosenCharMap.end())
 		{
 			UE_LOG(LogTemp, Display,
@@ -288,10 +288,16 @@ TSubclassOf<APC_PlayerFox> USideScrollerGameInstance::GetChosenCharacter(APlayer
 	return nullptr;
 }
 
-void USideScrollerGameInstance::SetChosenCharacter(APlayerController* PlayerController,
-                                                   TSubclassOf<APC_PlayerFox> ChosenCharacter)
-{
-	this->PlayerControllerChosenCharMap.insert({PlayerController->GetName(), ChosenCharacter});
+void USideScrollerGameInstance::SetChosenCharacter(
+	APlayerController* PlayerController,
+	TSubclassOf<APC_PlayerFox> ChosenCharacter
+) {
+	UE_LOG(LogTemp, Display,
+		TEXT("USideScrollerGameInstance::SetChosenCharacter - Setting %d's chosen character as %s."),
+		PlayerController->GetUniqueID(),
+		*ChosenCharacter->GetName()
+	)
+	this->PlayerControllerChosenCharMap.insert({PlayerController->GetUniqueID(), ChosenCharacter});
 }
 
 void USideScrollerGameInstance::OnGameSessionComplete(FName SessionName, bool Success)

@@ -90,7 +90,7 @@ private:
 	void OnDestroySessionComplete(FName SessionName, bool Success);
 	void OnFindSessionsComplete(bool Success);
 	void OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
-	std::map<FString, TSubclassOf<APC_PlayerFox>> PlayerControllerChosenCharMap;
+	std::map<uint32, TSubclassOf<APC_PlayerFox>> PlayerControllerChosenCharMap;
 	FString DesiredServerName;
 	void CreateSession();
 };
