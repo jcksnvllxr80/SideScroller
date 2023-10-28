@@ -13,9 +13,11 @@ void AGameModePlayerController::BeginPlay()
 	this->SetInputMode(FInputModeGameOnly());
 }
 
-void AGameModePlayerController::SpawnPlayer_Implementation(TSubclassOf<APC_PlayerFox> PlayerBP,
-	const FString& PlayerColorStr, APlayerController* PlayerController)
-{
+void AGameModePlayerController::SpawnPlayer_Implementation(
+	TSubclassOf<APC_PlayerFox> PlayerBP,
+	const FString& PlayerColorStr,
+	APlayerController* PlayerController
+) {
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = PlayerController;
 	if (PlayerBP != nullptr)

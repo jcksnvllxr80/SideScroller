@@ -5,8 +5,6 @@
 #include "Components/Button.h"
 #include "SideScroller/Characters/Players/PC_PlayerFox.h"
 #include "SideScroller/Controllers/GameModePlayerController.h"
-#include "SideScroller/GameModes/LevelGameMode.h"
-#include "SideScroller/GameStates/LobbyGameState.h"
 
 void USelectCharacterMenu::PinkPlayerSelect()
 {
@@ -149,8 +147,8 @@ void USelectCharacterMenu::BackToGame()
 void USelectCharacterMenu::SelectPlayer(const TSubclassOf<APC_PlayerFox> PlayerBP, const FString& PlayerColorStr)
 {
 	UE_LOG(LogTemp, Display,
-		TEXT("USelectCharacterMenu::SelectPlayer - Player %s Selected the %s Player."),
-		*PlayerColorStr, *PlayerColorStr
+		TEXT("USelectCharacterMenu::SelectPlayer - Player Selected the %s Player."),
+		*PlayerColorStr
 	);
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	if (PlayerController != nullptr)

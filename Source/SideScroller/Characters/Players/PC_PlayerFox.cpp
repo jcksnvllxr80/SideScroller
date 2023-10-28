@@ -11,7 +11,6 @@
 #include "Net/UnrealNetwork.h"
 #include "SideScroller/SideScrollerGameInstance.h"
 #include "SideScroller/GameModes/LevelGameMode.h"
-#include "SideScroller/GameModes/LobbyGameMode.h"
 #include "SideScroller/GameModes/SideScrollerGameModeBase.h"
 #include "SideScroller/GameStates/LobbyGameState.h"
 
@@ -68,7 +67,6 @@ void APC_PlayerFox::BeginPlay()
 	Super::BeginPlay();
 
 	GameInstance = dynamic_cast<USideScrollerGameInstance*>(GetGameInstance());
-	PlayerSpawnCharacterSelect();
 	AddToPlayersArray();
 	PlayerHUDSetup();
 
@@ -107,21 +105,6 @@ void APC_PlayerFox::GetLifetimeReplicatedProps( TArray< FLifetimeProperty > & Ou
 	DOREPLIFETIME(APC_PlayerFox, bOnLadder);
 	DOREPLIFETIME(APC_PlayerFox, CurrentRotation);
 	// DOREPLIFETIME(APC_PlayerFox, bIsClimbing);
-}
-
-void APC_PlayerFox::PlayerSpawnCharacterSelect()
-{
-	if (GameInstance == nullptr) return;  // early return
-	
-	APlayerController* PlayerController = Cast<APlayerController>(GetWorld()->GetFirstPlayerController());
-	if (PlayerController != nullptr)
-	{
-		// if the player hasn't selected and stored a character yet, open the character select window
-		if (GameInstance->GetChosenCharacter(PlayerController) == nullptr)
-		{
-			OpenSelectCharacterMenu();
-		}
-	}
 }
 
 int APC_PlayerFox::GetAccumulatedPoints() const
@@ -870,7 +853,11 @@ void APC_PlayerFox::OpenMenu()
 		return;
 	}
 	
-	OpenSelectCharacterMenu();
+	ALobbyGameState* GameState = Cast<ALobbyGameState>(GetWorld()->GetGameState());
+	if (GameState != nullptr)
+	{
+		GameState->OpenSelectCharacterMenu();
+	}
 }
 
 void APC_PlayerFox::OpenInGameMenu()
@@ -881,20 +868,5 @@ void APC_PlayerFox::OpenInGameMenu()
 	}
 	else {
 		UE_LOG(LogTemp, Warning, TEXT("APC_PlayerFox::OpenInGameMenu - Can't open InGameMenu. GameInstance is null!"));
-	}
-}
-
-void APC_PlayerFox::OpenSelectCharacterMenu()
-{
-	const ALobbyGameState* LobbyGameState = dynamic_cast<ALobbyGameState*>(GetWorld()->GetGameState());
-	if (LobbyGameState != nullptr)
-	{
-		if (GameInstance != nullptr) {
-			GameInstance->SelectCharacterLoadMenu();
-		} else {
-			UE_LOG(LogTemp, Warning,
-				TEXT("APC_PlayerFox::OpenSelectCharacterMenu - Cant find GameInstance!")
-			);
-		}
 	}
 }

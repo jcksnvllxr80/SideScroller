@@ -16,8 +16,8 @@ class SIDESCROLLER_API ALobbyGameMode : public ASideScrollerGameModeBase
 
 public:
 	void LogPlayerCount() const;
-	void PostLogin(APlayerController* NewPlayer) override;
-	void Logout(AController* Exiting) override;
+	virtual void PostLogin(APlayerController* NewPlayer) override;
+	virtual void Logout(AController* Exiting) override;
 
 	UFUNCTION(BlueprintCallable)
 	void GetNumPlayersToStart();

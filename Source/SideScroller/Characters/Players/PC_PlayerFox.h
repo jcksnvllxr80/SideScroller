@@ -109,7 +109,6 @@ public:
 	void SpectatePrevPlayer();
 	
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
-	void PlayerSpawnCharacterSelect();
 
 	virtual void BeginPlay() override;
 
@@ -283,9 +282,6 @@ private:
 	
 	UFUNCTION(BlueprintCallable)
 	void OpenInGameMenu();
-
-	UFUNCTION(BlueprintCallable)
-	void OpenSelectCharacterMenu();
 
 	UFUNCTION(BlueprintCallable)
 	void DoWalkAnimAndSound();
