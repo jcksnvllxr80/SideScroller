@@ -83,19 +83,44 @@ void AGameModePlayerController::SpawnPlayer_Implementation(
 			TEXT("AGameModePlayerController::SpawnPlayer_Implementation - Cant save chosen char. No GameInstance")
 		);
 	}
-
+	
+	APawn* PlayerControllerPawn = PlayerController->GetPawn();
+	if (PlayerControllerPawn == nullptr)
+	{
+		UE_LOG(LogTemp, Error,
+			TEXT("AGameModePlayerController::SpawnPlayer_Implementation - Cant spawn new pawn. %s's pawn not found."),
+			*PlayerController->GetName()
+		);
+		return;
+	}
+	
 	APC_PlayerFox* NewCharacter = World->SpawnActor<APC_PlayerFox>(
 		PlayerBP->GetDefaultObject()->GetClass(),
-		PlayerController->GetPawn()->GetActorLocation() + PlayerSpawnDropInHeight,
-		PlayerController->GetPawn()->GetActorRotation(),
+		PlayerControllerPawn->GetActorLocation() + PlayerSpawnDropInHeight,
+		PlayerControllerPawn->GetActorRotation(),
 		SpawnParams
 	);
 	
 	if (NewCharacter)
 	{
-		APawn* PawnToBeReplaced = PlayerController->GetPawn();
+		APawn* PawnToBeReplaced = PlayerControllerPawn;
+
+		UE_LOG(LogTemp, Display,
+			TEXT("AGameModePlayerController::SpawnPlayer_Implementation - PlayerController, %s, unpossessing old pawn"),
+			*PlayerController->GetName()
+		);
 		PlayerController->UnPossess();
+
+		UE_LOG(LogTemp, Display,
+			TEXT("AGameModePlayerController::SpawnPlayer_Implementation - PlayerController, %s, possessing new pawn"),
+			*PlayerController->GetName()
+		);
 		PlayerController->Possess(NewCharacter);
+
+		UE_LOG(LogTemp, Display,
+			TEXT("AGameModePlayerController::SpawnPlayer_Implementation - PlayerController, %s, destorying old Pawn"),
+			*PlayerController->GetName()
+		);
 		if (PawnToBeReplaced) PawnToBeReplaced->Destroy();
 	}
 }
