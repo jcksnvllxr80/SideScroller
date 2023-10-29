@@ -148,7 +148,7 @@ void USelectCharacterMenu::BackToGame()
 void USelectCharacterMenu::SelectPlayer(const TSubclassOf<APC_PlayerFox> PlayerBP, const FString& PlayerColorStr)
 {
 	UE_LOG(LogTemp, Display,
-		TEXT("USelectCharacterMenu::SelectPlayer - Player Selected the %s Player."),
+		TEXT("USelectCharacterMenu::SelectPlayer - Player Selected the %s player character."),
 		*PlayerColorStr
 	);
 

@@ -19,6 +19,7 @@ public:
 	TSubclassOf<APC_PlayerFox> DefaultCharacterBP = nullptr;
 
 private:
+	bool LocateChosenCharacter(FConstPlayerControllerIterator Iter);
 	void SpawnPlayerChosenCharacters();
 	
 protected:

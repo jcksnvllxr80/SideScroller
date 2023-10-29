@@ -7,6 +7,13 @@
 #include "SideScroller/Characters/Players/PC_PlayerFox.h"
 #include "SideScroller/GameModes/LobbyGameMode.h"
 
+void AGameModePlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+	this->SetShowMouseCursor(false);
+	this->SetInputMode(FInputModeGameOnly());
+}
+
 void AGameModePlayerController::TravelToLevel_Implementation()
 {
 	USideScrollerGameInstance* GameInstance = dynamic_cast<USideScrollerGameInstance*>(GetGameInstance());
@@ -38,13 +45,6 @@ bool AGameModePlayerController::TravelToLevel_Validate()
 	return true;  // This will allow the RPC to be called
 }
 
-void AGameModePlayerController::BeginPlay()
-{
-	Super::BeginPlay();
-	this->SetShowMouseCursor(false);
-	this->SetInputMode(FInputModeGameOnly());
-}
-
 void AGameModePlayerController::SpawnPlayer_Implementation(
 	TSubclassOf<APC_PlayerFox> PlayerBP,
 	const FString& PlayerColorStr,
@@ -52,39 +52,51 @@ void AGameModePlayerController::SpawnPlayer_Implementation(
 ) {
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = PlayerController;
-	if (PlayerBP != nullptr)
+	if (PlayerBP == nullptr)
 	{
-		if (USideScrollerGameInstance* SideScrollerGameInstance =
-			Cast<USideScrollerGameInstance>(GetWorld()->GetGameInstance());
-			SideScrollerGameInstance != nullptr
-		) {
-			SideScrollerGameInstance->SetChosenCharacter(PlayerController, PlayerBP);
-		} else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("ASideScrollerGameModeBase::SpawnPlayer - Cant find GameInstance"))
-		}
-		
-		APC_PlayerFox* NewCharacter = GetWorld()->SpawnActor<APC_PlayerFox>(
-			PlayerBP->GetDefaultObject()->GetClass(),
-			PlayerController->GetPawn()->GetActorLocation() + PlayerSpawnDropInHeight,
-			PlayerController->GetPawn()->GetActorRotation(),
-			SpawnParams
+		UE_LOG(LogTemp, Error,
+			   TEXT("AGameModePlayerController::SpawnPlayer_Implementation - Not spawning %s char. No %sPlayerBP."),
+			   *PlayerColorStr
 		);
-		
-		if (NewCharacter)
-		{
-			APawn* PawnToBeReplaced = PlayerController->GetPawn();
-			PlayerController->UnPossess();
-			PlayerController->Possess(NewCharacter);
-			if (PawnToBeReplaced) PawnToBeReplaced->Destroy();
-		}
+		return;
+	}
+
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		UE_LOG(LogTemp, Error,
+			TEXT("AGameModePlayerController::SpawnPlayer_Implementation - Not spawning %s character. Cant find World."),
+			*PlayerController->GetName()
+		)
+		return;  // dont go any further, cant find world
+	}
+	
+	if (USideScrollerGameInstance* SideScrollerGameInstance =
+		Cast<USideScrollerGameInstance>(World->GetGameInstance());
+		SideScrollerGameInstance != nullptr
+	) {
+		SideScrollerGameInstance->SetChosenCharacter(PlayerController, PlayerBP);
 	}
 	else
 	{
 		UE_LOG(LogTemp, Error,
-			   TEXT("ASideScrollerGameModeBase::SpawnPlayer - Select %s Character Failed! No %sPlayerBP."),
-			   *PlayerColorStr, *PlayerColorStr
+			TEXT("AGameModePlayerController::SpawnPlayer_Implementation - Cant save chosen char. No GameInstance")
 		);
+	}
+
+	APC_PlayerFox* NewCharacter = World->SpawnActor<APC_PlayerFox>(
+		PlayerBP->GetDefaultObject()->GetClass(),
+		PlayerController->GetPawn()->GetActorLocation() + PlayerSpawnDropInHeight,
+		PlayerController->GetPawn()->GetActorRotation(),
+		SpawnParams
+	);
+	
+	if (NewCharacter)
+	{
+		APawn* PawnToBeReplaced = PlayerController->GetPawn();
+		PlayerController->UnPossess();
+		PlayerController->Possess(NewCharacter);
+		if (PawnToBeReplaced) PawnToBeReplaced->Destroy();
 	}
 }
 
@@ -136,7 +148,7 @@ void AGameModePlayerController::CheckGameStartReqs_Implementation()
 	}
 
 	UE_LOG(LogTemp, Display,
-		TEXT("AGameModePlayerController::CheckGameStartReqs_Implementation - Start game, players ready.")
+		TEXT("AGameModePlayerController::CheckGameStartReqs_Implementation - Player Prereqs met, game can start.")
 	)
 	GameInstance->SetReadyToStartGame(true);
 }

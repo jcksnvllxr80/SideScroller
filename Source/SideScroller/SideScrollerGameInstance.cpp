@@ -274,7 +274,7 @@ TSubclassOf<APC_PlayerFox> USideScrollerGameInstance::GetChosenCharacter(APlayer
 			TEXT("USideScrollerGameInstance::GetChosenCharacter - PlayerControllerChosenCharMap is empty.")
 		)
 	} else {
-		const auto ChosenCharacter = PlayerControllerChosenCharMap.find(PlayerController->GetPlatformUserId());
+		const auto ChosenCharacter = PlayerControllerChosenCharMap.find(PlayerController->GetName());
 		if (ChosenCharacter == PlayerControllerChosenCharMap.end())
 		{
 			UE_LOG(LogTemp, Display,
@@ -292,11 +292,11 @@ void USideScrollerGameInstance::SetChosenCharacter(
 	TSubclassOf<APC_PlayerFox> ChosenCharacter
 ) {
 	UE_LOG(LogTemp, Display,
-		TEXT("USideScrollerGameInstance::SetChosenCharacter - Setting %d's chosen character as %s."),
-		int(PlayerController->GetPlatformUserId()),
+		TEXT("USideScrollerGameInstance::SetChosenCharacter - Setting %s's chosen character as %s."),
+		*PlayerController->GetName(),
 		*ChosenCharacter->GetName()
 	)
-	this->PlayerControllerChosenCharMap.insert({PlayerController->GetPlatformUserId(), ChosenCharacter});
+	this->PlayerControllerChosenCharMap.insert({PlayerController->GetName(), ChosenCharacter});
 }
 
 bool USideScrollerGameInstance::IsEveryPlayersCharacterChosen() const
@@ -327,7 +327,7 @@ void USideScrollerGameInstance::OnGameSessionComplete(FName SessionName, bool Su
 
 	UWorld* World = GetWorld();
 	if (!World) return;
-	World->ServerTravel("/Game/Maps/Lobby?listen");
+	World->ServerTravel("/Game/Maps/Map_Lobby?listen");
 }
 
 void USideScrollerGameInstance::OnDestroySessionComplete(FName SessionName, bool Success)
