@@ -9,7 +9,14 @@
 void ALevelGameMode::BeginPlay()
 {
 	Super::BeginPlay();
-	SpawnPlayerChosenCharacters();
+
+	GetWorld()->GetTimerManager().SetTimer(
+		this->SpawnPlayerChosenCharDelayTimerHandle,
+		this,
+		&ALevelGameMode::SpawnPlayerChosenCharacters,
+		SpawnPlayerChosenCharDelayTimer,
+		false
+	);
 }
 
 bool ALevelGameMode::LocateChosenCharacter(FConstPlayerControllerIterator Iter)

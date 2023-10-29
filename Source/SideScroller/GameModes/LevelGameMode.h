@@ -21,7 +21,12 @@ public:
 private:
 	bool LocateChosenCharacter(FConstPlayerControllerIterator Iter);
 	void SpawnPlayerChosenCharacters();
+
+	UPROPERTY(EditAnywhere)
+	float SpawnPlayerChosenCharDelayTimer = 0.05;
 	
+	FTimerHandle SpawnPlayerChosenCharDelayTimerHandle;
+
 protected:
 	virtual void BeginPlay() override;
 };

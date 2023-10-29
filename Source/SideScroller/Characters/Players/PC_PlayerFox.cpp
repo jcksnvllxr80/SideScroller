@@ -366,7 +366,7 @@ void APC_PlayerFox::DoWalkAnimAndSound()
 		this->GetSprite()->SetFlipbook(RunAnimation);
 	}
 			
-	if (this->GetSprite()->GetPlaybackPositionInFrames() % 12 == 0) {
+	if (this->GetSprite()->GetPlaybackPositionInFrames() % this->FramesPerStep == 0) {
 		// UE_LOG(LogTemp, VeryVerbose, TEXT("Playing %s's walking sound!"), *this->GetName());
 		UGameplayStatics::SpawnSoundAttached(
 			this->WalkSound,

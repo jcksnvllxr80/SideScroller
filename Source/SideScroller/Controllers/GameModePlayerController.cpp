@@ -118,7 +118,7 @@ void AGameModePlayerController::SpawnPlayer_Implementation(
 		PlayerController->Possess(NewCharacter);
 
 		UE_LOG(LogTemp, Display,
-			TEXT("AGameModePlayerController::SpawnPlayer_Implementation - PlayerController, %s, destorying old Pawn"),
+			TEXT("AGameModePlayerController::SpawnPlayer_Implementation - PlayerController, %s, destroying old Pawn"),
 			*PlayerController->GetName()
 		);
 		if (PawnToBeReplaced) PawnToBeReplaced->Destroy();

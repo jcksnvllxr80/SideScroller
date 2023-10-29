@@ -161,6 +161,9 @@ private:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UUserWidget> WidgetPlayerHUD;
 
+	UPROPERTY(EditAnywhere)
+	int32 FramesPerStep = 12;
+	
 	UPROPERTY(EditAnywhere, replicated)
 	UUserWidget* WidgetPlayerHUDInstance;
 	

@@ -216,7 +216,6 @@ void ABasePaperCharacter::PrepProjectileLaunch(bool bIsPLayer = true)
 		Direction = -1.f;
 	}
 	
-	// UE_LOG(LogTemp, Display, TEXT("Fire!"));
 	if (ProjectileClass)
 	{
 		const FVector ProjectileSpawnLocation = ProjectileSpawnPoint->GetComponentLocation();
@@ -226,6 +225,7 @@ void ABasePaperCharacter::PrepProjectileLaunch(bool bIsPLayer = true)
 			ProjectileSpawnLocation,
 			ProjectileSpawnRotation
 		);
+		
 		TempProjectile->SetOwner(this);
 		TempProjectile->LaunchProjectile(Direction);
 		UE_LOG(
