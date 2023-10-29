@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "MenuWidget.h"
 #include "SideScroller/SideScrollerGameInstance.h"
+#include "SideScroller/Controllers/GameModePlayerController.h"
 #include "SelectCharacterMenu.generated.h"
 
 class APC_PlayerFox;
@@ -88,4 +89,15 @@ private:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void BackToGame();
+	bool WriteLaunchWarningOnScreen(APlayerController* PlayerController);
+
+	UFUNCTION(BlueprintCallable)
+	static void CheckStartReadinessDelay(AGameModePlayerController* GameModePlayerController);
+
+	UPROPERTY(EditAnywhere)
+	float CheckStartReadinessDelayTimer = 2.0;
+	
+	FTimerHandle CheckStartReadinessDelayTimerHandle;
+	
+	FTimerDelegate CheckStartReadinessDelayTimerDelegate;
 };

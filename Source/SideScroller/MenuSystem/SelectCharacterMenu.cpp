@@ -145,6 +145,30 @@ void USelectCharacterMenu::BackToGame()
 	GetWorld()->GetFirstPlayerController()->SetPause(false);
 }
 
+bool USelectCharacterMenu::WriteLaunchWarningOnScreen(APlayerController* PlayerController)
+{
+	USideScrollerGameInstance* GameInstance = Cast<USideScrollerGameInstance>(GetWorld()->GetGameInstance());
+	if (GameInstance != nullptr)
+	{
+		UEngine* Engine = GameInstance->GetEngine();
+		if (!Engine) return true;
+		Engine->AddOnScreenDebugMessage(0,
+            CheckStartReadinessDelayTimer,
+            FColor::Green,
+            TEXT("USelectCharacterMenu::SelectPlayer - Checking to see if all players are ready, if so "
+                "the game will be launching in a few seconds"
+            )
+		);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning,
+		       TEXT("USelectCharacterMenu::SelectPlayer - Can't show onscreen message. GameInstance is null!")
+		);
+	}
+	return false;
+}
+
 void USelectCharacterMenu::SelectPlayer(const TSubclassOf<APC_PlayerFox> PlayerBP, const FString& PlayerColorStr)
 {
 	UE_LOG(LogTemp, Display,
@@ -173,6 +197,25 @@ void USelectCharacterMenu::SelectPlayer(const TSubclassOf<APC_PlayerFox> PlayerB
 
 	GameModePlayerController->SpawnPlayer(PlayerBP, PlayerColorStr, PlayerController);
 	BackToGame();
+
+	CheckStartReadinessDelayTimerDelegate.BindUFunction(
+		this,
+		FName("CheckStartReadinessDelay"),
+		GameModePlayerController
+	);
+	
+	GetWorld()->GetTimerManager().SetTimer(
+		this->CheckStartReadinessDelayTimerHandle,
+		CheckStartReadinessDelayTimerDelegate,
+		CheckStartReadinessDelayTimer,
+		false
+	);
+
+	if (WriteLaunchWarningOnScreen(PlayerController)) return;
+}
+
+void USelectCharacterMenu::CheckStartReadinessDelay(AGameModePlayerController* GameModePlayerController)
+{
 	GameModePlayerController->CheckGameStartReqs();
 	GameModePlayerController->TravelToLevel();
 }
