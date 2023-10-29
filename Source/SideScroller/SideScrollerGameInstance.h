@@ -9,6 +9,7 @@
 #include "Interfaces/MenuInterface.h"
 #include "OnlineSessionSettings.h"
 #include "OnlineSubsystem.h"
+#include "GameModes/LobbyGameMode.h"
 #include "Interfaces/OnlineSessionInterface.h"
 #include "SidescrollerGameInstance.generated.h"
 
@@ -76,6 +77,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetChosenCharacter(APlayerController* PlayerController, TSubclassOf<APC_PlayerFox> ChosenCharacter);
 
+	UFUNCTION(BlueprintCallable)
+	bool IsEveryPlayersCharacterChosen() const;
+
+	UFUNCTION(BlueprintCallable)
+	void SetReadyToStartGame(bool bCond);
+
+	UFUNCTION(BlueprintCallable)
+	bool IsReadyToStartGame();
+
 private:
 	TSubclassOf<class UUserWidget> MainMenuClass = nullptr;
 	TSubclassOf<class UUserWidget> InGameMenuClass = nullptr;
@@ -86,11 +96,12 @@ private:
 	IOnlineSessionPtr SessionInterface;
 	TSharedPtr<class FOnlineSessionSearch> GameSessionSearch;
 	int NumPlayers = 1;
+	bool bReadyToStartGame = false;
 	void OnGameSessionComplete(FName SessionName, bool Success);
 	void OnDestroySessionComplete(FName SessionName, bool Success);
 	void OnFindSessionsComplete(bool Success);
 	void OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
-	std::map<uint32, TSubclassOf<APC_PlayerFox>> PlayerControllerChosenCharMap;
+	std::map<FPlatformUserId, TSubclassOf<APC_PlayerFox>> PlayerControllerChosenCharMap;
 	FString DesiredServerName;
 	void CreateSession();
 };

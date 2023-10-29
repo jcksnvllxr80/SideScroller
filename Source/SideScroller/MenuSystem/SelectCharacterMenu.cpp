@@ -3,6 +3,7 @@
 
 #include "SelectCharacterMenu.h"
 #include "Components/Button.h"
+#include "SideScroller/SideScrollerGameInstance.h"
 #include "SideScroller/Characters/Players/PC_PlayerFox.h"
 #include "SideScroller/Controllers/GameModePlayerController.h"
 
@@ -150,28 +151,28 @@ void USelectCharacterMenu::SelectPlayer(const TSubclassOf<APC_PlayerFox> PlayerB
 		TEXT("USelectCharacterMenu::SelectPlayer - Player Selected the %s Player."),
 		*PlayerColorStr
 	);
+
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	if (PlayerController != nullptr)
-	{
-		AGameModePlayerController* GameModePlayerController = Cast<AGameModePlayerController>(PlayerController);
-		if (GameModePlayerController != nullptr)
-		{
-			GameModePlayerController->SpawnPlayer(PlayerBP, PlayerColorStr, PlayerController);
-			BackToGame();
-		}
-		else
-		{
-			UE_LOG(LogTemp, Error,
-				TEXT("USelectCharacterMenu::SelectPlayer - Select %s Character Failed! No GameState."),
-				*PlayerColorStr
-			);
-		}
-	}
-	else
+	if (PlayerController == nullptr)
 	{
 		UE_LOG(LogTemp, Error,
 			TEXT("USelectCharacterMenu::SelectPlayer - Select %s Character Failed! No PlayerController."),
 			*PlayerColorStr
 		);
 	}
+
+	AGameModePlayerController* GameModePlayerController = Cast<AGameModePlayerController>(PlayerController);
+	if (GameModePlayerController == nullptr)
+	{
+		UE_LOG(LogTemp, Warning,
+			TEXT("USelectCharacterMenu::SelectPlayer - Select %s character failed! No GameModePlayerController."),
+			*PlayerColorStr
+		);
+		return;
+	}
+
+	GameModePlayerController->SpawnPlayer(PlayerBP, PlayerColorStr, PlayerController);
+	BackToGame();
+	GameModePlayerController->CheckGameStartReqs();
+	GameModePlayerController->TravelToLevel();
 }

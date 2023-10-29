@@ -11,7 +11,6 @@
 #include "Engine/Engine.h"
 #include "GameFramework/GameModeBase.h"
 #include "GameModes/LevelGameMode.h"
-#include "GameModes/LobbyGameMode.h"
 #include "Interfaces/OnlineSessionInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "MenuSystem/MainMenu.h"
@@ -220,7 +219,7 @@ void USideScrollerGameInstance::SelectCharacterLoadMenu()
 {
 	if (SelectCharacterMenuClass)
 	{
-		UE_LOG(LogTemp, Display, TEXT("Found InGame Menu blueprint class %s."), *SelectCharacterMenuClass->GetName());
+		UE_LOG(LogTemp, Display, TEXT("Found SelectCharacter Menu blueprint class %s."), *SelectCharacterMenuClass->GetName());
 		if (UMenuWidget* SelectCharacterMenu = CreateWidget<UMenuWidget>(this, SelectCharacterMenuClass))
 		{
 			SelectCharacterMenu->Setup();
@@ -275,7 +274,7 @@ TSubclassOf<APC_PlayerFox> USideScrollerGameInstance::GetChosenCharacter(APlayer
 			TEXT("USideScrollerGameInstance::GetChosenCharacter - PlayerControllerChosenCharMap is empty.")
 		)
 	} else {
-		const auto ChosenCharacter = PlayerControllerChosenCharMap.find(PlayerController->GetUniqueID());
+		const auto ChosenCharacter = PlayerControllerChosenCharMap.find(PlayerController->GetPlatformUserId());
 		if (ChosenCharacter == PlayerControllerChosenCharMap.end())
 		{
 			UE_LOG(LogTemp, Display,
@@ -294,10 +293,25 @@ void USideScrollerGameInstance::SetChosenCharacter(
 ) {
 	UE_LOG(LogTemp, Display,
 		TEXT("USideScrollerGameInstance::SetChosenCharacter - Setting %d's chosen character as %s."),
-		PlayerController->GetUniqueID(),
+		int(PlayerController->GetPlatformUserId()),
 		*ChosenCharacter->GetName()
 	)
-	this->PlayerControllerChosenCharMap.insert({PlayerController->GetUniqueID(), ChosenCharacter});
+	this->PlayerControllerChosenCharMap.insert({PlayerController->GetPlatformUserId(), ChosenCharacter});
+}
+
+bool USideScrollerGameInstance::IsEveryPlayersCharacterChosen() const
+{
+	return (this->PlayerControllerChosenCharMap.size() >= GetNumPlayersToStartGame()) ? true : false;
+}
+
+void USideScrollerGameInstance::SetReadyToStartGame(bool bCond)
+{
+	this->bReadyToStartGame = bCond;
+}
+
+bool USideScrollerGameInstance::IsReadyToStartGame()
+{
+	return this->bReadyToStartGame;
 }
 
 void USideScrollerGameInstance::OnGameSessionComplete(FName SessionName, bool Success)

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "MenuWidget.h"
+#include "SideScroller/SideScrollerGameInstance.h"
 #include "SelectCharacterMenu.generated.h"
 
 class APC_PlayerFox;
@@ -87,5 +88,4 @@ private:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void BackToGame();
-	
 };

@@ -5,27 +5,47 @@
 
 #include "SideScroller/SideScrollerGameInstance.h"
 
+void ALobbyGameMode::StartGame()
+{
+	USideScrollerGameInstance* GameInstance = Cast<USideScrollerGameInstance>(GetWorld()->GetGameInstance());
+	if (GameInstance == nullptr)
+	{
+		UE_LOG(LogTemp, Warning,
+			TEXT("ALobbyGameMode::StartGame - Can't set SetReadyToStartGame back to false. GameInstance is null!")
+		);
+		return;
+	}
+	GameInstance->SetReadyToStartGame(false);
+
+	UE_LOG(LogTemp, Display, TEXT("Leaving lobby to start game..."));
+	UWorld* World = GetWorld();
+	if (!World) return;
+	bUseSeamlessTravel = true;
+	World->ServerTravel("/Game/Maps/Map_Level1?listen");
+}
+
 void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 	++NumberOfPlayers;
-	GetNumPlayersToStart();
+	SetNumPlayersToStart();
 	LogPlayerCount();
 	EnablePlayerGameModeInput(NewPlayer);
 	
 	if(NumberOfPlayers >= MinPlayersToStartGame)
 	{
-		UE_LOG(LogTemp, Display, TEXT("Leaving lobby to start game..."));
-		UWorld* World = GetWorld();
-		if (!World) return;
-		bUseSeamlessTravel = true;
-		World->ServerTravel("/Game/Maps/Map_Level1?listen");
+		bNumPlayersRequirementFulfilled = true;
 	}
 }
 
 void ALobbyGameMode::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+bool ALobbyGameMode::IsNumPlayersRequirementFulfilled() const
+{
+	return bNumPlayersRequirementFulfilled;
 }
 
 void ALobbyGameMode::Logout(AController* Exiting)
@@ -35,7 +55,7 @@ void ALobbyGameMode::Logout(AController* Exiting)
 	LogPlayerCount();
 }
 
-void ALobbyGameMode::GetNumPlayersToStart()
+void ALobbyGameMode::SetNumPlayersToStart()
 {
 	const USideScrollerGameInstance* GameInstance = Cast<USideScrollerGameInstance>(GetWorld()->GetGameInstance());
 	if (GameInstance != nullptr)
