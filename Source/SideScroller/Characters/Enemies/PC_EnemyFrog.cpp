@@ -76,6 +76,10 @@ void APC_EnemyFrog::UpdateAnimation()
 
 void APC_EnemyFrog::Jump()
 {
+	// dont jump if already dead. this action is on a timer so it was started
+	// right after the previous jump. this check is necessary
+	if (this->IsDead()) return; 
+	
 	Super::Jump();
 
 	this->GetSprite()->SetFlipbook(JumpAnimation);
