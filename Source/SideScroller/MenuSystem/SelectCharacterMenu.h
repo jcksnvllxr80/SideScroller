@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <map>
+
 #include "CoreMinimal.h"
 #include "MenuWidget.h"
 #include "SideScroller/SideScrollerGameInstance.h"
@@ -54,6 +56,9 @@ protected:
 	
 	UFUNCTION()
 	void BlackPlayerSelect();
+
+	UFUNCTION()
+	void UpdateSelectedCharacterButtons();
 	
 	virtual bool Initialize() override;
 	
@@ -100,4 +105,6 @@ private:
 	FTimerHandle CheckStartReadinessDelayTimerHandle;
 	
 	FTimerDelegate CheckStartReadinessDelayTimerDelegate;
+
+	std::map<FString, UButton*> CharacterColorButtonMap;
 };
