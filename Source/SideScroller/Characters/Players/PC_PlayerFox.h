@@ -85,7 +85,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float SlideAngleDeg = 15.f;
 
-
 	UFUNCTION(BlueprintCallable)
 	void TakeMoney(int MonetaryValue);
 
@@ -110,7 +109,7 @@ public:
 	void SpectatePrevPlayer();
 	
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
-	
+
 	virtual void BeginPlay() override;
 
 	virtual void Jump() override;
@@ -162,6 +161,9 @@ private:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UUserWidget> WidgetPlayerHUD;
 
+	UPROPERTY(EditAnywhere)
+	int32 FramesPerStep = 12;
+	
 	UPROPERTY(EditAnywhere, replicated)
 	UUserWidget* WidgetPlayerHUDInstance;
 	
@@ -278,6 +280,9 @@ private:
 	UFUNCTION(BlueprintCallable)
 	void LogLocation();
 
+	UFUNCTION(BlueprintCallable)
+	void OpenMenu();
+	
 	UFUNCTION(BlueprintCallable)
 	void OpenInGameMenu();
 

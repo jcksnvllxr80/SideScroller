@@ -6,17 +6,18 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
-#include "GameFramework/PlayerState.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "SideScroller/SideScrollerGameInstance.h"
+#include "SideScroller/GameModes/LevelGameMode.h"
 #include "SideScroller/GameModes/SideScrollerGameModeBase.h"
+#include "SideScroller/GameStates/LobbyGameState.h"
 
 APC_PlayerFox::APC_PlayerFox()
 {
 	PrimaryActorTick.bCanEverTick = true;
-
+	
 	CameraArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraArm->SetupAttachment(RootComponent);
 	CameraArm->SetWorldLocationAndRotation(
@@ -56,7 +57,7 @@ void APC_PlayerFox::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAction("Shoot", IE_Pressed, this, &APC_PlayerFox::Shoot);
 	PlayerInputComponent->BindAction("Run", IE_Pressed, this, &APC_PlayerFox::SetRunVelocity);
 	PlayerInputComponent->BindAction("Run", IE_Released, this, &APC_PlayerFox::SetWalkVelocity);
-	PlayerInputComponent->BindAction("InGameMenu", IE_Pressed, this, &APC_PlayerFox::OpenInGameMenu);
+	PlayerInputComponent->BindAction("InGameContextMenu", IE_Pressed, this, &APC_PlayerFox::OpenMenu);
 	PlayerInputComponent->BindAction("SpectateNextPlayer", IE_Pressed, this, &APC_PlayerFox::SpectateNextPlayer);
 	PlayerInputComponent->BindAction("SpectatePrevPlayer", IE_Pressed, this, &APC_PlayerFox::SpectatePrevPlayer);
 }
@@ -65,6 +66,7 @@ void APC_PlayerFox::BeginPlay()
 {
 	Super::BeginPlay();
 
+	GameInstance = dynamic_cast<USideScrollerGameInstance*>(GetGameInstance());
 	AddToPlayersArray();
 	PlayerHUDSetup();
 
@@ -276,14 +278,15 @@ void APC_PlayerFox::Spectate() const
 		return;
 	}
 
-	try
-	{
-		PlayerController->SetViewTargetWithBlend(SpectableActor);
-	}
-	catch (...)
-	{
-		UE_LOG(LogTemp, Error, TEXT("APC_PlayerFox::Spectate - Catch block - cant SetViewTargetWithBlend"))
-	}
+	PlayerController->SetViewTargetWithBlend(SpectableActor);
+	// try
+	// {
+	// 	PlayerController->SetViewTargetWithBlend(SpectableActor);
+	// }
+	// catch (...)
+	// {
+	// 	UE_LOG(LogTemp, Error, TEXT("APC_PlayerFox::Spectate - Catch block - cant SetViewTargetWithBlend"))
+	// }
 }
 
 void APC_PlayerFox::SpectatePrevPlayer()
@@ -343,7 +346,7 @@ void APC_PlayerFox::PlayerDeath()
 		
 		ReviveAtCheckpoint();
 	} else {
-		RemoveFromPlayersArray();
+		this->RemoveFromPlayersArray();
 		this->DoDeath();
 
 		this->bIsOutOfLives = true;
@@ -363,7 +366,7 @@ void APC_PlayerFox::DoWalkAnimAndSound()
 		this->GetSprite()->SetFlipbook(RunAnimation);
 	}
 			
-	if (this->GetSprite()->GetPlaybackPositionInFrames() % 12 == 0) {
+	if (this->GetSprite()->GetPlaybackPositionInFrames() % this->FramesPerStep == 0) {
 		// UE_LOG(LogTemp, VeryVerbose, TEXT("Playing %s's walking sound!"), *this->GetName());
 		UGameplayStatics::SpawnSoundAttached(
 			this->WalkSound,
@@ -412,8 +415,10 @@ void APC_PlayerFox::RemoveFromPlayersArray()
 
 void APC_PlayerFox::PlayerHUDSetup()
 {
-	this->WidgetPlayerHUDInstance = CreateWidget<UUserWidget>(GetWorld(), WidgetPlayerHUD);
-	this->WidgetPlayerHUDInstance->AddToViewport();
+	if (WidgetPlayerHUD) {
+		this->WidgetPlayerHUDInstance = CreateWidget<UUserWidget>(GetWorld(), WidgetPlayerHUD);
+		this->WidgetPlayerHUDInstance->AddToViewport();
+	}
 }
 
 void APC_PlayerFox::PlayerHUDTeardown()
@@ -430,6 +435,7 @@ void APC_PlayerFox::PlayerHUDTeardown()
 
 void APC_PlayerFox::DeathCleanUp()
 {
+	this->RemoveFromPlayersArray();
 	this->PlayerHUDTeardown();
 	this->MoveSpectatorsToNewPlayer();
 }
@@ -839,14 +845,29 @@ void APC_PlayerFox::LogLocation()
 	UE_LOG(LogTemp, VeryVerbose, TEXT("%s's location is %s!"), *this->GetName(), *this->GetActorLocation().ToString());
 }
 
+void APC_PlayerFox::OpenMenu()
+{
+	const ALevelGameMode* LevelGameMode = dynamic_cast<ALevelGameMode*>(GetWorld()->GetAuthGameMode());
+	if (LevelGameMode != nullptr)
+	{
+		OpenInGameMenu();
+		return;
+	}
+	
+	ALobbyGameState* GameState = Cast<ALobbyGameState>(GetWorld()->GetGameState());
+	if (GameState != nullptr)
+	{
+		GameState->OpenSelectCharacterMenu();
+	}
+}
+
 void APC_PlayerFox::OpenInGameMenu()
 {
-	GameInstance = dynamic_cast<USideScrollerGameInstance*>(GetGameInstance());
 	if (GameInstance != nullptr) {
 		GetWorld()->GetFirstPlayerController()->SetPause(true);
 		GameInstance->InGameLoadMenu();
 	}
 	else {
-		UE_LOG(LogTemp, Warning, TEXT("Can't open InGameMenu!"));
+		UE_LOG(LogTemp, Warning, TEXT("APC_PlayerFox::OpenInGameMenu - Can't open InGameMenu. GameInstance is null!"));
 	}
 }

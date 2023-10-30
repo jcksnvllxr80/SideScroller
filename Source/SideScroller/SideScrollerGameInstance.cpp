@@ -11,7 +11,6 @@
 #include "Engine/Engine.h"
 #include "GameFramework/GameModeBase.h"
 #include "GameModes/LevelGameMode.h"
-#include "GameModes/LobbyGameMode.h"
 #include "Interfaces/OnlineSessionInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "MenuSystem/MainMenu.h"
@@ -35,6 +34,12 @@ USideScrollerGameInstance::USideScrollerGameInstance(const FObjectInitializer & 
 	ConstructorHelpers::FClassFinder<UUserWidget> GameOverMenuBPClass(TEXT("/Game/MenuSystem/WBP_GameOverMenu"));
 	if (!GameOverMenuBPClass.Class) return;
 	GameOverMenuClass = GameOverMenuBPClass.Class;
+
+	ConstructorHelpers::FClassFinder<UUserWidget> SelectCharacterMenuBPClass(
+		TEXT("/Game/MenuSystem/WBP_SelectCharacterMenu")
+	);
+	if (!SelectCharacterMenuBPClass.Class) return;
+	SelectCharacterMenuClass = SelectCharacterMenuBPClass.Class;
 }
 
 void USideScrollerGameInstance::Init()
@@ -210,6 +215,29 @@ void USideScrollerGameInstance::InGameLoadMenu()
 	}
 }
 
+void USideScrollerGameInstance::SelectCharacterLoadMenu()
+{
+	if (SelectCharacterMenuClass)
+	{
+		UE_LOG(LogTemp, Display, TEXT("Found SelectCharacter Menu blueprint class %s."), *SelectCharacterMenuClass->GetName());
+		if (UMenuWidget* SelectCharacterMenu = CreateWidget<UMenuWidget>(this, SelectCharacterMenuClass))
+		{
+			SelectCharacterMenu->Setup();
+			SelectCharacterMenu->SetMenuInterface(this);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Cant create UMenuWidget Menu from SelectCharacter menu blueprint class."));
+			return;
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Cant find the SelectCharacter Menu blueprint class."));
+		return;
+	}
+}
+
 void USideScrollerGameInstance::GameOverLoadMenu()
 {
 	if (GameOverMenuClass)
@@ -238,6 +266,54 @@ int USideScrollerGameInstance::GetNumPlayersToStartGame() const
 	return NumPlayers;
 }
 
+TSubclassOf<APC_PlayerFox> USideScrollerGameInstance::GetChosenCharacter(APlayerController* PlayerController)
+{
+	if (PlayerControllerChosenCharMap.empty())
+	{
+		UE_LOG(LogTemp, Display,
+			TEXT("USideScrollerGameInstance::GetChosenCharacter - PlayerControllerChosenCharMap is empty.")
+		)
+	} else {
+		const auto ChosenCharacter = PlayerControllerChosenCharMap.find(PlayerController->GetName());
+		if (ChosenCharacter == PlayerControllerChosenCharMap.end())
+		{
+			UE_LOG(LogTemp, Display,
+				TEXT("USideScrollerGameInstance::GetChosenCharacter - Cant find Player controller in the map.")
+			)
+			return nullptr;
+		}
+		return ChosenCharacter->second;
+	}
+	return nullptr;
+}
+
+void USideScrollerGameInstance::SetChosenCharacter(
+	APlayerController* PlayerController,
+	TSubclassOf<APC_PlayerFox> ChosenCharacter
+) {
+	UE_LOG(LogTemp, Display,
+		TEXT("USideScrollerGameInstance::SetChosenCharacter - Setting %s's chosen character as %s."),
+		*PlayerController->GetName(),
+		*ChosenCharacter->GetName()
+	)
+	this->PlayerControllerChosenCharMap.insert({PlayerController->GetName(), ChosenCharacter});
+}
+
+bool USideScrollerGameInstance::IsEveryPlayersCharacterChosen() const
+{
+	return (this->PlayerControllerChosenCharMap.size() >= GetNumPlayersToStartGame()) ? true : false;
+}
+
+void USideScrollerGameInstance::SetReadyToStartGame(bool bCond)
+{
+	this->bReadyToStartGame = bCond;
+}
+
+bool USideScrollerGameInstance::IsReadyToStartGame()
+{
+	return this->bReadyToStartGame;
+}
+
 void USideScrollerGameInstance::OnGameSessionComplete(FName SessionName, bool Success)
 {
 	if (!Success)
@@ -251,7 +327,7 @@ void USideScrollerGameInstance::OnGameSessionComplete(FName SessionName, bool Su
 
 	UWorld* World = GetWorld();
 	if (!World) return;
-	World->ServerTravel("/Game/Maps/Lobby?listen");
+	World->ServerTravel("/Game/Maps/Map_Lobby?listen");
 }
 
 void USideScrollerGameInstance::OnDestroySessionComplete(FName SessionName, bool Success)

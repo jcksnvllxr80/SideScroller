@@ -5,6 +5,7 @@
 
 #include "SideScroller/Characters/Players/PC_PlayerFox.h"
 #include "Kismet/GameplayStatics.h"
+#include "SideScroller/Controllers/GameModePlayerController.h"
 #include "SideScroller/MenuSystem/MainMenu.h"
 #include "UObject/ConstructorHelpers.h"
 

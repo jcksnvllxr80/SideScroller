@@ -40,7 +40,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = Travel)
 	void TravelToGameOverMenu();
-
+	
 private:
 	UPROPERTY(EditAnywhere, Category = Game)
 	TArray<APC_PlayerFox*> Players;

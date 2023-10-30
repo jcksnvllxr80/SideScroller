@@ -2,13 +2,18 @@
 
 #pragma once
 
+#include <map>
+
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 #include "Interfaces/MenuInterface.h"
 #include "OnlineSessionSettings.h"
 #include "OnlineSubsystem.h"
+#include "GameModes/LobbyGameMode.h"
 #include "Interfaces/OnlineSessionInterface.h"
 #include "SidescrollerGameInstance.generated.h"
+
+class APC_PlayerFox;
 
 USTRUCT()
 struct FServerData
@@ -55,6 +60,9 @@ public:
 	void InGameLoadMenu();
 
 	UFUNCTION(BlueprintCallable)
+	void SelectCharacterLoadMenu();
+
+	UFUNCTION(BlueprintCallable)
 	void GameOverLoadMenu();
 	
 	UFUNCTION(BlueprintCallable)
@@ -62,21 +70,38 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	int GetNumPlayersToStartGame() const;
+	
+	UFUNCTION(BlueprintCallable)
+	TSubclassOf<APC_PlayerFox> GetChosenCharacter(APlayerController* PlayerController);
+
+	UFUNCTION(BlueprintCallable)
+	void SetChosenCharacter(APlayerController* PlayerController, TSubclassOf<APC_PlayerFox> ChosenCharacter);
+
+	UFUNCTION(BlueprintCallable)
+	bool IsEveryPlayersCharacterChosen() const;
+
+	UFUNCTION(BlueprintCallable)
+	void SetReadyToStartGame(bool bCond);
+
+	UFUNCTION(BlueprintCallable)
+	bool IsReadyToStartGame();
 
 private:
 	TSubclassOf<class UUserWidget> MainMenuClass = nullptr;
 	TSubclassOf<class UUserWidget> InGameMenuClass = nullptr;
+	TSubclassOf<class UUserWidget> SelectCharacterMenuClass = nullptr;
 	TSubclassOf<class UUserWidget> SettingsMenuClass = nullptr;
 	TSubclassOf<class UUserWidget> GameOverMenuClass = nullptr;
 	class UMainMenu* Menu;
 	IOnlineSessionPtr SessionInterface;
 	TSharedPtr<class FOnlineSessionSearch> GameSessionSearch;
 	int NumPlayers = 1;
+	bool bReadyToStartGame = false;
 	void OnGameSessionComplete(FName SessionName, bool Success);
 	void OnDestroySessionComplete(FName SessionName, bool Success);
 	void OnFindSessionsComplete(bool Success);
 	void OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
-
+	std::map<FString, TSubclassOf<APC_PlayerFox>> PlayerControllerChosenCharMap;
 	FString DesiredServerName;
 	void CreateSession();
 };

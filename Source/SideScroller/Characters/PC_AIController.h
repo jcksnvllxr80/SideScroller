@@ -33,4 +33,10 @@ private:
 
 protected:
 	virtual void BeginPlay() override;
+
+	UFUNCTION(BlueprintCallable)
+	bool UpdateFocusPawn();
+
+	UFUNCTION(BlueprintCallable)
+	void FocusOnPawn();
 };
