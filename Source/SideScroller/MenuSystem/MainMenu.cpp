@@ -7,6 +7,8 @@
 #include "Components/WidgetSwitcher.h"
 #include "Components/EditableText.h"
 #include "ServerRow.h"
+#include "Components/ComboBoxString.h"
+#include "Components/Slider.h"
 #include "Components/SpinBox.h"
 #include "Components/TextBlock.h"
 
@@ -21,7 +23,7 @@ bool UMainMenu::Initialize()
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("INIT FAILED! Cant find the Host button during init."));
+		UE_LOG(LogTemp, Error, TEXT("UMainMenu::Initialize - Cant find the Host button during init."));
 		return false;
 	}
 	
@@ -31,7 +33,27 @@ bool UMainMenu::Initialize()
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("INIT FAILED! Cant find the Open Join Menu button during init."));
+		UE_LOG(LogTemp, Error, TEXT("UMainMenu::Initialize - Cant find the Open Join Menu button during init."));
+		return false;
+	}
+
+	if (OpenSettingsMenuButton)
+	{
+		OpenSettingsMenuButton->OnClicked.AddDynamic(this, &UMainMenu::OpenSettingsMenu);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("UMainMenu::Initialize - Cant find the Open Settings Menu button during init."));
+		return false;
+	}
+	
+	if (OpenProfileMenuButton)
+	{
+		OpenProfileMenuButton->OnClicked.AddDynamic(this, &UMainMenu::OpenProfileMenu);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("UMainMenu::Initialize - Cant find the Open Profile Menu button during init."));
 		return false;
 	}
 
@@ -41,7 +63,7 @@ bool UMainMenu::Initialize()
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("INIT FAILED! Cant find the Join button during init."));
+		UE_LOG(LogTemp, Error, TEXT("UMainMenu::Initialize - Cant find the Join button during init."));
 		return false;
 	}
 
@@ -51,7 +73,7 @@ bool UMainMenu::Initialize()
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("INIT FAILED! Cant find the Join button during init."));
+		UE_LOG(LogTemp, Error, TEXT("UMainMenu::Initialize - Cant find the Join button during init."));
 		return false;
 	}
 
@@ -61,7 +83,7 @@ bool UMainMenu::Initialize()
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("INIT FAILED! Cant find the Desktop button during init."));
+		UE_LOG(LogTemp, Error, TEXT("UMainMenu::Initialize - Cant find the Desktop button during init."));
 		return false;
 	}
 
@@ -71,7 +93,7 @@ bool UMainMenu::Initialize()
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("INIT FAILED! Cant find the Join menu's Back button during init."));
+		UE_LOG(LogTemp, Error, TEXT("UMainMenu::Initialize - Cant find the Join menu's Back button during init."));
 		return false;
 	}
 		
@@ -81,7 +103,57 @@ bool UMainMenu::Initialize()
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("INIT FAILED! Cant find the Host menu's Back button during init."));
+		UE_LOG(LogTemp, Error, TEXT("UMainMenu::Initialize - Cant find the Host menu's Back button during init."));
+		return false;
+	}
+
+	if (BackButtonSettingsMenu)
+	{
+		BackButtonSettingsMenu->OnClicked.AddDynamic(this, &UMainMenu::BackToMainMenu);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("UMainMenu::Initialize - Cant find the Settings menu's Back button during init."));
+		return false;
+	}
+		
+	if (BackButtonProfileMenu)
+	{
+		BackButtonProfileMenu->OnClicked.AddDynamic(this, &UMainMenu::BackToMainMenu);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("UMainMenu::Initialize - Cant find the Profile menu's Back button during init."));
+		return false;
+	}
+
+	if (SetPlayerNameButton)
+	{
+		SetPlayerNameButton->OnClicked.AddDynamic(this, &UMainMenu::SetCustomPlayerName);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("UMainMenu::Initialize - Cant find the SetPlayerName button during init."));
+		return false;
+	}
+
+	if (ResolutionSelectComboBox)
+	{
+		ResolutionSelectComboBox->OnSelectionChanged.AddDynamic(this, &UMainMenu::SetResolution);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("UMainMenu::Initialize - Cant find the ResolutionSelect combo-box during init."));
+		return false;
+	}
+
+	if (VolumeSelectSlider)
+	{
+		VolumeSelectSlider->OnValueChanged.AddDynamic(this, &UMainMenu::SetVolume);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("UMainMenu::Initialize - Cant find the VolumeSelect slider during init."));
 		return false;
 	}
 
@@ -220,6 +292,48 @@ void UMainMenu::OpenJoinMenu()
 	}
 }
 
+void UMainMenu::OpenSettingsMenu()
+{
+	if (MenuSwitcher)
+	{
+		if (SettingsMenu)
+		{
+			MenuSwitcher->SetActiveWidget(SettingsMenu);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("UMainMenu::OpenSettingsMenu - Cant find the SettingsMenu Widget."));
+			return;
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("UMainMenu::OpenSettingsMenu - Cant find the Menu Switcher OBJ."));
+		return;
+	}
+}
+
+void UMainMenu::OpenProfileMenu()
+{
+	if (MenuSwitcher)
+	{
+		if (ProfileMenu)
+		{
+			MenuSwitcher->SetActiveWidget(ProfileMenu);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("UMainMenu::OpenProfileMenu - Cant find the ProfileMenu Widget."));
+			return;
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("UMainMenu::OpenProfileMenu - Cant find the Menu Switcher OBJ."));
+		return;
+	}
+}
+
 void UMainMenu::JoinServer()
 {
 	if (MenuInterface)
@@ -323,4 +437,19 @@ void UMainMenu::UpdateChildrenRows()
 			}
 		}
 	}
+}
+
+void UMainMenu::SetCustomPlayerName()
+{
+	// TODO: write the SetCustomPlayerName function body
+}
+
+void UMainMenu::SetResolution(FString SelectedItem, ESelectInfo::Type SelectionType)
+{
+	// TODO: write the SetResolution function body
+}
+
+void UMainMenu::SetVolume(float Value)
+{
+	// TODO: write the SetVolume function body
 }

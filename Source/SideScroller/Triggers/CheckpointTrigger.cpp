@@ -70,6 +70,15 @@ void ACheckpointTrigger::SetAllPlayersCheckpointLocations() const
 		TArray<APC_PlayerFox*> CurrentPlayers = GameMode->GetPlayers();
 		for (APC_PlayerFox* CurrentPlayer : CurrentPlayers)
 		{
+			if (CurrentPlayer == nullptr)
+			{
+				UE_LOG(LogTemp, Warning,
+					TEXT("ACheckpointTrigger::SetAllPlayersCheckpointLocationsOverlap - A Player exists in the "
+						"PlayersArray but is null. Not updating this player's LastCheckpointLocation."
+					)
+				);
+				return;	
+			}
 			CurrentPlayer->SetLastCheckpointLocation(this->CheckpointFlipbook->GetComponentLocation());
 		}
 	}
