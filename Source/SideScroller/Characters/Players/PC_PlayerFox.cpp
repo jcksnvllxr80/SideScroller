@@ -157,6 +157,11 @@ void APC_PlayerFox::PrintPlayersList(TArray<APC_PlayerFox*> PlayersArray)
 	FString PlayerArrayStr = "";
 	for (const APC_PlayerFox* Player : PlayersArray)
 	{
+		if (Player == nullptr)
+		{
+			UE_LOG(LogTemp, Display, TEXT("APC_PlayerFox::PrintPlayersList - Found null Player."));
+			continue;
+		}
 		PlayerArrayStr += (Player->GetName() + (Player->IsDead() ? ": Dead; " : ": Alive; "));
 	}
 	UE_LOG(LogTemp, Display, TEXT("List of Players is %s"), *PlayerArrayStr);

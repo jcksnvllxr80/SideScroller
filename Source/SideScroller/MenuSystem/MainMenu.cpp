@@ -2,15 +2,20 @@
 
 
 #include "MainMenu.h"
+
+#include "AudioMixerDevice.h"
 #include "Components/Button.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Components/WidgetSwitcher.h"
 #include "Components/EditableText.h"
 #include "ServerRow.h"
+#include "CompGeom/FitOrientedBox3.h"
 #include "Components/ComboBoxString.h"
 #include "Components/Slider.h"
 #include "Components/SpinBox.h"
 #include "Components/TextBlock.h"
+#include "GameFramework/GameUserSettings.h"
+#include "Sound/SoundClass.h"
 
 bool UMainMenu::Initialize()
 {
@@ -166,7 +171,8 @@ UMainMenu::UMainMenu(const FObjectInitializer & ObjectInitializer)
 	ConstructorHelpers::FClassFinder<UUserWidget> ServerRowBPClass(TEXT("/Game/MenuSystem/WBP_ServerRow"));
 	if (!ServerRowBPClass.Class) return;
 	ServerRowClass = ServerRowBPClass.Class;
-	bIsFocusable = true;
+	SetIsFocusable(true);
+	// bIsFocusable = true;  // deprecated
 }
 
 void UMainMenu::SetServerList(TArray<FServerData> ServersData)
@@ -446,10 +452,41 @@ void UMainMenu::SetCustomPlayerName()
 
 void UMainMenu::SetResolution(FString SelectedItem, ESelectInfo::Type SelectionType)
 {
-	// TODO: write the SetResolution function body
+	const std::map<FString, int> ResolutionMap = {
+		{"1280x720", 0},
+		{"1920x1080", 1},
+		{"2560x1440", 2}
+	};
+	
+	FIntPoint Resolution;
+	switch (ResolutionMap.find(SelectedItem)->second)
+	{
+	case 0: 
+		Resolution.X = 1280;
+		Resolution.Y = 720;
+		break;
+	case 1: 
+		Resolution.X = 1920;
+		Resolution.Y = 1080;
+		break;
+	case 2: 
+		Resolution.X = 2560;
+		Resolution.Y = 1440;
+		break; 
+	default: 
+		Resolution.X = 1280;
+		Resolution.Y = 720;
+		break; 
+	}
+
+	UE_LOG(LogTemp, Display,
+		TEXT("UMainMenu::SetResolution - Changing resolution to %i x %i."),
+		Resolution.X, Resolution.Y
+	)
+	GetGameInstance()->GetEngine()->GameUserSettings->SetScreenResolution(Resolution);
 }
 
 void UMainMenu::SetVolume(float Value)
 {
-	// TODO: write the SetVolume function body
+	UE_LOG(LogTemp, Verbose, TEXT("UMainMenu::SetVolume - volume was changed to %f."), Value)
 }

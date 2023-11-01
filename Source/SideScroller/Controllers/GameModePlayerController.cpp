@@ -121,7 +121,10 @@ void AGameModePlayerController::SpawnPlayer_Implementation(
 			TEXT("AGameModePlayerController::SpawnPlayer_Implementation - PlayerController, %s, destroying old Pawn"),
 			*PlayerController->GetName()
 		);
-		if (PawnToBeReplaced) PawnToBeReplaced->Destroy();
+		if (PawnToBeReplaced)
+		{
+			PawnToBeReplaced->Destroy();
+		}
 	}
 }
 
