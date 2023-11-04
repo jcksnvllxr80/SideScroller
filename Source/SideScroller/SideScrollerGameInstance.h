@@ -13,6 +13,7 @@
 #include "Interfaces/OnlineSessionInterface.h"
 #include "SidescrollerGameInstance.generated.h"
 
+class USideScrollerSaveGame;
 class APC_PlayerFox;
 
 USTRUCT()
@@ -86,6 +87,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool IsReadyToStartGame();
 
+	UFUNCTION(BlueprintCallable)
+	USideScrollerSaveGame* GetPlayerProfile() const;
+
+	void SaveGame();
+	
 private:
 	TSubclassOf<class UUserWidget> MainMenuClass = nullptr;
 	TSubclassOf<class UUserWidget> InGameMenuClass = nullptr;
@@ -104,4 +110,7 @@ private:
 	std::map<FString, TSubclassOf<APC_PlayerFox>> PlayerControllerChosenCharMap;
 	FString DesiredServerName;
 	void CreateSession();
+	void LoadGame();
+	USideScrollerSaveGame* PlayerProfile;
+	FString PlayerProfileSlot = "SideScrollerPlayerProfile";
 };
