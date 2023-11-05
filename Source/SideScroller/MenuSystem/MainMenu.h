@@ -137,6 +137,10 @@ private:
 	void SetCustomPlayerName();
 
 	UFUNCTION()
+	void SetCustomPlayerNameEnter(const FText& Text, ETextCommit::Type CommitMethod);
+	
+
+	UFUNCTION()
 	void SetResolution(FString SelectedItem, ESelectInfo::Type SelectionType);
 
 	UFUNCTION()

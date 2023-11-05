@@ -65,6 +65,8 @@ bool UMainMenu::Initialize()
 		if (!PlayerProfile) return true;  // early return; player profile is null
 		UE_LOG(LogTemp, Display, TEXT("UMainMenu::Initialize - PlayerName is set to %s."), *PlayerProfile->PlayerName);
 		CustomPlayerName->SetText(FText::FromString(PlayerProfile->PlayerName));
+		
+		CustomPlayerName->OnTextCommitted.AddDynamic(this, &UMainMenu::SetCustomPlayerNameEnter);
 	}
 	else
 	{
@@ -156,14 +158,15 @@ bool UMainMenu::Initialize()
 
 	if (ResolutionSelectComboBox)
 	{
-		ResolutionSelectComboBox->OnSelectionChanged.AddDynamic(this, &UMainMenu::SetResolution);
-		
 		if (!PlayerProfile) return true;  // early return; player profile is null
 		UE_LOG(LogTemp, Display,
 			TEXT("UMainMenu::Initialize - ResolutionIndex is set to %i."),
 			PlayerProfile->ResolutionIndex
 		);
 		ResolutionSelectComboBox->SetSelectedIndex(PlayerProfile->ResolutionIndex);
+
+		ResolutionSelectComboBox->OnSelectionChanged.AddDynamic(this, &UMainMenu::SetResolution);
+
 	}
 	else
 	{
@@ -173,14 +176,14 @@ bool UMainMenu::Initialize()
 
 	if (VolumeSelectSlider)
 	{
-		VolumeSelectSlider->OnValueChanged.AddDynamic(this, &UMainMenu::SetVolume);
-		
 		if (!PlayerProfile) return true;  // early return; player profile is null
 		UE_LOG(LogTemp, Display,
 			TEXT("UMainMenu::Initialize - VolumeSelectSlider is set to %f."),
 			PlayerProfile->VolumeLevel
 		);
 		VolumeSelectSlider->SetValue(PlayerProfile->VolumeLevel);
+
+		VolumeSelectSlider->OnValueChanged.AddDynamic(this, &UMainMenu::SetVolume);
 	}
 	else
 	{
@@ -491,6 +494,11 @@ void UMainMenu::UpdateChildrenRows()
 			}
 		}
 	}
+}
+
+void UMainMenu::SetCustomPlayerNameEnter(const FText& Text, ETextCommit::Type CommitMethod)
+{
+	SetCustomPlayerName();
 }
 
 void UMainMenu::SetCustomPlayerName()
