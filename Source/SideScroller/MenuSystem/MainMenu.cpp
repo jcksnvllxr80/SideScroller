@@ -63,6 +63,20 @@ bool UMainMenu::Initialize()
 		return false;
 	}
 
+	if (CustomPlayerName)
+	{
+		if (!PlayerProfile) return true;  // early return; player profile is null
+		UE_LOG(LogTemp, Display, TEXT("UMainMenu::Initialize - PlayerName is set to %s."), *PlayerProfile->PlayerName);
+		CustomPlayerName->SetText(FText::FromString(PlayerProfile->PlayerName));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning,
+			TEXT("UMainMenu::Initialize - Either CustomPlayerName or PlayerProfile is null.")
+		);
+		return false;
+	}
+	
 	if (JoinButton)
 	{
 		JoinButton->OnClicked.AddDynamic(this, &UMainMenu::JoinServer);
@@ -174,6 +188,8 @@ UMainMenu::UMainMenu(const FObjectInitializer & ObjectInitializer)
 	ServerRowClass = ServerRowBPClass.Class;
 	SetIsFocusable(true);
 	// bIsFocusable = true;  // deprecated
+
+	LoadPlayerData();
 }
 
 void UMainMenu::LoadPlayerData()
@@ -342,21 +358,6 @@ void UMainMenu::OpenSettingsMenu()
 
 void UMainMenu::OpenProfileMenu()
 {
-	LoadPlayerData();
-
-	if (CustomPlayerName && PlayerProfile)
-	{
-		UE_LOG(LogTemp, Display, TEXT("UMainMenu::Initialize - PlayerName is set to %s."), *PlayerProfile->PlayerName);
-		CustomPlayerName->SetText(FText::FromString(PlayerProfile->PlayerName));
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning,
-			TEXT("UMainMenu::Initialize - Either CustomPlayerName or PlayerProfile is null.")
-		);
-		return;
-	}
-	
 	if (MenuSwitcher)
 	{
 		if (ProfileMenu)

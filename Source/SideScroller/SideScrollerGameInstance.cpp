@@ -276,7 +276,16 @@ TSubclassOf<APC_PlayerFox> USideScrollerGameInstance::GetChosenCharacter(APlayer
 			TEXT("USideScrollerGameInstance::GetChosenCharacter - PlayerControllerChosenCharMap is empty.")
 		)
 	} else {
-		const auto ChosenCharacter = PlayerControllerChosenCharMap.find(PlayerController->GetName());
+		const APC_PlayerFox* PlayerFox = Cast<APC_PlayerFox>(PlayerController->GetPawn());
+		if (PlayerFox == nullptr)
+		{
+			UE_LOG(LogTemp, Warning,
+				TEXT("USideScrollerGameInstance::GetChosenCharacter - PlayerPawn is not a PlayerFox.")
+			)
+			return nullptr;
+		}
+		
+		const auto ChosenCharacter = PlayerControllerChosenCharMap.find(PlayerFox->GetName());
 		if (ChosenCharacter == PlayerControllerChosenCharMap.end())
 		{
 			UE_LOG(LogTemp, Display,
@@ -298,7 +307,16 @@ void USideScrollerGameInstance::SetChosenCharacter(
 		*PlayerController->GetName(),
 		*ChosenCharacter->GetName()
 	)
-	this->PlayerControllerChosenCharMap.insert({PlayerController->GetName(), ChosenCharacter});
+	const APC_PlayerFox* PlayerFox = Cast<APC_PlayerFox>(PlayerController->GetPawn());
+	if (PlayerFox == nullptr)
+	{
+		UE_LOG(LogTemp, Warning,
+			TEXT("USideScrollerGameInstance::SetChosenCharacter - PlayerPawn is not a PlayerFox.")
+		)
+		return;
+	}
+	
+	this->PlayerControllerChosenCharMap.insert({PlayerFox->GetName(), ChosenCharacter});
 }
 
 bool USideScrollerGameInstance::IsEveryPlayersCharacterChosen() const
