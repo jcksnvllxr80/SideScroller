@@ -116,7 +116,8 @@ void AGameModePlayerController::SpawnPlayer_Implementation(
 			*PlayerController->GetName()
 		);
 		PlayerController->Possess(NewCharacter);
-
+		NewCharacter->SetHasChosenCharacter(true);
+		
 		UE_LOG(LogTemp, Display,
 			TEXT("AGameModePlayerController::SpawnPlayer_Implementation - PlayerController, %s, destroying old Pawn"),
 			*PlayerController->GetName()
@@ -127,7 +128,6 @@ void AGameModePlayerController::SpawnPlayer_Implementation(
 		}
 	}
 }
-
 
 bool AGameModePlayerController::SpawnPlayer_Validate(
 	TSubclassOf<APC_PlayerFox> PlayerBP,

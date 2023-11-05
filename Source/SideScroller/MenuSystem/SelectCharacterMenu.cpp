@@ -194,6 +194,32 @@ bool USelectCharacterMenu::Initialize()
 	if (CancelButton)
 	{
 		CancelButton->OnClicked.AddDynamic(this, &USelectCharacterMenu::BackToGame);
+		
+		CancelButton->SetIsEnabled(false);  // disabled if the player hasn't selected a character yet
+		APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+		if (PlayerController == nullptr)
+		{
+			UE_LOG(LogTemp, Warning,
+				TEXT("USelectCharacterMenu::Initialize - No PlayerController. Not enabling cancel button.")
+			);
+		}
+		else
+		{
+			APC_PlayerFox* PlayerFox = dynamic_cast<APC_PlayerFox*>(PlayerController->GetPawn());
+			if (PlayerFox == nullptr)
+			{
+				UE_LOG(LogTemp, Warning,
+					TEXT("USelectCharacterMenu::Initialize - No PlayerFox. cant check if player selcted character"),
+				);
+			}
+			else if (PlayerFox->GetHasChosenCharacter())
+			{
+				UE_LOG(LogTemp, Warning,
+				       TEXT("USelectCharacterMenu::Initialize - Player has selected character, enabling cancel button."),
+				);
+				CancelButton->SetIsEnabled(true);
+			}
+		}
 	}
 	else
 	{

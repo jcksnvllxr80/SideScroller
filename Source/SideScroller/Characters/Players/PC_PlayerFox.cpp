@@ -194,6 +194,16 @@ void APC_PlayerFox::PrintPlayersList(TArray<APC_PlayerFox*> PlayersArray)
 	UE_LOG(LogTemp, Display, TEXT("List of Players is %s"), *PlayerArrayStr);
 }
 
+bool APC_PlayerFox::GetHasChosenCharacter() const
+{
+	return this->bHasChosenCharacter;
+}
+
+void APC_PlayerFox::SetHasChosenCharacter(const bool HasChosenChar)
+{
+	this->bHasChosenCharacter = HasChosenChar;
+}
+
 bool APC_PlayerFox::FoundPlayerToSpectate(APC_PlayerFox* Player)
 {
 	if (Player != nullptr && Player != this && !Player->IsDead()) {

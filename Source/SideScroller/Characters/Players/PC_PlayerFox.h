@@ -99,6 +99,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void TakeCherries(int NumCherries);
 
+	UFUNCTION(BlueprintCallable)
+	bool GetHasChosenCharacter() const;
+
+	UFUNCTION(BlueprintCallable)
+	void SetHasChosenCharacter(const bool HasChosenChar);
+	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -164,8 +170,13 @@ public:
 	void PrintPlayersList(TArray<APC_PlayerFox*> PlayersArray);
 
 private:
+	UPROPERTY()
 	USideScrollerGameInstance* GameInstance;
 
+	UPROPERTY()
+	bool bHasChosenCharacter = false;
+
+private:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UUserWidget> WidgetPlayerHUD;
 
@@ -244,6 +255,7 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	class UCameraComponent* FollowCamera;
 
+	UPROPERTY()
 	USoundBase* NearbyClimbableSound;
 
 	UPROPERTY(EditAnywhere)
