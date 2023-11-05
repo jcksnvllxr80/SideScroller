@@ -16,7 +16,7 @@ class SIDESCROLLER_API USideScrollerSaveGame : public USaveGame
 	
 public:
 	
-	UPROPERTY(VisibleAnywhere, Category = Basic)
+	UPROPERTY()
 	FString PlayerName;
 	
 	USideScrollerSaveGame();

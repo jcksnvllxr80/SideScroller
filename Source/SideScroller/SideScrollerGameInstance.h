@@ -90,6 +90,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	USideScrollerSaveGame* GetPlayerProfile() const;
 
+	UFUNCTION(BlueprintCallable)
 	void SaveGame();
 	
 private:
@@ -110,7 +111,13 @@ private:
 	std::map<FString, TSubclassOf<APC_PlayerFox>> PlayerControllerChosenCharMap;
 	FString DesiredServerName;
 	void CreateSession();
+	
+	UFUNCTION(BlueprintCallable)
 	void LoadGame();
+
+	UPROPERTY()
 	USideScrollerSaveGame* PlayerProfile;
+
+	UPROPERTY()
 	FString PlayerProfileSlot = "SideScrollerPlayerProfile";
 };

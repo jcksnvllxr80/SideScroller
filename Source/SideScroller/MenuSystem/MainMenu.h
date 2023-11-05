@@ -106,7 +106,7 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	class USlider* VolumeSelectSlider;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY()
 	USideScrollerSaveGame* PlayerProfile;
 
 	UFUNCTION()
