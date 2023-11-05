@@ -518,6 +518,8 @@ void USideScrollerGameInstance::LoadGame()
 		}
 		
 		PlayerProfile->PlayerName = TEXT("Default");
+		PlayerProfile->VolumeLevel = 0.75;
+		PlayerProfile->ResolutionIndex = 1;
 		SaveGame();
 	}
 	else

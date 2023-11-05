@@ -3,20 +3,17 @@
 
 #include "MainMenu.h"
 
-#include "AudioMixerDevice.h"
 #include "Components/Button.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Components/WidgetSwitcher.h"
 #include "Components/EditableText.h"
 #include "ServerRow.h"
-#include "CompGeom/FitOrientedBox3.h"
 #include "Components/ComboBoxString.h"
 #include "Components/Slider.h"
 #include "Components/SpinBox.h"
 #include "Components/TextBlock.h"
 #include "GameFramework/GameUserSettings.h"
 #include "SideScroller/SaveGames/SideScrollerSaveGame.h"
-#include "Sound/SoundClass.h"
 
 bool UMainMenu::Initialize()
 {
@@ -160,6 +157,13 @@ bool UMainMenu::Initialize()
 	if (ResolutionSelectComboBox)
 	{
 		ResolutionSelectComboBox->OnSelectionChanged.AddDynamic(this, &UMainMenu::SetResolution);
+		
+		if (!PlayerProfile) return true;  // early return; player profile is null
+		UE_LOG(LogTemp, Display,
+			TEXT("UMainMenu::Initialize - ResolutionIndex is set to %i."),
+			PlayerProfile->ResolutionIndex
+		);
+		ResolutionSelectComboBox->SetSelectedIndex(PlayerProfile->ResolutionIndex);
 	}
 	else
 	{
@@ -170,6 +174,13 @@ bool UMainMenu::Initialize()
 	if (VolumeSelectSlider)
 	{
 		VolumeSelectSlider->OnValueChanged.AddDynamic(this, &UMainMenu::SetVolume);
+		
+		if (!PlayerProfile) return true;  // early return; player profile is null
+		UE_LOG(LogTemp, Display,
+			TEXT("UMainMenu::Initialize - VolumeSelectSlider is set to %f."),
+			PlayerProfile->VolumeLevel
+		);
+		VolumeSelectSlider->SetValue(PlayerProfile->VolumeLevel);
 	}
 	else
 	{
@@ -505,23 +516,29 @@ void UMainMenu::SetCustomPlayerName()
 void UMainMenu::SetResolution(FString SelectedItem, ESelectInfo::Type SelectionType)
 {
 	const std::map<FString, int> ResolutionMap = {
-		{"1280x720", 0},
-		{"1920x1080", 1},
-		{"2560x1440", 2}
+		{"640x480", 0},
+		{"1280x720", 1},
+		{"1920x1080", 2},
+		{"2560x1440", 3}
 	};
 	
 	FIntPoint Resolution;
-	switch (ResolutionMap.find(SelectedItem)->second)
+	const int ResolutionIndex = ResolutionMap.find(SelectedItem)->second;
+	switch (ResolutionIndex)
 	{
 	case 0: 
+		Resolution.X = 640;
+		Resolution.Y = 480;
+		break;
+	case 1:
 		Resolution.X = 1280;
 		Resolution.Y = 720;
 		break;
-	case 1: 
+	case 2: 
 		Resolution.X = 1920;
 		Resolution.Y = 1080;
 		break;
-	case 2: 
+	case 3: 
 		Resolution.X = 2560;
 		Resolution.Y = 1440;
 		break; 
@@ -535,10 +552,42 @@ void UMainMenu::SetResolution(FString SelectedItem, ESelectInfo::Type SelectionT
 		TEXT("UMainMenu::SetResolution - Changing resolution to %i x %i."),
 		Resolution.X, Resolution.Y
 	)
-	GetGameInstance()->GetEngine()->GameUserSettings->SetScreenResolution(Resolution);
+
+	USideScrollerGameInstance* GameInstance = dynamic_cast<USideScrollerGameInstance*>(GetGameInstance());
+	if (GameInstance == nullptr)
+	{
+		UE_LOG(LogTemp, Error,
+			TEXT("UMainMenu::SetResolution - No GameInstance. Not saving ResolutionIndex to profile"),
+		);
+		return;  // no game instance - early return
+	}
+
+	GameInstance->GetEngine()->GameUserSettings->SetScreenResolution(Resolution);
+	
+	PlayerProfile->ResolutionIndex = ResolutionIndex;
+	UE_LOG(LogTemp, Display,
+		TEXT("UMainMenu::SetResolution - Attempting to save ResolutionIndex in profile SaveGame as %i"),
+		ResolutionIndex
+	);
+	GameInstance->SaveGame();
 }
 
 void UMainMenu::SetVolume(float Value)
 {
 	UE_LOG(LogTemp, Verbose, TEXT("UMainMenu::SetVolume - volume was changed to %f."), Value)
+
+	USideScrollerGameInstance* GameInstance = dynamic_cast<USideScrollerGameInstance*>(GetGameInstance());
+	if (GameInstance == nullptr)
+	{
+		UE_LOG(LogTemp, Error,
+			TEXT("UMainMenu::SetVolume - No GameInstance. Not saving volume to profile"),
+		);
+		return;  // no game instance - early return
+	}
+
+	PlayerProfile->VolumeLevel = Value;
+	UE_LOG(LogTemp, Display,
+		TEXT("UMainMenu::SetVolume - Attempting to save volume in profile SaveGame as %f"), Value
+	);
+	GameInstance->SaveGame();
 }

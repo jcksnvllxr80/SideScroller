@@ -18,6 +18,12 @@ public:
 	
 	UPROPERTY()
 	FString PlayerName;
+
+	UPROPERTY()
+	float VolumeLevel;
+
+	UPROPERTY()
+	int ResolutionIndex;
 	
 	USideScrollerSaveGame();
 };

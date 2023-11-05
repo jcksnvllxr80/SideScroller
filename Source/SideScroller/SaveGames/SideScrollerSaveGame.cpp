@@ -6,4 +6,6 @@
 USideScrollerSaveGame::USideScrollerSaveGame()
 {
 	PlayerName = TEXT("Default");
+	VolumeLevel = 0.75;
+	ResolutionIndex = 1;
 }
