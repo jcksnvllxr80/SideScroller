@@ -6,6 +6,7 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/TextBlock.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
@@ -13,6 +14,7 @@
 #include "SideScroller/GameModes/LevelGameMode.h"
 #include "SideScroller/GameModes/SideScrollerGameModeBase.h"
 #include "SideScroller/GameStates/LobbyGameState.h"
+#include "SideScroller/SaveGames/SideScrollerSaveGame.h"
 
 APC_PlayerFox::APC_PlayerFox()
 {
@@ -32,6 +34,14 @@ APC_PlayerFox::APC_PlayerFox()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraArm);
 
+	NameBanner = CreateDefaultSubobject<UTextRenderComponent>(TEXT("NameBanner"));
+	NameBanner->SetupAttachment(RootComponent);
+	NameBanner->SetRelativeScale3D(FVector(0.4, 0.4, 0.4));
+	NameBanner->SetRelativeLocation(FVector(0.f, 0.1, 10.f));
+	NameBanner->SetRelativeRotation(FRotator(0.f, 90.f, 0.f));
+	NameBanner->SetHorizontalAlignment(EHTA_Center);
+	NameBanner->SetTextRenderColor(FColor(0, 11, 133, 255));
+
 	this->GetCharacterMovement()->MaxWalkSpeed = 250.0;
 	this->GetCharacterMovement()->JumpZVelocity = 525.0;
 	this->GetCharacterMovement()->GravityScale = 3.5;
@@ -45,6 +55,7 @@ APC_PlayerFox::APC_PlayerFox()
 	this->GetCharacterMovement()->SetIsReplicated(true);
 	this->SetReplicates(true);
 	this->CurrentRotation = MovingLeftRotation;
+	// this->NameBanner->SetIsReplicated(true);
 }
 
 void APC_PlayerFox::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -68,14 +79,30 @@ void APC_PlayerFox::BeginPlay()
 
 	GameInstance = dynamic_cast<USideScrollerGameInstance*>(GetGameInstance());
 	AddToPlayersArray();
+	LoadProfilePlayerName();
 	PlayerHUDSetup();
 
+	this->NameBanner->SetText(GetPlayerName());
 	this->LastCheckpointLocation = this->GetSprite()->GetComponentLocation(); 
 	this->StandingFriction = this->GetCharacterMovement()->BrakingFrictionFactor;
 	this->NormalWalkingSpeed = this->GetCharacterMovement()->MaxWalkSpeed;
 }
 
-// Called every frame
+void APC_PlayerFox::LoadProfilePlayerName()
+{
+	if (GameInstance == nullptr)
+	{
+		UE_LOG(LogTemp, Error,
+			TEXT("APC_PlayerFox::LoadProfilePlayerName - No GameInstance. Using default PlayerName"),
+		);
+
+		this->PlayerName = this->GetName();
+		return;  // no game instance - early return
+	}
+
+	this->PlayerName = GameInstance->GetPlayerProfile()->PlayerName;
+}
+
 void APC_PlayerFox::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -104,7 +131,7 @@ void APC_PlayerFox::GetLifetimeReplicatedProps( TArray< FLifetimeProperty > & Ou
 	DOREPLIFETIME(APC_PlayerFox, bIsSliding);
 	DOREPLIFETIME(APC_PlayerFox, bOnLadder);
 	DOREPLIFETIME(APC_PlayerFox, CurrentRotation);
-	// DOREPLIFETIME(APC_PlayerFox, bIsClimbing);
+	// DOREPLIFETIME(APC_PlayerFox, NameBanner);
 }
 
 int APC_PlayerFox::GetAccumulatedPoints() const
@@ -715,7 +742,7 @@ FText APC_PlayerFox::GetSpectatorsAsStr() const
 
 FText APC_PlayerFox::GetPlayerName() const
 {
-	return FText::FromString(this->GetName());
+	return FText::FromString(this->PlayerName);
 }
 
 void APC_PlayerFox::AddToSpectators(APC_PlayerFox* Spectator)

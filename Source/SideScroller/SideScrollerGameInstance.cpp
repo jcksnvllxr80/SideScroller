@@ -40,6 +40,8 @@ USideScrollerGameInstance::USideScrollerGameInstance(const FObjectInitializer & 
 	);
 	if (!SelectCharacterMenuBPClass.Class) return;
 	SelectCharacterMenuClass = SelectCharacterMenuBPClass.Class;
+
+	LoadGame();
 }
 
 void USideScrollerGameInstance::Init()
@@ -274,7 +276,16 @@ TSubclassOf<APC_PlayerFox> USideScrollerGameInstance::GetChosenCharacter(APlayer
 			TEXT("USideScrollerGameInstance::GetChosenCharacter - PlayerControllerChosenCharMap is empty.")
 		)
 	} else {
-		const auto ChosenCharacter = PlayerControllerChosenCharMap.find(PlayerController->GetName());
+		const APC_PlayerFox* PlayerFox = Cast<APC_PlayerFox>(PlayerController->GetPawn());
+		if (PlayerFox == nullptr)
+		{
+			UE_LOG(LogTemp, Warning,
+				TEXT("USideScrollerGameInstance::GetChosenCharacter - PlayerPawn is not a PlayerFox.")
+			)
+			return nullptr;
+		}
+		
+		const auto ChosenCharacter = PlayerControllerChosenCharMap.find(PlayerFox->GetName());
 		if (ChosenCharacter == PlayerControllerChosenCharMap.end())
 		{
 			UE_LOG(LogTemp, Display,
@@ -296,7 +307,16 @@ void USideScrollerGameInstance::SetChosenCharacter(
 		*PlayerController->GetName(),
 		*ChosenCharacter->GetName()
 	)
-	this->PlayerControllerChosenCharMap.insert({PlayerController->GetName(), ChosenCharacter});
+	const APC_PlayerFox* PlayerFox = Cast<APC_PlayerFox>(PlayerController->GetPawn());
+	if (PlayerFox == nullptr)
+	{
+		UE_LOG(LogTemp, Warning,
+			TEXT("USideScrollerGameInstance::SetChosenCharacter - PlayerPawn is not a PlayerFox.")
+		)
+		return;
+	}
+	
+	this->PlayerControllerChosenCharMap.insert({PlayerFox->GetName(), ChosenCharacter});
 }
 
 bool USideScrollerGameInstance::IsEveryPlayersCharacterChosen() const
@@ -468,4 +488,68 @@ void USideScrollerGameInstance::CreateSession()
 		}
 		SessionInterface->CreateSession(0, SESSION_NAME, SessionSettings);
 	}
+}
+
+void USideScrollerGameInstance::LoadGame()
+{
+	UE_LOG(LogTemp, Display, TEXT("USideScrollerGameInstance::LoadGame - Trying to load a saved game"));
+	// Try to load a saved game file (with name: <SaveGameSlotName>.sav) if exists
+	PlayerProfile = Cast<USideScrollerSaveGame>(
+		UGameplayStatics::LoadGameFromSlot(PlayerProfileSlot, 0)
+	);
+
+	// If file does not exist try create a new one
+	if (PlayerProfile == nullptr)
+	{
+		UE_LOG(LogTemp, Display,
+			TEXT("USideScrollerGameInstance::LoadGame - No saved games found. Trying to save a new one.")
+		);
+
+		// Instantiate a new SaveGame object
+		PlayerProfile = Cast<USideScrollerSaveGame>(
+			UGameplayStatics::CreateSaveGameObject(USideScrollerSaveGame::StaticClass())
+		);
+		if (PlayerProfile == nullptr)
+		{
+			UE_LOG(LogTemp, Warning,
+				TEXT("USideScrollerGameInstance::LoadGame - Not able to create a saved game.")
+			);
+			return;
+		}
+		
+		PlayerProfile->PlayerName = TEXT("Default");
+		SaveGame();
+	}
+	else
+	{
+		
+		UE_LOG(LogTemp, Display,
+			TEXT("USideScrollerGameInstance::LoadGame - Saved game found. Loaded %s."), *PlayerProfile->GetPathName()
+		);
+	}
+    
+}
+
+void USideScrollerGameInstance::SaveGame()
+{
+	UE_LOG(LogTemp, Display, TEXT("USideScrollerGameInstance::SaveGame - Saving game..."));
+    
+	// Call SaveGameToSlot to serialize and save our SaveGameObject with name: <SaveGameSlotName>.sav
+	if (UGameplayStatics::SaveGameToSlot(PlayerProfile, PlayerProfileSlot, 0))
+	{
+		UE_LOG(LogTemp, Display,
+			TEXT("USideScrollerGameInstance::LogIfGameWasSavedOrNot - Game saved.")
+		);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning,
+			TEXT("USideScrollerGameInstance::LogIfGameWasSavedOrNot - Game NOT saved.")
+		);
+	}
+}
+
+USideScrollerSaveGame* USideScrollerGameInstance::GetPlayerProfile() const
+{
+	return PlayerProfile;
 }

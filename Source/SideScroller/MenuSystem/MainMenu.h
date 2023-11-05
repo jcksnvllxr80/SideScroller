@@ -6,6 +6,7 @@
 #include "MenuWidget.h"
 #include "Components/Button.h"
 #include "Sidescroller/SideScrollerGameInstance.h"
+#include "SideScroller/SaveGames/SideScrollerSaveGame.h"
 #include "MainMenu.generated.h"
 
 /**
@@ -24,8 +25,10 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	int GetNumberOfPlayers();
-	
+
 private:
+	void LoadPlayerData();
+	
 	TSubclassOf<class UUserWidget> ServerRowClass = nullptr;
 
 	UPROPERTY(meta = (BindWidget))
@@ -102,7 +105,10 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	class USlider* VolumeSelectSlider;
-	
+
+	UPROPERTY()
+	USideScrollerSaveGame* PlayerProfile;
+
 	UFUNCTION()
 	void HostServer();
 
@@ -139,7 +145,7 @@ private:
 	TOptional<uint32> SelectedIndex;
 
 	void UpdateChildrenRows();
-
+	
 protected:
 	virtual bool Initialize() override;
 };

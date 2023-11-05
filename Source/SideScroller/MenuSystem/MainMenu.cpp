@@ -15,6 +15,7 @@
 #include "Components/SpinBox.h"
 #include "Components/TextBlock.h"
 #include "GameFramework/GameUserSettings.h"
+#include "SideScroller/SaveGames/SideScrollerSaveGame.h"
 #include "Sound/SoundClass.h"
 
 bool UMainMenu::Initialize()
@@ -62,6 +63,20 @@ bool UMainMenu::Initialize()
 		return false;
 	}
 
+	if (CustomPlayerName)
+	{
+		if (!PlayerProfile) return true;  // early return; player profile is null
+		UE_LOG(LogTemp, Display, TEXT("UMainMenu::Initialize - PlayerName is set to %s."), *PlayerProfile->PlayerName);
+		CustomPlayerName->SetText(FText::FromString(PlayerProfile->PlayerName));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning,
+			TEXT("UMainMenu::Initialize - Either CustomPlayerName or PlayerProfile is null.")
+		);
+		return false;
+	}
+	
 	if (JoinButton)
 	{
 		JoinButton->OnClicked.AddDynamic(this, &UMainMenu::JoinServer);
@@ -131,7 +146,7 @@ bool UMainMenu::Initialize()
 		UE_LOG(LogTemp, Error, TEXT("UMainMenu::Initialize - Cant find the Profile menu's Back button during init."));
 		return false;
 	}
-
+	
 	if (SetPlayerNameButton)
 	{
 		SetPlayerNameButton->OnClicked.AddDynamic(this, &UMainMenu::SetCustomPlayerName);
@@ -173,6 +188,28 @@ UMainMenu::UMainMenu(const FObjectInitializer & ObjectInitializer)
 	ServerRowClass = ServerRowBPClass.Class;
 	SetIsFocusable(true);
 	// bIsFocusable = true;  // deprecated
+
+	LoadPlayerData();
+}
+
+void UMainMenu::LoadPlayerData()
+{
+	const USideScrollerGameInstance* GameInstance = Cast<USideScrollerGameInstance>(GetGameInstance());
+	if (GameInstance == nullptr)
+	{
+		UE_LOG(LogTemp, Error,
+			TEXT("UMainMenu::LoadPlayerProfile - Can't LoadPlayerProfile. GameInstance is null!")
+		);
+		return;
+	}
+
+	PlayerProfile = GameInstance->GetPlayerProfile();
+	if (PlayerProfile == nullptr)
+	{
+		UE_LOG(LogTemp, Warning,
+			TEXT("UMainMenu::LoadPlayerProfile - Can't LoadPlayerProfile. PlayerProfile is null!")
+		);
+	}
 }
 
 void UMainMenu::SetServerList(TArray<FServerData> ServersData)
@@ -447,7 +484,22 @@ void UMainMenu::UpdateChildrenRows()
 
 void UMainMenu::SetCustomPlayerName()
 {
-	// TODO: write the SetCustomPlayerName function body
+	USideScrollerGameInstance* GameInstance = dynamic_cast<USideScrollerGameInstance*>(GetGameInstance());
+	if (GameInstance == nullptr)
+	{
+		UE_LOG(LogTemp, Error,
+			TEXT("UMainMenu::SetCustomPlayerName - No GameInstance. Not saving player name to profile"),
+		);
+		return;  // no game instance - early return
+	}
+
+	const FString PlayerNameText = CustomPlayerName->GetText().ToString();
+	PlayerProfile->PlayerName = PlayerNameText;
+	UE_LOG(LogTemp, Display,
+		TEXT("UMainMenu::SetCustomPlayerName - Attempting to save PlayerName in profile SaveGame as %s"),
+		*PlayerNameText
+	);
+	GameInstance->SaveGame();
 }
 
 void UMainMenu::SetResolution(FString SelectedItem, ESelectInfo::Type SelectionType)

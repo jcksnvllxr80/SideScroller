@@ -3,6 +3,8 @@
 #include "SideScroller/Climbables/BaseClimbable.h"
 #include "SideScroller/Characters/BasePaperCharacter.h"
 #include "PaperFlipbook.h"
+#include "Components/TextBlock.h"
+#include "Components/TextRenderComponent.h"
 #include "SideScroller/Interfaces/ProjectileInterface.h"
 #include "PC_PlayerFox.generated.h"
 
@@ -85,6 +87,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float SlideAngleDeg = 15.f;
 
+	UPROPERTY(EditAnywhere, Category = Camera)
+	UTextRenderComponent* NameBanner;
+
 	UFUNCTION(BlueprintCallable)
 	void TakeMoney(int MonetaryValue);
 
@@ -110,6 +115,9 @@ public:
 	
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
+	UFUNCTION(BlueprintCallable)
+	void LoadProfilePlayerName();
+	
 	virtual void BeginPlay() override;
 
 	virtual void Jump() override;
@@ -316,6 +324,9 @@ private:
 	UPROPERTY(VisibleAnywhere, replicated)
 	FString SpectatorsStr;
 
+	UPROPERTY(EditAnywhere)
+	FString PlayerName;
+	
 protected:
 	/*True means that we're currently in air - or falling*/
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
