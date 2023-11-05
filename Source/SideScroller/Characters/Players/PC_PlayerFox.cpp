@@ -37,7 +37,7 @@ APC_PlayerFox::APC_PlayerFox()
 	NameBanner = CreateDefaultSubobject<UTextRenderComponent>(TEXT("NameBanner"));
 	NameBanner->SetupAttachment(RootComponent);
 	NameBanner->SetRelativeScale3D(FVector(0.4, 0.4, 0.4));
-	NameBanner->SetRelativeLocation(FVector(0.f, 0.f, 10.f));
+	NameBanner->SetRelativeLocation(FVector(0.f, 0.1, 10.f));
 	NameBanner->SetRelativeRotation(FRotator(0.f, 90.f, 0.f));
 	NameBanner->SetHorizontalAlignment(EHTA_Center);
 	NameBanner->SetTextRenderColor(FColor(0, 11, 133, 255));
@@ -55,6 +55,7 @@ APC_PlayerFox::APC_PlayerFox()
 	this->GetCharacterMovement()->SetIsReplicated(true);
 	this->SetReplicates(true);
 	this->CurrentRotation = MovingLeftRotation;
+	// this->NameBanner->SetIsReplicated(true);
 }
 
 void APC_PlayerFox::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -130,7 +131,7 @@ void APC_PlayerFox::GetLifetimeReplicatedProps( TArray< FLifetimeProperty > & Ou
 	DOREPLIFETIME(APC_PlayerFox, bIsSliding);
 	DOREPLIFETIME(APC_PlayerFox, bOnLadder);
 	DOREPLIFETIME(APC_PlayerFox, CurrentRotation);
-	DOREPLIFETIME(APC_PlayerFox, NameBanner);
+	// DOREPLIFETIME(APC_PlayerFox, NameBanner);
 }
 
 int APC_PlayerFox::GetAccumulatedPoints() const
