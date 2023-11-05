@@ -93,7 +93,7 @@ void APC_PlayerFox::LoadProfilePlayerName()
 	if (GameInstance == nullptr)
 	{
 		UE_LOG(LogTemp, Error,
-			TEXT("APC_PlayerFox::LoadProfilePlayerName - No GameInstance. Using default PlayerName"),
+			TEXT("APC_PlayerFox::LoadProfilePlayerName - No GameInstance. Using default PlayerName")
 		);
 
 		this->PlayerName = this->GetName();

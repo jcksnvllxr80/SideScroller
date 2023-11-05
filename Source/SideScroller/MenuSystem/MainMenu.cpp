@@ -507,7 +507,7 @@ void UMainMenu::SetCustomPlayerName()
 	if (GameInstance == nullptr)
 	{
 		UE_LOG(LogTemp, Error,
-			TEXT("UMainMenu::SetCustomPlayerName - No GameInstance. Not saving player name to profile"),
+			TEXT("UMainMenu::SetCustomPlayerName - No GameInstance. Not saving player name to profile")
 		);
 		return;  // no game instance - early return
 	}
@@ -565,7 +565,7 @@ void UMainMenu::SetResolution(FString SelectedItem, ESelectInfo::Type SelectionT
 	if (GameInstance == nullptr)
 	{
 		UE_LOG(LogTemp, Error,
-			TEXT("UMainMenu::SetResolution - No GameInstance. Not saving ResolutionIndex to profile"),
+			TEXT("UMainMenu::SetResolution - No GameInstance. Not saving ResolutionIndex to profile")
 		);
 		return;  // no game instance - early return
 	}
@@ -588,7 +588,7 @@ void UMainMenu::SetVolume(float Value)
 	if (GameInstance == nullptr)
 	{
 		UE_LOG(LogTemp, Error,
-			TEXT("UMainMenu::SetVolume - No GameInstance. Not saving volume to profile"),
+			TEXT("UMainMenu::SetVolume - No GameInstance. Not saving volume to profile")
 		);
 		return;  // no game instance - early return
 	}

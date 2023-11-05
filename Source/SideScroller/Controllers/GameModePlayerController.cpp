@@ -20,7 +20,7 @@ void AGameModePlayerController::TravelToLevel_Implementation()
 	if (GameInstance == nullptr)
 	{
 		UE_LOG(LogTemp, Error,
-			TEXT("AGameModePlayerController::TravelToLevel_Implementation - No GameInstance."),
+			TEXT("AGameModePlayerController::TravelToLevel_Implementation - No GameInstance.")
 		);
 		return;  // no game instance - early return
 	}
