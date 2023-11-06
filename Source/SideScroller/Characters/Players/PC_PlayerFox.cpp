@@ -6,7 +6,6 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
-#include "Components/TextBlock.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
@@ -192,16 +191,6 @@ void APC_PlayerFox::PrintPlayersList(TArray<APC_PlayerFox*> PlayersArray)
 		PlayerArrayStr += (Player->GetName() + (Player->IsDead() ? ": Dead; " : ": Alive; "));
 	}
 	UE_LOG(LogTemp, Display, TEXT("List of Players is %s"), *PlayerArrayStr);
-}
-
-bool APC_PlayerFox::GetHasChosenCharacter() const
-{
-	return this->bHasChosenCharacter;
-}
-
-void APC_PlayerFox::SetHasChosenCharacter(const bool HasChosenChar)
-{
-	this->bHasChosenCharacter = HasChosenChar;
 }
 
 bool APC_PlayerFox::FoundPlayerToSpectate(APC_PlayerFox* Player)

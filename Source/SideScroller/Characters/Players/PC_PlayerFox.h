@@ -3,7 +3,6 @@
 #include "SideScroller/Climbables/BaseClimbable.h"
 #include "SideScroller/Characters/BasePaperCharacter.h"
 #include "PaperFlipbook.h"
-#include "Components/TextBlock.h"
 #include "Components/TextRenderComponent.h"
 #include "SideScroller/Interfaces/ProjectileInterface.h"
 #include "PC_PlayerFox.generated.h"
@@ -98,12 +97,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void TakeCherries(int NumCherries);
-
-	UFUNCTION(BlueprintCallable)
-	bool GetHasChosenCharacter() const;
-
-	UFUNCTION(BlueprintCallable)
-	void SetHasChosenCharacter(const bool HasChosenChar);
 	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -173,10 +166,6 @@ private:
 	UPROPERTY()
 	USideScrollerGameInstance* GameInstance;
 
-	UPROPERTY()
-	bool bHasChosenCharacter = false;
-
-private:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UUserWidget> WidgetPlayerHUD;
 

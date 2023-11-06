@@ -56,7 +56,7 @@ void ASideScrollerGameModeBase::Tick(float DeltaTime)
 		)
 	) return;  // early return if in mainmenu or gameover menu, we dont want to quit in these cases
 
-	PrintPlayersList();
+	// PrintPlayersList();
 	
 	if (Players.Num() < 1)
 	{
@@ -104,13 +104,17 @@ void ASideScrollerGameModeBase::Logout(AController* Exiting)
 	APC_PlayerFox* PlayerFox = Cast<APC_PlayerFox>(Exiting->GetPawn());
 	if (PlayerFox != nullptr)
 	{
+		UE_LOG(LogGameMode, Display,
+			TEXT("ASideScrollerGameModeBase::Logout - Running DestroyActor and RemovePlayer on PlayerFox, %s!"),
+			*PlayerFox->GetPlayerName().ToString()
+		);
 		PlayerFox->DestroyActor();
 		RemovePlayer(PlayerFox);
 	}
 	else
 	{
 		UE_LOG(LogGameMode, Warning,
-			TEXT("ASideScrollerGameModeBase::Logout - PlayerFox is null. Not removing from Players array!"),
+			TEXT("ASideScrollerGameModeBase::Logout - PlayerFox is null. Not removing from Players array!")
 		);
 	}
 	

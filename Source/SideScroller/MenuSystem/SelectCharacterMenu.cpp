@@ -8,6 +8,7 @@
 #include "SideScroller/SideScrollerGameInstance.h"
 #include "SideScroller/Characters/Players/PC_PlayerFox.h"
 #include "SideScroller/Controllers/GameModePlayerController.h"
+#include "SideScroller/PlayerStates/PlayerFoxState.h"
 
 void USelectCharacterMenu::PinkPlayerSelect()
 {
@@ -212,12 +213,27 @@ bool USelectCharacterMenu::Initialize()
 					TEXT("USelectCharacterMenu::Initialize - No PlayerFox. cant check if player selcted character")
 				);
 			}
-			else if (PlayerFox->GetHasChosenCharacter())
+			else
 			{
-				UE_LOG(LogTemp, Display,
-				       TEXT("USelectCharacterMenu::Initialize - Player has selected character, enabling cancel button.")
-				);
-				CancelButton->SetIsEnabled(true);
+				const APlayerFoxState* PlayerFoxState = Cast<APlayerFoxState>(PlayerFox->GetPlayerState());
+				if (PlayerFoxState != nullptr)
+				{
+					if (PlayerFoxState->GetHasChosenCharacter())
+					{
+						UE_LOG(LogTemp, Display,
+						       TEXT("USelectCharacterMenu::Initialize - Player has selected character, "
+									"enabling cancel button."
+								)
+						);
+						CancelButton->SetIsEnabled(true);
+					}
+				}
+				else
+				{
+					UE_LOG(LogTemp, Warning,
+						TEXT("USelectCharacterMenu::Initialize - Cant find PlayerFoxState, wont enable cancel button.")
+					);
+				}
 			}
 		}
 	}

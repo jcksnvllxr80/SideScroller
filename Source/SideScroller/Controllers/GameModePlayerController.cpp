@@ -6,6 +6,7 @@
 #include "SideScroller/SideScrollerGameInstance.h"
 #include "SideScroller/Characters/Players/PC_PlayerFox.h"
 #include "SideScroller/GameModes/LobbyGameMode.h"
+#include "SideScroller/PlayerStates/PlayerFoxState.h"
 
 void AGameModePlayerController::BeginPlay()
 {
@@ -115,7 +116,12 @@ void AGameModePlayerController::SpawnPlayer_Implementation(
 			*PlayerController->GetName()
 		);
 		PlayerController->Possess(NewCharacter);
-		NewCharacter->SetHasChosenCharacter(true);
+		
+		APlayerFoxState* PlayerFoxState = Cast<APlayerFoxState>(NewCharacter->GetPlayerState());
+		if (PlayerFoxState != nullptr)
+		{
+			PlayerFoxState->SetHasChosenCharacter(true);	
+		}
 		
 		UE_LOG(LogTemp, Display,
 			TEXT("AGameModePlayerController::SpawnPlayer_Implementation - PlayerController, %s, destroying old Pawn"),
