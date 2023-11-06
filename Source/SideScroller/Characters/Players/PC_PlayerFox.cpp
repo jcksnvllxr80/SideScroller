@@ -309,15 +309,15 @@ void APC_PlayerFox::Spectate() const
 		return;
 	}
 
-	PlayerController->SetViewTargetWithBlend(SpectableActor);
-	// try
-	// {
-	// 	PlayerController->SetViewTargetWithBlend(SpectableActor);
-	// }
-	// catch (...)
-	// {
-	// 	UE_LOG(LogTemp, Error, TEXT("APC_PlayerFox::Spectate - Catch block - cant SetViewTargetWithBlend"))
-	// }
+	// PlayerController->SetViewTargetWithBlend(SpectableActor);
+	try
+	{
+		PlayerController->SetViewTargetWithBlend(SpectableActor);
+	}
+	catch (...)
+	{
+		UE_LOG(LogTemp, Error, TEXT("APC_PlayerFox::Spectate - Catch block - cant SetViewTargetWithBlend"))
+	}
 }
 
 void APC_PlayerFox::SpectatePrevPlayer()
