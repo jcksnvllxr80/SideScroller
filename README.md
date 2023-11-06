@@ -57,9 +57,15 @@ using the packaging selections (`deleopment`` for quick packing) in UE (Unreal E
 
 ### 3. Run it in PowerShell
 
-example command:
+#### example commands:
+
+##### WINDOWS
 ```shell
  & F:\UE_5.2\Engine\Binaries\Win64\UnrealEditor.exe C:\Users\A-A-Ron\git\SideScroller\SideScroller.uproject /Game/Maps/Map_MainMenu -game -log -v -windowed resx=1280 resy=720
+```
+##### MacOS
+```shell
+"/Users/Shared/Epic Games/UE_5.2/Engine/Binaries/Mac/UnrealEditor.app/Contents/MacOS/UnrealEditor" $HOME/git/SideScroller/SideScroller.uproject  /Game/Maps/Map_MainMenu -game -log -v -windowed resx=1280 resy=720 &
 ```
 
 ---
