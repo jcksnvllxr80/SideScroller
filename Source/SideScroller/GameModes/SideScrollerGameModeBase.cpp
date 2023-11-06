@@ -54,25 +54,67 @@ void ASideScrollerGameModeBase::Tick(float DeltaTime)
 			CurrentGameMode->GetName().Contains("MainMenu") ||
 			CurrentGameMode->GetName().Contains("GameOver")
 		)
-	) return;  // early return if in mainmenu or gameover menu
+	) return;  // early return if in mainmenu or gameover menu, we dont want to quit in these cases
+
+	PrintPlayersList();
 	
 	if (Players.Num() < 1)
 	{
-		const UWorld* World = GetWorld();
-		if (!World) return;
+		UE_LOG(LogGameMode, Warning,
+			TEXT("ASideScrollerGameModeBase::Tick - Number of Players less that 1; going to gameover menu!")
+		);
 		
 		// go to game over screen/level where you can either start over or exit.
 		if (USideScrollerGameInstance* SideScrollerGameInstance =
-			Cast<USideScrollerGameInstance>(World->GetGameInstance())
+			Cast<USideScrollerGameInstance>(GetGameInstance())
 		) {
 			SideScrollerGameInstance->LoadGameOverMenu();
 		} else {
-			UE_LOG(LogGameMode, Display,
+			UE_LOG(LogGameMode, Warning,
 				TEXT("ASideScrollerGameModeBase::Tick - Cant find sidescroller game instance; quitting game!")
 			);
 			QuitGameHard();
 		}
 	}
+}
+
+void ASideScrollerGameModeBase::PrintPlayersList()
+{
+	if (Players.IsEmpty())
+	{
+		UE_LOG(LogTemp, Display, TEXT("ASideScrollerGameModeBase::PrintPlayersList - List is empty. Returning early."));
+		return;
+	}
+	
+	FString PlayerArrayStr = "";
+	for (const APC_PlayerFox* Player : Players)
+	{
+		if (Player == nullptr)
+		{
+			UE_LOG(LogTemp, Display, TEXT("ASideScrollerGameModeBase::PrintPlayersList - Found null Player."));
+			continue;
+		}
+		PlayerArrayStr += (Player->GetName() + (Player->IsDead() ? ": Dead; " : ": Alive; "));
+	}
+	UE_LOG(LogTemp, Display, TEXT("List of Players is %s"), *PlayerArrayStr);
+}
+
+void ASideScrollerGameModeBase::Logout(AController* Exiting)
+{
+	APC_PlayerFox* PlayerFox = Cast<APC_PlayerFox>(Exiting->GetPawn());
+	if (PlayerFox != nullptr)
+	{
+		PlayerFox->DestroyActor();
+		RemovePlayer(PlayerFox);
+	}
+	else
+	{
+		UE_LOG(LogGameMode, Warning,
+			TEXT("ASideScrollerGameModeBase::Logout - PlayerFox is null. Not removing from Players array!"),
+		);
+	}
+	
+	Super::Logout(Exiting);
 }
 
 void ASideScrollerGameModeBase::AddPlayer(APC_PlayerFox* PlayerFox)
@@ -87,7 +129,8 @@ void ASideScrollerGameModeBase::RemovePlayer(APC_PlayerFox* PlayerFox)
 		this->Players.Remove(PlayerFox);
 	} else {
 		UE_LOG(LogGameMode, Warning,
-			TEXT("Player, %s, not in Players array. Not removing from Players array!"), *PlayerFox->GetName()
+			TEXT("Player, %s, not in Players array. Not removing from Players array!"),
+			*PlayerFox->GetPlayerName().ToString()
 		);
 	}
 }

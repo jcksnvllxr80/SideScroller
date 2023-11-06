@@ -285,11 +285,12 @@ TSubclassOf<APC_PlayerFox> USideScrollerGameInstance::GetChosenCharacter(APlayer
 			return nullptr;
 		}
 		
-		const auto ChosenCharacter = PlayerControllerChosenCharMap.find(PlayerFox->GetName());
+		const auto ChosenCharacter = PlayerControllerChosenCharMap.find(PlayerFox->GetPlayerName().ToString());
 		if (ChosenCharacter == PlayerControllerChosenCharMap.end())
 		{
 			UE_LOG(LogTemp, Display,
-				TEXT("USideScrollerGameInstance::GetChosenCharacter - Cant find Player controller in the map.")
+				TEXT("USideScrollerGameInstance::GetChosenCharacter - Cant find Player, %s, in the map."),
+				*PlayerFox->GetPlayerName().ToString()
 			)
 			return nullptr;
 		}
@@ -302,11 +303,6 @@ void USideScrollerGameInstance::SetChosenCharacter(
 	APlayerController* PlayerController,
 	TSubclassOf<APC_PlayerFox> ChosenCharacter
 ) {
-	UE_LOG(LogTemp, Display,
-		TEXT("USideScrollerGameInstance::SetChosenCharacter - Setting %s's chosen character as %s."),
-		*PlayerController->GetName(),
-		*ChosenCharacter->GetName()
-	)
 	const APC_PlayerFox* PlayerFox = Cast<APC_PlayerFox>(PlayerController->GetPawn());
 	if (PlayerFox == nullptr)
 	{
@@ -315,8 +311,14 @@ void USideScrollerGameInstance::SetChosenCharacter(
 		)
 		return;
 	}
+
+	UE_LOG(LogTemp, Display,
+		TEXT("USideScrollerGameInstance::SetChosenCharacter - Setting %s's chosen character as %s."),
+		*PlayerFox->GetPlayerName().ToString(),
+		*ChosenCharacter->GetName()
+	)
 	
-	this->PlayerControllerChosenCharMap.insert({PlayerFox->GetName(), ChosenCharacter});
+	this->PlayerControllerChosenCharMap.insert({PlayerFox->GetPlayerName().ToString(), ChosenCharacter});
 }
 
 bool USideScrollerGameInstance::IsEveryPlayersCharacterChosen() const

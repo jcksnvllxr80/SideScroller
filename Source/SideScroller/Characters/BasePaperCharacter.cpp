@@ -310,7 +310,7 @@ void ABasePaperCharacter::DestroyActor()
 	if (APC_PlayerFox* PlayerFox = UECasts_Private::DynamicCast<APC_PlayerFox*>(this);
 		PlayerFox != nullptr
 	) {
-		UE_LOG(LogTemp, Display, TEXT("Cleaning up, not detroying, %s!"), *this->GetName());
+		UE_LOG(LogTemp, Display, TEXT("Cleaning up, not destroying, %s!"), *this->GetName());
 		PlayerFox->DeathCleanUp();
 		return;
 	}

@@ -214,7 +214,7 @@ bool USelectCharacterMenu::Initialize()
 			}
 			else if (PlayerFox->GetHasChosenCharacter())
 			{
-				UE_LOG(LogTemp, Warning,
+				UE_LOG(LogTemp, Display,
 				       TEXT("USelectCharacterMenu::Initialize - Player has selected character, enabling cancel button.")
 				);
 				CancelButton->SetIsEnabled(true);

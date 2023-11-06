@@ -70,11 +70,10 @@ void AGameModePlayerController::SpawnPlayer_Implementation(
 		)
 		return;  // dont go any further, cant find world
 	}
-	
-	if (USideScrollerGameInstance* SideScrollerGameInstance =
-		Cast<USideScrollerGameInstance>(World->GetGameInstance());
-		SideScrollerGameInstance != nullptr
-	) {
+
+	USideScrollerGameInstance* SideScrollerGameInstance = Cast<USideScrollerGameInstance>(World->GetGameInstance());
+	if (SideScrollerGameInstance != nullptr)
+	{
 		SideScrollerGameInstance->SetChosenCharacter(PlayerController, PlayerBP);
 	}
 	else
@@ -124,6 +123,12 @@ void AGameModePlayerController::SpawnPlayer_Implementation(
 		);
 		if (PawnToBeReplaced)
 		{
+			APC_PlayerFox* PlayerPawnToBeDestroyed = Cast<APC_PlayerFox>(PawnToBeReplaced);
+			if (PlayerPawnToBeDestroyed != nullptr)
+			{
+				PlayerPawnToBeDestroyed->DestroyActor();
+			}
+
 			PawnToBeReplaced->Destroy();
 		}
 	}

@@ -40,10 +40,16 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = Travel)
 	void TravelToGameOverMenu();
+
+	UFUNCTION()
+	virtual void Logout(AController* Exiting) override;
 	
 private:
 	UPROPERTY(EditAnywhere, Category = Game)
 	TArray<APC_PlayerFox*> Players;
+
+	UFUNCTION(BlueprintCallable, Category = Players)
+	void PrintPlayersList();
 
 protected:
 	static void EnablePlayerGameModeInput(APlayerController* NewPlayer);

@@ -24,11 +24,8 @@ struct FServerData
 	uint16 CurrentPlayers;
 	uint16 MaxPlayers;
 	FString HostUserName;
-	
 };
-/**
- * 
- */
+
 UCLASS()
 class SIDESCROLLER_API USideScrollerGameInstance : public UGameInstance, public IMenuInterface
 {
