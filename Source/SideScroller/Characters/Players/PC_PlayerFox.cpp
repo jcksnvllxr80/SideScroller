@@ -567,10 +567,11 @@ void APC_PlayerFox::CrouchClimbDown()
 {
 	// Run slide ////////////
 	const float VelocityX = this->GetVelocity().X;
-	if (!this->bIsSliding && abs(VelocityX) > this->CrouchSlidingThresholdVelocity)
+	if (!this->bIsSliding && (abs(VelocityX) > this->CrouchSlidingThresholdVelocity))
 	{
 		// UE_LOG(LogTemp, VeryVerbose, TEXT("X Vel = %f"), VelocityX);
 		// UE_LOG(LogTemp, VeryVerbose, TEXT("APC_PlayerFox::CrouchClimbDown - setting slide (run) to true"));
+		UE_LOG(LogTemp, Display, TEXT("APC_PlayerFox::CrouchClimbDown - setting bIsSliding to true for run."));
 		this->bIsSliding = true;
 		this->GetCharacterMovement()->BrakingFrictionFactor = this->CrouchSlideFriction;
 		return;
@@ -579,30 +580,53 @@ void APC_PlayerFox::CrouchClimbDown()
 	
 	// Hill sliding ////////////
 	const float FloorAngleDeg = GetFloorAngle();
-	if (!this->bIsSliding && (
-			(FloorAngleDeg <= -SlideAngleDeg && VelocityX > 0) ||
-			(FloorAngleDeg >= SlideAngleDeg && VelocityX < 0)
-		)
-	) {
-		// UE_LOG(LogTemp, VeryVerbose, TEXT("X Vel = %f"), VelocityX);
-		// UE_LOG(LogTemp, VeryVerbose, TEXT("Floor Angle = %f"), FloorAngleDeg);
-		// UE_LOG(LogTemp, VeryVerbose, TEXT("APC_PlayerFox::CrouchClimbDown - setting slide (hill) to true"));
-		this->bIsSliding = true;
-		this->GetCharacterMovement()->BrakingFrictionFactor = 0.f;  // this->CrouchSlideFriction;
-		return;
+	if (!this->bIsSliding)
+	{
+		if (FloorAngleDeg <= -SlideAngleDeg && VelocityX > 0)
+		{
+			// UE_LOG(LogTemp, VeryVerbose, TEXT("X Vel = %f"), VelocityX);
+			// UE_LOG(LogTemp, VeryVerbose, TEXT("Floor Angle = %f"), FloorAngleDeg);
+			// UE_LOG(LogTemp, VeryVerbose, TEXT("APC_PlayerFox::CrouchClimbDown - setting slide (hill) to true"));
+			UE_LOG(LogTemp, Verbose, TEXT("APC_PlayerFox::CrouchClimbDown - RIGHT - setting bIsSliding true - hill."));
+			this->bIsSliding = true;
+			this->GetCharacterMovement()->BrakingFrictionFactor = 0.f;  // this->CrouchSlideFriction;
+			return;
+		}
+
+		if (FloorAngleDeg >= SlideAngleDeg && VelocityX < 0)
+		{
+			// UE_LOG(LogTemp, VeryVerbose, TEXT("X Vel = %f"), VelocityX);
+			// UE_LOG(LogTemp, VeryVerbose, TEXT("Floor Angle = %f"), FloorAngleDeg);
+			// UE_LOG(LogTemp, VeryVerbose, TEXT("APC_PlayerFox::CrouchClimbDown - setting slide (hill) to true"));
+			UE_LOG(LogTemp, Verbose, TEXT("APC_PlayerFox::CrouchClimbDown - LEFT - setting bIsSliding true - hill."));
+			this->bIsSliding = true;
+			this->GetCharacterMovement()->BrakingFrictionFactor = 0.f;  // this->CrouchSlideFriction;
+			return;
+		}
 	}
 	/////////////////////////
 
 	// Stop hill sliding ////////////
-	if (this->bIsSliding && (abs(VelocityX) < CrouchSlidingThresholdVelocity) &&
-		(FloorAngleDeg < 1.f && FloorAngleDeg > -SlideAngleDeg && VelocityX > 0) ||
-		(FloorAngleDeg > -1.f && FloorAngleDeg < SlideAngleDeg && VelocityX < 0)
-	) {
-		// UE_LOG(LogTemp, VeryVerbose, TEXT("X Vel = %f"), VelocityX);
-		// UE_LOG(LogTemp, VeryVerbose, TEXT("Floor Angle = %f"), FloorAngleDeg);
-		// UE_LOG(LogTemp, VeryVerbose, TEXT("APC_PlayerFox::CrouchClimbDown - setting slide to false"));
-		this->bIsSliding = false;
-		this->GetCharacterMovement()->BrakingFrictionFactor = this->StandingFriction;
+	if (this->bIsSliding && (abs(VelocityX) < CrouchSlidingThresholdVelocity))
+	{
+		if (FloorAngleDeg < 1.f && FloorAngleDeg > -SlideAngleDeg && VelocityX > 0)
+		{
+			// UE_LOG(LogTemp, VeryVerbose, TEXT("X Vel = %f"), VelocityX);
+			// UE_LOG(LogTemp, VeryVerbose, TEXT("Floor Angle = %f"), FloorAngleDeg);
+			// UE_LOG(LogTemp, VeryVerbose, TEXT("APC_PlayerFox::CrouchClimbDown - setting slide to false"));
+			UE_LOG(LogTemp, Verbose, TEXT("APC_PlayerFox::CrouchClimbDown - RIGHT - setting bIsSliding to false."));
+			this->bIsSliding = false;
+			this->GetCharacterMovement()->BrakingFrictionFactor = this->StandingFriction;
+		}
+		else if (FloorAngleDeg > -1.f && FloorAngleDeg < SlideAngleDeg && VelocityX < 0)
+		{
+			// UE_LOG(LogTemp, VeryVerbose, TEXT("X Vel = %f"), VelocityX);
+			// UE_LOG(LogTemp, VeryVerbose, TEXT("Floor Angle = %f"), FloorAngleDeg);
+			// UE_LOG(LogTemp, VeryVerbose, TEXT("APC_PlayerFox::CrouchClimbDown - setting slide to false"));
+			UE_LOG(LogTemp, Verbose, TEXT("APC_PlayerFox::CrouchClimbDown - LEFT - setting bIsSliding to false."));
+			this->bIsSliding = false;
+			this->GetCharacterMovement()->BrakingFrictionFactor = this->StandingFriction;
+		}
 	}
 	/////////////////////////
 
