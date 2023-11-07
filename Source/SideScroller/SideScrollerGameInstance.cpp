@@ -221,7 +221,10 @@ void USideScrollerGameInstance::SelectCharacterLoadMenu()
 {
 	if (SelectCharacterMenuClass)
 	{
-		UE_LOG(LogTemp, Display, TEXT("Found SelectCharacter Menu blueprint class %s."), *SelectCharacterMenuClass->GetName());
+		UE_LOG(LogTemp, Display,
+			TEXT("Found SelectCharacter Menu blueprint class %s."),
+			*SelectCharacterMenuClass->GetName()
+		);
 		if (UMenuWidget* SelectCharacterMenu = CreateWidget<UMenuWidget>(this, SelectCharacterMenuClass))
 		{
 			SelectCharacterMenu->Setup();
@@ -285,12 +288,12 @@ TSubclassOf<APC_PlayerFox> USideScrollerGameInstance::GetChosenCharacter(APlayer
 			return nullptr;
 		}
 		
-		const auto ChosenCharacter = PlayerControllerChosenCharMap.find(PlayerFox->GetName());
+		const auto ChosenCharacter = PlayerControllerChosenCharMap.find(PlayerFox->GetPlayerName().ToString());
 		if (ChosenCharacter == PlayerControllerChosenCharMap.end())
 		{
 			UE_LOG(LogTemp, Display,
 				TEXT("USideScrollerGameInstance::GetChosenCharacter - Cant find Player, %s, in the map."),
-				*PlayerFox->GetName()
+				*PlayerFox->GetPlayerName().ToString()
 			)
 			return nullptr;
 		}
@@ -318,7 +321,7 @@ void USideScrollerGameInstance::SetChosenCharacter(
 		*ChosenCharacter->GetName()
 	)
 	
-	this->PlayerControllerChosenCharMap.insert({PlayerFox->GetName(), ChosenCharacter});
+	this->PlayerControllerChosenCharMap.insert({PlayerFox->GetPlayerName().ToString(), ChosenCharacter});
 }
 
 bool USideScrollerGameInstance::IsEveryPlayersCharacterChosen() const
