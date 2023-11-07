@@ -88,6 +88,8 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = Camera)
 	UTextRenderComponent* NameBanner;
+	
+	FTimerHandle ShootTimerHandle;
 
 	UFUNCTION(BlueprintCallable)
 	void TakeMoney(int MonetaryValue);
@@ -163,6 +165,9 @@ public:
 	void PrintPlayersList(TArray<APC_PlayerFox*> PlayersArray);
 
 private:
+	UPROPERTY()
+	bool bCanShoot = true;
+
 	UPROPERTY()
 	USideScrollerGameInstance* GameInstance;
 
@@ -294,6 +299,11 @@ private:
 	
 	UFUNCTION(BlueprintCallable)
 	void OpenInGameMenu();
+
+	UFUNCTION()
+	void CanShootAgain();
+	
+	virtual void Shoot() override;
 
 	UFUNCTION(BlueprintCallable)
 	void DoWalkAnimAndSound();

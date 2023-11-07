@@ -926,3 +926,25 @@ void APC_PlayerFox::OpenInGameMenu()
 		UE_LOG(LogTemp, Warning, TEXT("APC_PlayerFox::OpenInGameMenu - Can't open InGameMenu. GameInstance is null!"));
 	}
 }
+
+void APC_PlayerFox::CanShootAgain()
+{
+	this->bCanShoot = true;
+}
+
+void APC_PlayerFox::Shoot()
+{
+	if (this->bCanShoot)
+	{
+		Super::Shoot();
+		this->bCanShoot = false;
+
+		GetWorld()->GetTimerManager().SetTimer(
+			this->ShootTimerHandle,
+			this,
+			&APC_PlayerFox::CanShootAgain,
+			this->GetShootDelayTime(),
+			false
+		);
+	}
+}
