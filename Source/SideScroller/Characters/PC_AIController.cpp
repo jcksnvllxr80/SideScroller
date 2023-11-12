@@ -88,6 +88,8 @@ bool APC_AIController::UpdateFocusPawn()
 
 void APC_AIController::FocusOnPawn()
 {
+	if (PlayerPawn == nullptr) return;
+	
 	if (this->LineOfSightTo(PlayerPawn))
 	{
 		this->SetFocus(PlayerPawn);

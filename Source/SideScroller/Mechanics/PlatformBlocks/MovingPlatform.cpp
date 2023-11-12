@@ -3,10 +3,12 @@
 
 #include "MovingPlatform.h"
 
+#include "PaperSpriteComponent.h"
+
 AMovingPlatform::AMovingPlatform()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	SetMobility(EComponentMobility::Movable);
+	GetRenderComponent()->SetMobility(EComponentMobility::Movable);
 }
 
 void AMovingPlatform::BeginPlay()

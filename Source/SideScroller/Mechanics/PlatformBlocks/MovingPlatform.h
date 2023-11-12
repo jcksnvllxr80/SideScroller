@@ -3,11 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Engine/StaticMeshActor.h"
+#include "PaperSpriteActor.h"
 #include "MovingPlatform.generated.h"
 
 UCLASS()
-class SIDESCROLLER_API AMovingPlatform : public AStaticMeshActor
+class SIDESCROLLER_API AMovingPlatform : public APaperSpriteActor
 {
 	GENERATED_BODY()
 	

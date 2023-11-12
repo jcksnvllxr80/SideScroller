@@ -3,7 +3,7 @@
 
 #include "PlatformTrigger.h"
 #include "Components/BoxComponent.h"
-#include "SideScroller/Mechanics/Platforms/MovingPlatform.h"
+#include "SideScroller/Mechanics/PlatformBlocks/MovingPlatform.h"
 
 // Sets default values
 APlatformTrigger::APlatformTrigger()
