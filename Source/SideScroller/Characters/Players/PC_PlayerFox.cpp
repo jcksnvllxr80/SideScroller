@@ -582,7 +582,7 @@ void APC_PlayerFox::CrouchClimbDown()
 	const float FloorAngleDeg = GetFloorAngle();
 	if (!this->bIsSliding)
 	{
-		if (FloorAngleDeg <= -SlideAngleDeg && VelocityX > 0)
+		if ((FloorAngleDeg <= -SlideAngleDeg) && VelocityX > 0)
 		{
 			// UE_LOG(LogTemp, VeryVerbose, TEXT("X Vel = %f"), VelocityX);
 			// UE_LOG(LogTemp, VeryVerbose, TEXT("Floor Angle = %f"), FloorAngleDeg);
@@ -593,7 +593,7 @@ void APC_PlayerFox::CrouchClimbDown()
 			return;
 		}
 
-		if (FloorAngleDeg >= SlideAngleDeg && VelocityX < 0)
+		if ((FloorAngleDeg >= SlideAngleDeg) && VelocityX < 0)
 		{
 			// UE_LOG(LogTemp, VeryVerbose, TEXT("X Vel = %f"), VelocityX);
 			// UE_LOG(LogTemp, VeryVerbose, TEXT("Floor Angle = %f"), FloorAngleDeg);
