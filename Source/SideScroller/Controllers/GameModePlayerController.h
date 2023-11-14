@@ -30,6 +30,9 @@ public:
 	void StartLevel();
 
 	UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
+	void StartNextLevel();
+	
+	UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
 	void TravelToLevel();
 
 private:

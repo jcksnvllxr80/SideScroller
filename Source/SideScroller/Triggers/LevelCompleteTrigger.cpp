@@ -3,6 +3,7 @@
 
 #include "LevelCompleteTrigger.h"
 #include "SideScroller/Characters/Players/PC_PlayerFox.h"
+#include "SideScroller/Controllers/GameModePlayerController.h"
 
 void ALevelCompleteTrigger::BeginPlay()
 {
@@ -14,14 +15,53 @@ void ALevelCompleteTrigger::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
 
-	APC_PlayerFox* Player = dynamic_cast<APC_PlayerFox*>(OtherActor);
+	const APC_PlayerFox* Player = dynamic_cast<APC_PlayerFox*>(OtherActor);
 	if (Player == nullptr)
 	{
-		UE_LOG(LogTemp, Display, TEXT("Overlap of LevelCompleteTrigger is not PC_PlayerFox."));
+		UE_LOG(LogTemp, Display,
+			TEXT("ALevelCompleteTrigger::NotifyActorBeginOverlap - Overlap LevelCompleteTrigger is not PC_PlayerFox.")
+		);
 		return;
 	}
 	
-	UE_LOG(LogTemp, Display, TEXT("PC_PlayerFox, %s, overlapping LevelCompleteTrigger."), *Player->GetName());
+	UE_LOG(LogTemp, Display,
+		TEXT("ALevelCompleteTrigger::NotifyActorBeginOverlap - PC_PlayerFox, %s, overlapping LevelCompleteTrigger."),
+		*Player->GetName()
+	);
 	
-	// TODO: use RPC to go to next level in case client got to the door first
+	PrepForNextLevel(Player);
+}
+
+void ALevelCompleteTrigger::PrepForNextLevel(const APC_PlayerFox* Player)
+{
+	AGameModePlayerController* GameModePlayerController = Cast<AGameModePlayerController>(Player->GetController());
+	if (GameModePlayerController == nullptr)
+	{
+		UE_LOG(LogTemp, Warning,
+			   TEXT("ALevelCompleteTrigger::NextLevel - PlayerController is not a \"GameMode\" PC.")
+		)
+		return;
+	}
+
+	// TODO: show level complete banner / celebration
+
+	StartNextLevelDelayDelegate.BindUFunction(
+		this,
+		FName("CallNextLevelStart"),
+		GameModePlayerController
+	);
+	
+	GetWorld()->GetTimerManager().SetTimer(
+		this->StartNextLevelDelayTimerHandle,
+		StartNextLevelDelayDelegate,
+		this->StartNextLevelDelayTimer,
+		false
+	);
+	
+	CallNextLevelStart(GameModePlayerController);
+}
+
+void ALevelCompleteTrigger::CallNextLevelStart(AGameModePlayerController* GameModePlayerController)
+{
+	GameModePlayerController->StartNextLevel();
 }

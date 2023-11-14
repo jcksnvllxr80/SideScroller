@@ -5,6 +5,7 @@
 
 #include "SideScroller/SideScrollerGameInstance.h"
 #include "SideScroller/Characters/Players/PC_PlayerFox.h"
+#include "SideScroller/GameModes/LevelGameMode.h"
 #include "SideScroller/GameModes/LobbyGameMode.h"
 #include "SideScroller/PlayerStates/PlayerFoxState.h"
 
@@ -205,13 +206,32 @@ void AGameModePlayerController::StartLevel_Implementation()
 		UE_LOG(LogTemp, Warning,
 			TEXT("AGameModePlayerController::StartLevel_Implementation - Game mode is not LobbyGameMode.")
 		)
-		return;  // need more players to start - early return - dont start game
+		return;  
 	}
 
 	LobbyGameMode->StartGame();
 }
 
 bool AGameModePlayerController::StartLevel_Validate()
+{
+	return true;  // This will allow the RPC to be called
+}
+
+void AGameModePlayerController::StartNextLevel_Implementation()
+{
+	ALevelGameMode* LevelGameMode = Cast<ALevelGameMode>(GetWorld()->GetAuthGameMode());
+	if (LevelGameMode == nullptr)
+	{
+		UE_LOG(LogTemp, Warning,
+			TEXT("AGameModePlayerController::StartNextLevel_Implementation - Game mode is not LevelGameMode.")
+		)
+		return; 
+	}
+
+	LevelGameMode->StartNextLevel();
+}
+
+bool AGameModePlayerController::StartNextLevel_Validate()
 {
 	return true;  // This will allow the RPC to be called
 }

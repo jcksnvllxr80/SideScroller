@@ -3,6 +3,9 @@
 
 #include "LevelGameMode.h"
 
+#include <sstream>
+
+#include "GameFramework/GameStateBase.h"
 #include "SideScroller/SideScrollerGameInstance.h"
 #include "SideScroller/Controllers/GameModePlayerController.h"
 
@@ -17,6 +20,8 @@ void ALevelGameMode::BeginPlay()
 		SpawnPlayerChosenCharDelayTimer,
 		false
 	);
+
+	// TODO: show level number begin banner
 }
 
 bool ALevelGameMode::LocateChosenCharacter(FConstPlayerControllerIterator Iter)
@@ -95,4 +100,31 @@ void ALevelGameMode::SpawnPlayerChosenCharacters()
 	{
 		if (!LocateChosenCharacter(Iter)) return;
 	}
+}
+
+void ALevelGameMode::StartNextLevel()
+{
+	USideScrollerGameInstance* GameInstance = Cast<USideScrollerGameInstance>(GetWorld()->GetGameInstance());
+	if (GameInstance == nullptr)
+	{
+		UE_LOG(LogTemp, Warning,
+			TEXT("ALevelGameMode::StartNextLevel - Can't StartNextLevel. GameInstance is null!")
+		);
+		return;
+	}
+
+	UE_LOG(LogTemp, Display,
+		TEXT("ALevelGameMode::StartNextLevel - Finished Level %i."),
+		GameInstance->GetCurrentLevel()
+	);
+
+	GameInstance->IncrementCurrentLevel();
+	
+	UWorld* World = GetWorld();
+	if (!World) return;
+	bUseSeamlessTravel = true;
+	const FString TravelURL = FString::Printf(
+		TEXT("/Game/Maps/Map_Level%i?listen"), GameInstance->GetCurrentLevel()
+	);
+	World->ServerTravel(TravelURL);
 }

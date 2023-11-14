@@ -495,6 +495,21 @@ void USideScrollerGameInstance::CreateSession()
 	}
 }
 
+int USideScrollerGameInstance::GetCurrentLevel() const
+{
+	return CurrentLevel;
+}
+
+void USideScrollerGameInstance::IncrementCurrentLevel()
+{
+	UE_LOG(LogTemp, Warning,
+		TEXT("USideScrollerGameInstance::IncrementCurrentLevel - Incrementing CurrentLevel from %i to %i!"),
+		this->GetCurrentLevel(),
+		1 + this->GetCurrentLevel()
+	);
+	this->CurrentLevel += 1;
+}
+
 void USideScrollerGameInstance::LoadGame()
 {
 	UE_LOG(LogTemp, Display, TEXT("USideScrollerGameInstance::LoadGame - Trying to load a saved game"));

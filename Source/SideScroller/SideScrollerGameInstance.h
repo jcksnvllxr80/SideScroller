@@ -89,6 +89,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SaveGame();
+
+	UFUNCTION(BlueprintCallable)
+	int GetCurrentLevel() const;
+
+	UFUNCTION(BlueprintCallable)
+	void IncrementCurrentLevel();
 	
 private:
 	TSubclassOf<class UUserWidget> MainMenuClass = nullptr;
@@ -108,7 +114,10 @@ private:
 	std::map<FString, TSubclassOf<APC_PlayerFox>> PlayerControllerChosenCharMap;
 	FString DesiredServerName;
 	void CreateSession();
-	
+
+	UPROPERTY()
+	int CurrentLevel = 1;
+
 	UFUNCTION(BlueprintCallable)
 	void LoadGame();
 

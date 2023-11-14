@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Engine/TriggerBox.h"
+#include "SideScroller/Characters/Players/PC_PlayerFox.h"
+#include "SideScroller/Controllers/GameModePlayerController.h"
 #include "LevelCompleteTrigger.generated.h"
 
 /**
@@ -20,6 +22,19 @@ public:
 	virtual void BeginPlay() override;
 
 private:
+	UFUNCTION()
+	void PrepForNextLevel(const APC_PlayerFox* Player);
+
+	UFUNCTION()
+	static void CallNextLevelStart(AGameModePlayerController* GameModePlayerController);
+
 	UPROPERTY(EditAnywhere)
 	FVector DoorSize = {8.000000, 20.000000, 16.000000};
+
+	UPROPERTY(EditAnywhere)
+	float StartNextLevelDelayTimer = 2.f;
+	
+	FTimerHandle StartNextLevelDelayTimerHandle;
+
+	FTimerDelegate StartNextLevelDelayDelegate;
 };

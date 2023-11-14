@@ -21,7 +21,10 @@ void ALobbyGameMode::StartGame()
 	UWorld* World = GetWorld();
 	if (!World) return;
 	bUseSeamlessTravel = true;
-	World->ServerTravel("/Game/Maps/Map_Level1?listen");
+	const FString TravelURL = FString::Printf(
+		TEXT("/Game/Maps/Map_Level%i?listen"), GameInstance->GetCurrentLevel()
+	);
+	World->ServerTravel(TravelURL);
 }
 
 void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)

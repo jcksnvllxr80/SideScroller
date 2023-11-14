@@ -18,6 +18,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Classes)
 	TSubclassOf<APC_PlayerFox> DefaultCharacterBP = nullptr;
 
+	UFUNCTION(BlueprintCallable)
+	void StartNextLevel();
+
 private:
 	bool LocateChosenCharacter(FConstPlayerControllerIterator Iter);
 	void SpawnPlayerChosenCharacters();
