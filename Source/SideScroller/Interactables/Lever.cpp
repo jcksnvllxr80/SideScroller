@@ -3,7 +3,6 @@
 
 #include "Lever.h"
 
-#include "PaperFlipbookComponent.h"
 #include "Components/BoxComponent.h"
 #include "SideScroller/Characters/Players/PC_PlayerFox.h"
 
