@@ -194,15 +194,19 @@ void APC_PlayerFox::PrintPlayersList(TArray<APC_PlayerFox*> PlayersArray)
 	UE_LOG(LogTemp, Display, TEXT("List of Players is %s"), *PlayerArrayStr);
 }
 
-UInteractInterface* APC_PlayerFox::GetInteractableObject() const
+UPrimitiveComponent* APC_PlayerFox::GetInteractableObject() const
 {
 	return InteractableObject;
 }
 
-void APC_PlayerFox::SetInteractableObject(AActor* InteractableObj)
+void APC_PlayerFox::SetInteractableObject(UPrimitiveComponent* InteractableObj)
 {
-	UInteractInterface* ThisInteractInterface =  Cast<UInteractInterface>(InteractableObj);
-	this->InteractableObject = ThisInteractInterface;
+	this->InteractableObject = InteractableObj;
+}
+
+void APC_PlayerFox::ClearInteractableObject()
+{
+	this->InteractableObject = nullptr;
 }
 
 bool APC_PlayerFox::FoundPlayerToSpectate(APC_PlayerFox* Player)
@@ -363,13 +367,36 @@ void APC_PlayerFox::SpectatePrevPlayer()
 
 void APC_PlayerFox::UseAction()
 {
-	if (InteractableObject != nullptr)
+	if (InteractableObject == nullptr)
+	{
+		UE_LOG(LogTemp, Display,
+			TEXT("APC_PlayerFox::UseAction - No item for %s to interact with."),
+			*this->GetPlayerName().ToString()
+		)
+		return;
+	}
+	
+	IInteractInterface* InteractableInterfaceObject = nullptr;
+	if (InteractableObject->GetOwner()->GetClass()->ImplementsInterface(UInteractInterface::StaticClass()))
+	{
+		InteractableInterfaceObject = Cast<IInteractInterface>(InteractableObject->GetOwner());
+	}
+	else
+	{
+		UE_LOG(LogTemp, Display,
+			TEXT("APC_PlayerFox::UseAction - %s is not an interactableobject."),
+			*InteractableObject->GetName()
+		)
+	}
+	
+	if (InteractableInterfaceObject != nullptr)
 	{
 		UE_LOG(LogTemp, Display,
 			TEXT("APC_PlayerFox::UseAction - %s is interacting with %s."),
 			*this->GetPlayerName().ToString(),
 			*InteractableObject->GetName()
 		)
+		InteractableInterfaceObject->Interact();
 	}
 	else
 	{

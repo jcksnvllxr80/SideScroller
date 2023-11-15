@@ -20,10 +20,10 @@ class SIDESCROLLER_API APC_PlayerFox : public ABasePaperCharacter, public IProje
 public:
 
 	UFUNCTION(BlueprintCallable)
-	UInteractInterface* GetInteractableObject() const;
+	UPrimitiveComponent* GetInteractableObject() const;
 
 	UFUNCTION(BlueprintCallable)
-	void SetInteractableObject(AActor* InteractableObj);
+	void SetInteractableObject(UPrimitiveComponent* InteractableObj);
 
 	UFUNCTION(BlueprintPure, Category = "HUD")
 	int GetAccumulatedPoints() const;
@@ -72,6 +72,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Fall")
 	void HandleFallOffLevel();
+
+	UFUNCTION(BlueprintCallable)
+	void ClearInteractableObject();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UPaperFlipbook* RunAnimation;
@@ -178,8 +181,9 @@ public:
 private:
 	UPROPERTY()
 	bool bCanShoot = true;
-	
-	UInteractInterface* InteractableObject;
+
+	UPROPERTY()
+	UPrimitiveComponent* InteractableObject;
 
 	UPROPERTY()
 	USideScrollerGameInstance* GameInstance;

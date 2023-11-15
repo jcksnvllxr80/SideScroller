@@ -42,13 +42,13 @@ void ADoor::ToggleDoor()
 {
 	if (bIsOpen)
 	{
-		UE_LOG(LogTemp, Display, TEXT("ADoor::ToggleDoor - Seetting lever to closed"));
+		UE_LOG(LogTemp, Display, TEXT("ADoor::ToggleDoor - Setting lever to closed"))
 		bIsOpen = false;
 		DoorSprite->SetSprite(ClosedPosition);
 	}
 	else
 	{
-		UE_LOG(LogTemp, Display, TEXT("ADoor::ToggleDoor - Seetting lever to open"));
+		UE_LOG(LogTemp, Display, TEXT("ADoor::ToggleDoor - Setting lever to open"))
 		bIsOpen = true;
 		DoorSprite->SetSprite(OpenPosition);
 	}
@@ -72,8 +72,12 @@ void ADoor::OnBeginOverlapDelegate(
 		return;
 	}
 
-	AActor* ThisActor =  Cast<AActor>(this);
-	PlayerFox->SetInteractableObject(ThisActor);
+	UE_LOG(LogTemp, Display,
+		TEXT("ADoor::OnBeginOverlapDelegate - Door Overlapped by %s"),
+		*PlayerFox->GetPlayerName().ToString()
+	)
+	
+	PlayerFox->SetInteractableObject(OverlappedComponent);
 }
 
 void ADoor::NotifyActorEndOverlap(AActor* OtherActor)
@@ -88,6 +92,11 @@ void ADoor::NotifyActorEndOverlap(AActor* OtherActor)
 		)
 		return;
 	}
+
+	UE_LOG(LogTemp, Display,
+		TEXT("ADoor::NotifyActorEndOverlap - Door overlap with %s is no longer occuring"),
+		*PlayerFox->GetPlayerName().ToString()
+	)
 	
-	PlayerFox->SetInteractableObject(nullptr);
+	PlayerFox->ClearInteractableObject();
 }

@@ -42,13 +42,13 @@ void ALever::ToggleLever()
 {
 	if (bIsOn)
 	{
-		UE_LOG(LogTemp, Display, TEXT("ALever::ToggleLever - Seetting lever to off"));
+		UE_LOG(LogTemp, Display, TEXT("ALever::ToggleLever - Setting lever to off"))
 		bIsOn = false;
 		LeverSprite->SetSprite(OffPosition);
 	}
 	else
 	{
-		UE_LOG(LogTemp, Display, TEXT("ALever::ToggleLever - Seetting lever to on"));
+		UE_LOG(LogTemp, Display, TEXT("ALever::ToggleLever - Setting lever to on"))
 		bIsOn = true;
 		LeverSprite->SetSprite(OnPosition);
 	}
@@ -72,8 +72,12 @@ void ALever::OnBeginOverlapDelegate(
 		return;
 	}
 
-	AActor* ThisActor =  Cast<AActor>(this);
-	PlayerFox->SetInteractableObject(ThisActor);
+	UE_LOG(LogTemp, Display,
+		TEXT("ALever::OnBeginOverlapDelegate - Lever Overlapped by %s"),
+		*PlayerFox->GetPlayerName().ToString()
+	)
+	
+	PlayerFox->SetInteractableObject(OverlappedComponent);
 }
 
 void ALever::NotifyActorEndOverlap(AActor* OtherActor)
@@ -88,6 +92,10 @@ void ALever::NotifyActorEndOverlap(AActor* OtherActor)
 		)
 		return;
 	}
-	
-	PlayerFox->SetInteractableObject(nullptr);
+
+	UE_LOG(LogTemp, Display,
+		TEXT("ALever::NotifyActorEndOverlap - Lever overlap with %s is no longer occuring"),
+		*PlayerFox->GetPlayerName().ToString()
+	)
+	PlayerFox->ClearInteractableObject();
 }
