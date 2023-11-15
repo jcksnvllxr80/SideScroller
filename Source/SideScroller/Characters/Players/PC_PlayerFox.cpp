@@ -65,6 +65,7 @@ void APC_PlayerFox::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAxis("ClimbUp", this, &APC_PlayerFox::ClimbUpAxisInputCallback);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &APC_PlayerFox::Jump);
 	PlayerInputComponent->BindAction("Shoot", IE_Pressed, this, &APC_PlayerFox::Shoot);
+	PlayerInputComponent->BindAction("Use", IE_Pressed, this, &APC_PlayerFox::UseAction);
 	PlayerInputComponent->BindAction("Run", IE_Pressed, this, &APC_PlayerFox::SetRunVelocity);
 	PlayerInputComponent->BindAction("Run", IE_Released, this, &APC_PlayerFox::SetWalkVelocity);
 	PlayerInputComponent->BindAction("InGameContextMenu", IE_Pressed, this, &APC_PlayerFox::OpenMenu);
@@ -191,6 +192,17 @@ void APC_PlayerFox::PrintPlayersList(TArray<APC_PlayerFox*> PlayersArray)
 		PlayerArrayStr += (Player->GetName() + (Player->IsDead() ? ": Dead; " : ": Alive; "));
 	}
 	UE_LOG(LogTemp, Display, TEXT("List of Players is %s"), *PlayerArrayStr);
+}
+
+UInteractInterface* APC_PlayerFox::GetInteractableObject() const
+{
+	return InteractableObject;
+}
+
+void APC_PlayerFox::SetInteractableObject(AActor* InteractableObj)
+{
+	UInteractInterface* ThisInteractInterface =  Cast<UInteractInterface>(InteractableObj);
+	this->InteractableObject = ThisInteractInterface;
 }
 
 bool APC_PlayerFox::FoundPlayerToSpectate(APC_PlayerFox* Player)
@@ -346,6 +358,25 @@ void APC_PlayerFox::SpectatePrevPlayer()
 				BeginSpectating(GameMode, true);
 			}
 		}
+	}
+}
+
+void APC_PlayerFox::UseAction()
+{
+	if (InteractableObject != nullptr)
+	{
+		UE_LOG(LogTemp, Display,
+			TEXT("APC_PlayerFox::UseAction - %s is interacting with %s."),
+			*this->GetPlayerName().ToString(),
+			*InteractableObject->GetName()
+		)
+	}
+	else
+	{
+		UE_LOG(LogTemp, Display,
+			TEXT("APC_PlayerFox::UseAction - No item for %s to interact with."),
+			*this->GetPlayerName().ToString()
+		)
 	}
 }
 

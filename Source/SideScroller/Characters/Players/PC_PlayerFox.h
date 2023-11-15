@@ -4,6 +4,7 @@
 #include "SideScroller/Characters/BasePaperCharacter.h"
 #include "PaperFlipbook.h"
 #include "Components/TextRenderComponent.h"
+#include "SideScroller/Interfaces/InteractInterface.h"
 #include "SideScroller/Interfaces/ProjectileInterface.h"
 #include "PC_PlayerFox.generated.h"
 
@@ -17,6 +18,13 @@ class SIDESCROLLER_API APC_PlayerFox : public ABasePaperCharacter, public IProje
 	GENERATED_BODY()
 
 public:
+
+	UFUNCTION(BlueprintCallable)
+	UInteractInterface* GetInteractableObject() const;
+
+	UFUNCTION(BlueprintCallable)
+	void SetInteractableObject(AActor* InteractableObj);
+
 	UFUNCTION(BlueprintPure, Category = "HUD")
 	int GetAccumulatedPoints() const;
 
@@ -113,6 +121,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SpectatePrevPlayer();
+
+	UFUNCTION(BlueprintCallable)
+	void UseAction();
 	
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
@@ -167,6 +178,8 @@ public:
 private:
 	UPROPERTY()
 	bool bCanShoot = true;
+	
+	UInteractInterface* InteractableObject;
 
 	UPROPERTY()
 	USideScrollerGameInstance* GameInstance;

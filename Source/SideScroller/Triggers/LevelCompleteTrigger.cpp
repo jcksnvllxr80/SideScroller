@@ -57,8 +57,6 @@ void ALevelCompleteTrigger::PrepForNextLevel(const APC_PlayerFox* Player)
 		this->StartNextLevelDelayTimer,
 		false
 	);
-	
-	CallNextLevelStart(GameModePlayerController);
 }
 
 void ALevelCompleteTrigger::CallNextLevelStart(AGameModePlayerController* GameModePlayerController)
