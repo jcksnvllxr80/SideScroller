@@ -16,6 +16,8 @@ class SIDESCROLLER_API ALever : public ABaseInteractable, public IInteractInterf
 	GENERATED_BODY()
 
 public:
+	ALever();
+	
 	UFUNCTION()
 	virtual void Interact() override;
 

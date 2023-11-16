@@ -5,6 +5,12 @@
 
 #include "Kismet/GameplayStatics.h"
 
+ADoor::ADoor()
+{
+	InteractableBox->SetRelativeScale3D(FVector(0.5,0.4,0.5));
+	InteractableBox->SetRelativeLocation(FVector(0.0,0.0,0.0));
+}
+
 void ADoor::Interact()
 {
 	if (GetCanInteract())

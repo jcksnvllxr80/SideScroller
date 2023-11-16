@@ -6,6 +6,12 @@
 #include "Kismet/GameplayStatics.h"
 #include "SideScroller/Characters/Players/PC_PlayerFox.h"
 
+ALever::ALever()
+{
+	InteractableBox->SetRelativeScale3D(FVector(0.5,0.4,0.2));
+	InteractableBox->SetRelativeLocation(FVector(0.0,0.0,0.0));
+}
+
 void ALever::Interact()
 {
 	if (GetCanInteract())

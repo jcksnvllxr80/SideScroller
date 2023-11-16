@@ -16,6 +16,8 @@ class SIDESCROLLER_API ADoor : public ABaseInteractable, public IInteractInterfa
 	GENERATED_BODY()
 
 public:
+	ADoor();
+	
 	UFUNCTION()
 	virtual void Interact() override;
 
