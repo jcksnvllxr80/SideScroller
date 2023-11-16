@@ -3,10 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PaperFlipbook.h"
-#include "PaperFlipbookComponent.h"
-#include "PaperSpriteActor.h"
-#include "Components/BoxComponent.h"
+#include "BaseInteractable.h"
 #include "SideScroller/Interfaces/InteractInterface.h"
 #include "Door.generated.h"
 
@@ -14,48 +11,46 @@
  * 
  */
 UCLASS()
-class SIDESCROLLER_API ADoor : public APaperSpriteActor, public IInteractInterface
+class SIDESCROLLER_API ADoor : public ABaseInteractable, public IInteractInterface
 {
 	GENERATED_BODY()
 
 public:
-	ADoor();
-	
 	UFUNCTION()
 	virtual void Interact() override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UPaperSprite* ClosedPosition;
+	UFUNCTION()
+	void CloseDoorSoundAndTimer();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UPaperSprite* OpenPosition;
+	UFUNCTION()
+	void OpenDoorSoundAndTimer();
 
 private:
 	UFUNCTION()
 	void ToggleDoor();
 
-	UPROPERTY()
-	UPaperSpriteComponent* DoorSprite;
-
-	UPROPERTY()
-	UBoxComponent* InteractBox;
-
-	UPROPERTY()
-	bool bIsOpen = false;
-
-protected:
 	UFUNCTION()
-	void OnBeginOverlapDelegate(
-		UPrimitiveComponent* OverlappedComponent,
-		AActor* OtherActor,
-		UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex,
-		bool bFromSweep,
-		const FHitResult& SweepResult
-	);
+	void CloseDoor();
 	
 	UFUNCTION()
-	virtual void NotifyActorEndOverlap(AActor* OtherActor) override;
+	void OpenDoor();
+
+	UFUNCTION()
+	void PlayDoorSound(USoundBase* DoorSound) const;
 	
-	virtual void BeginPlay() override;
+	UPROPERTY(EditAnywhere)
+	USoundBase* DoorOpenSound;
+	
+	UPROPERTY(EditAnywhere)
+	USoundBase* DoorCloseSound;
+	
+	FTimerHandle DoorOpenTimerHandle;
+
+	FTimerHandle DoorCloseTimerHandle;
+	
+	UPROPERTY(EditAnywhere)
+	float DoorOpenTime = 0.75;
+
+	UPROPERTY(EditAnywhere)
+	float DoorCloseTime = 0.25;
 };

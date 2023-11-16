@@ -3,100 +3,78 @@
 
 #include "Door.h"
 
-#include "Components/BoxComponent.h"
-#include "SideScroller/Characters/Players/PC_PlayerFox.h"
-
-ADoor::ADoor()
-{
-	PrimaryActorTick.bCanEverTick = false;
-
-	DoorSprite = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("DoorFlipbook"));
-	DoorSprite->SetupAttachment(RootComponent);
-
-	this->InteractBox = CreateDefaultSubobject<UBoxComponent>(TEXT("DoorInteractBox"));
-	this->InteractBox->SetupAttachment(DoorSprite);
-	this->InteractBox->SetHiddenInGame(true);
-}
-
-void ADoor::BeginPlay()
-{
-	Super::BeginPlay();
-
-	if (!DoorSprite)
-	{
-		return;
-	}
-	
-	this->InteractBox->SetGenerateOverlapEvents(true);
-	this->InteractBox->OnComponentBeginOverlap.AddDynamic(this, &ADoor::OnBeginOverlapDelegate);
-	
-	DoorSprite->SetSprite(ClosedPosition);
-}
+#include "Kismet/GameplayStatics.h"
 
 void ADoor::Interact()
 {
-	ToggleDoor();
+	if (GetCanInteract())
+	{
+		SetCanInteract(false);
+		ToggleDoor();
+	}
 }
 
 void ADoor::ToggleDoor()
 {
-	if (bIsOpen)
+	if (bIsTrue)
 	{
-		UE_LOG(LogTemp, Display, TEXT("ADoor::ToggleDoor - Setting lever to closed"))
-		bIsOpen = false;
-		DoorSprite->SetSprite(ClosedPosition);
+		CloseDoorSoundAndTimer();
 	}
 	else
 	{
-		UE_LOG(LogTemp, Display, TEXT("ADoor::ToggleDoor - Setting lever to open"))
-		bIsOpen = true;
-		DoorSprite->SetSprite(OpenPosition);
+		OpenDoorSoundAndTimer();
 	}
 }
 
-void ADoor::OnBeginOverlapDelegate(
-	UPrimitiveComponent* OverlappedComponent,
-	AActor* OtherActor,
-	UPrimitiveComponent* OtherComp,
-	int32 OtherBodyIndex,
-	bool bFromSweep,
-	const FHitResult& SweepResult
-) {
-	APC_PlayerFox* PlayerFox = Cast<APC_PlayerFox>(OtherActor);
-	if (PlayerFox == nullptr)
-	{
-		UE_LOG(LogTemp, Display,
-			TEXT("ADoor::OnBeginOverlapDelegate - Overlap is %s, which is not a PlayerFox"),
-			*OtherActor->GetName()
-		)
-		return;
-	}
-
-	UE_LOG(LogTemp, Display,
-		TEXT("ADoor::OnBeginOverlapDelegate - Door Overlapped by %s"),
-		*PlayerFox->GetPlayerName().ToString()
-	)
-	
-	PlayerFox->SetInteractableObject(OverlappedComponent);
-}
-
-void ADoor::NotifyActorEndOverlap(AActor* OtherActor)
+void ADoor::CloseDoor()
 {
-	Super::NotifyActorEndOverlap(OtherActor);
-	APC_PlayerFox* PlayerFox = Cast<APC_PlayerFox>(OtherActor);
-	if (PlayerFox == nullptr)
-	{
-		UE_LOG(LogTemp, Display,
-			TEXT("ADoor::NotifyActorEndOverlap - Overlap was %s, which was not a PlayerFox"),
-			*OtherActor->GetName()
-		)
-		return;
-	}
+	UE_LOG(LogTemp, Display, TEXT("ADoor::CloseDoor - Setting door to closed"))
+	bIsTrue = false;
+	InteractableFlipbook->SetFlipbook(FalsePosition);
 
-	UE_LOG(LogTemp, Display,
-		TEXT("ADoor::NotifyActorEndOverlap - Door overlap with %s is no longer occuring"),
-		*PlayerFox->GetPlayerName().ToString()
-	)
-	
-	PlayerFox->ClearInteractableObject();
+	SetCanInteract(true);
+}
+
+void ADoor::OpenDoor()
+{
+	UE_LOG(LogTemp, Display, TEXT("ADoor::OpenDoor - Setting door to open"))
+	bIsTrue = true;
+	InteractableFlipbook->SetFlipbook(TruePosition);
+
+	SetCanInteract(true);
+}
+
+void ADoor::PlayDoorSound(USoundBase* DoorSound) const
+{
+	UGameplayStatics::SpawnSoundAttached(
+		DoorSound,
+		this->InteractableFlipbook,
+		TEXT("DoorSound")
+	);
+}
+
+void ADoor::CloseDoorSoundAndTimer()
+{
+	PlayDoorSound(DoorCloseSound);
+
+	GetWorld()->GetTimerManager().SetTimer(
+		this->DoorCloseTimerHandle,
+		this,
+		&ADoor::CloseDoor,
+		DoorCloseTime,
+		false
+	);
+}
+
+void ADoor::OpenDoorSoundAndTimer()
+{
+	PlayDoorSound(DoorOpenSound);
+
+	GetWorld()->GetTimerManager().SetTimer(
+		this->DoorOpenTimerHandle,
+		this,
+		&ADoor::OpenDoor,
+		DoorOpenTime,
+		false
+	);
 }

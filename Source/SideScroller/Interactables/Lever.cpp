@@ -3,99 +3,64 @@
 
 #include "Lever.h"
 
-#include "Components/BoxComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "SideScroller/Characters/Players/PC_PlayerFox.h"
-
-ALever::ALever()
-{
-	PrimaryActorTick.bCanEverTick = false;
-
-	LeverSprite = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("LeverFlipbook"));
-	LeverSprite->SetupAttachment(RootComponent);
-
-	this->InteractBox = CreateDefaultSubobject<UBoxComponent>(TEXT("LeverInteractBox"));
-	this->InteractBox->SetupAttachment(LeverSprite);
-	this->InteractBox->SetHiddenInGame(true);
-}
-
-void ALever::BeginPlay()
-{
-	Super::BeginPlay();
-
-	if (!LeverSprite)
-	{
-		return;
-	}
-	
-	this->InteractBox->SetGenerateOverlapEvents(true);
-	this->InteractBox->OnComponentBeginOverlap.AddDynamic(this, &ALever::OnBeginOverlapDelegate);
-	
-	LeverSprite->SetSprite(OffPosition);
-}
 
 void ALever::Interact()
 {
-	ToggleLever();
+	if (GetCanInteract())
+	{
+		SetCanInteract(false);
+		ToggleLever();
+	}
+}
+
+void ALever::TurnOffLever()
+{
+	UE_LOG(LogTemp, Display, TEXT("ALever::ToggleLever - Setting lever to off"))
+	bIsTrue = false;
+	InteractableFlipbook->SetFlipbook(FalsePosition);
+}
+
+void ALever::TurnOnLever()
+{
+	UE_LOG(LogTemp, Display, TEXT("ALever::ToggleLever - Setting lever to on"))
+	bIsTrue = true;
+	InteractableFlipbook->SetFlipbook(TruePosition);
+}
+
+void ALever::MoveLever()
+{
+	if (bIsTrue)
+	{
+		TurnOffLever();
+	}
+	else
+	{
+		TurnOnLever();
+	}
+
+	SetCanInteract(true);
+}
+
+void ALever::PlayLeverMoveSound() const
+{
+	UGameplayStatics::SpawnSoundAttached(
+		this->LeverMoveSound,
+		this->InteractableFlipbook,
+		TEXT("LeverMoveSound")
+	);
 }
 
 void ALever::ToggleLever()
 {
-	if (bIsOn)
-	{
-		UE_LOG(LogTemp, Display, TEXT("ALever::ToggleLever - Setting lever to off"))
-		bIsOn = false;
-		LeverSprite->SetSprite(OffPosition);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Display, TEXT("ALever::ToggleLever - Setting lever to on"))
-		bIsOn = true;
-		LeverSprite->SetSprite(OnPosition);
-	}
-}
+	PlayLeverMoveSound();
 
-void ALever::OnBeginOverlapDelegate(
-	UPrimitiveComponent* OverlappedComponent,
-	AActor* OtherActor,
-	UPrimitiveComponent* OtherComp,
-	int32 OtherBodyIndex,
-	bool bFromSweep,
-	const FHitResult& SweepResult
-) {
-	APC_PlayerFox* PlayerFox = Cast<APC_PlayerFox>(OtherActor);
-	if (PlayerFox == nullptr)
-	{
-		UE_LOG(LogTemp, Display,
-			TEXT("ALever::OnBeginOverlapDelegate - Overlap is %s, which is not a PlayerFox"),
-			*OtherActor->GetName()
-		)
-		return;
-	}
-
-	UE_LOG(LogTemp, Display,
-		TEXT("ALever::OnBeginOverlapDelegate - Lever Overlapped by %s"),
-		*PlayerFox->GetPlayerName().ToString()
-	)
-	
-	PlayerFox->SetInteractableObject(OverlappedComponent);
-}
-
-void ALever::NotifyActorEndOverlap(AActor* OtherActor)
-{
-	Super::NotifyActorEndOverlap(OtherActor);
-	APC_PlayerFox* PlayerFox = Cast<APC_PlayerFox>(OtherActor);
-	if (PlayerFox == nullptr)
-	{
-		UE_LOG(LogTemp, Display,
-			TEXT("ALever::NotifyActorEndOverlap - Overlap was %s, which was not a PlayerFox"),
-			*OtherActor->GetName()
-		)
-		return;
-	}
-
-	UE_LOG(LogTemp, Display,
-		TEXT("ALever::NotifyActorEndOverlap - Lever overlap with %s is no longer occuring"),
-		*PlayerFox->GetPlayerName().ToString()
-	)
-	PlayerFox->ClearInteractableObject();
+	GetWorld()->GetTimerManager().SetTimer(
+		this->LeverMoveTimerHandle,
+		this,
+		&ALever::MoveLever,
+		LeverMoveTime,
+		false
+	);
 }
