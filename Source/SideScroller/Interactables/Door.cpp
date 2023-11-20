@@ -84,3 +84,8 @@ void ADoor::OpenDoorSoundAndTimer()
 		false
 	);
 }
+
+bool ADoor::GetIsOpen() const
+{
+	return bIsTrue;
+}

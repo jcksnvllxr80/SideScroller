@@ -25,6 +25,9 @@ private:
 	UFUNCTION()
 	void PlayLeverMoveSound() const;
 
+	UPROPERTY(EditAnywhere)
+	TArray<class AMovingPlatform*> PlatformsToTrigger;
+	
 	UFUNCTION()
 	void ToggleLever();
 

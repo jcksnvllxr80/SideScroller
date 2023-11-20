@@ -18,26 +18,29 @@ class SIDESCROLLER_API ADoor : public ABaseInteractable, public IInteractInterfa
 public:
 	ADoor();
 	
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	virtual void Interact() override;
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void CloseDoorSoundAndTimer();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void OpenDoorSoundAndTimer();
 
+	UFUNCTION(BlueprintCallable)
+	bool GetIsOpen() const;
+
 private:
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void ToggleDoor();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void CloseDoor();
 	
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void OpenDoor();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void PlayDoorSound(USoundBase* DoorSound) const;
 	
 	UPROPERTY(EditAnywhere)
@@ -55,4 +58,7 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	float DoorCloseTime = 0.25;
+
+	UPROPERTY(VisibleAnywhere)
+	FVector FlipbookScale;
 };

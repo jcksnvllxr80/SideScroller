@@ -5,6 +5,7 @@
 
 #include "Kismet/GameplayStatics.h"
 #include "SideScroller/Characters/Players/PC_PlayerFox.h"
+#include "SideScroller/Mechanics/PlatformBlocks/MovingPlatform.h"
 
 ALever::ALever()
 {
@@ -26,6 +27,11 @@ void ALever::TurnOffLever()
 	UE_LOG(LogTemp, Display, TEXT("ALever::ToggleLever - Setting lever to off"))
 	bIsTrue = false;
 	InteractableFlipbook->SetFlipbook(FalsePosition);
+
+	for (AMovingPlatform* Platform: PlatformsToTrigger)
+	{
+		Platform->RemoveActiveTrigger();
+	}
 }
 
 void ALever::TurnOnLever()
@@ -33,6 +39,11 @@ void ALever::TurnOnLever()
 	UE_LOG(LogTemp, Display, TEXT("ALever::ToggleLever - Setting lever to on"))
 	bIsTrue = true;
 	InteractableFlipbook->SetFlipbook(TruePosition);
+	
+	for (AMovingPlatform* Platform: PlatformsToTrigger)
+	{
+		Platform->AddActiveTrigger();
+	}
 }
 
 void ALever::MoveLever()
