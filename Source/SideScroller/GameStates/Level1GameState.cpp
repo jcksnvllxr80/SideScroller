@@ -3,7 +3,7 @@
 
 #include "Level1GameState.h"
 
-void ASideScrollerGameState::BeginPlay()
+void ALevel1GameState::BeginPlay()
 {
 	Super::BeginPlay();
 
