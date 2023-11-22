@@ -7,6 +7,7 @@
 #include "PaperFlipbookComponent.h"
 #include "PaperSpriteActor.h"
 #include "Components/BoxComponent.h"
+#include "Components/WidgetComponent.h"
 #include "BaseInteractable.generated.h"
 
 /**
@@ -29,6 +30,12 @@ public:
 private:
 	UPROPERTY()
 	bool bCanInteract = true;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UUserWidget> WidgetInteractPrompt;
+
+	UPROPERTY(EditAnywhere)
+	UWidgetComponent* InteractPrompt;
 
 protected:
 	UPROPERTY()
