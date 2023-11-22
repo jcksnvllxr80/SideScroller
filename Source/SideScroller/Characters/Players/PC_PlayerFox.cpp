@@ -14,7 +14,6 @@
 #include "SideScroller/SideScrollerGameInstance.h"
 #include "SideScroller/GameModes/LevelGameMode.h"
 #include "SideScroller/GameModes/SideScrollerGameModeBase.h"
-#include "SideScroller/GameStates/Level1GameState.h"
 #include "SideScroller/GameStates/LobbyGameState.h"
 #include "SideScroller/SaveGames/SideScrollerSaveGame.h"
 
@@ -78,31 +77,38 @@ void APC_PlayerFox::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 void APC_PlayerFox::DoLevelWelcome()
 {
 	const ASideScrollerGameState* GameState = Cast<ASideScrollerGameState>(GetWorld()->GetGameState());
-	if (GameState != nullptr)
-	{
-		const FString GameMessage = FString::Printf( TEXT("Level %i Begin!"), GameState->GetCurrentLevel());
-		DisplayGameMessage(FText::FromString(GameMessage));
-	}
-	else
+	if (GameState == nullptr)
 	{
 		UE_LOG(LogTemp, Warning,
 			TEXT("APC_PlayerFox::DoLevelWelcome - Not a SideScrollerGameState. Not displaying level welcome message.")
 		);
 	}
 
-	UGameplayStatics::SpawnSoundAttached(
-		this->LevelStartSound,
-		this->GetSprite(),
-		TEXT("StartLevelSound")
-	);
+	if (GetWorld()->GetGameState()->GetName().Contains("Level"))
+	{
+		const FString GameMessage = FString::Printf( TEXT("Level %i Begin!"), GameState->GetCurrentLevel());
+		DisplayGameMessage(FText::FromString(GameMessage));
+		
+		UGameplayStatics::SpawnSoundAttached(
+			this->LevelStartSound,
+			this->GetSprite(),
+			TEXT("StartLevelSound")
+		);
 
-	GetWorld()->GetTimerManager().SetTimer(
-		this->LevelStartMessageTimerHandle,
-		this,
-		&APC_PlayerFox::HideGameMessage,
-		LevelStartMessageTime,
-		false
-	);
+		GetWorld()->GetTimerManager().SetTimer(
+			this->LevelStartMessageTimerHandle,
+			this,
+			&APC_PlayerFox::HideGameMessage,
+			LevelStartMessageTime,
+			false
+		);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning,
+			TEXT("APC_PlayerFox::DoLevelWelcome - This is not a Level. Not displaying level welcome message.")
+		);
+	}
 }
 
 void APC_PlayerFox::BeginPlay()
@@ -594,6 +600,10 @@ void APC_PlayerFox::HideGameMessage() const
 	if (this->WidgetPlayerGameMessageInstance != nullptr)
 	{
 		this->WidgetPlayerGameMessageInstance->SetVisibility(ESlateVisibility::Hidden);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("APC_PlayerFox::HideGameMessage - cant hide game message. no widget."));
 	}
 }
 
