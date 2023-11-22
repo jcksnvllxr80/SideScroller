@@ -56,6 +56,7 @@ APC_PlayerFox::APC_PlayerFox()
 	this->GetCharacterMovement()->SetIsReplicated(true);
 	this->SetReplicates(true);
 	this->CurrentRotation = MovingLeftRotation;
+	// this->NameBanner->SetIsReplicated(true);
 }
 
 void APC_PlayerFox::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
