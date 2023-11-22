@@ -6,12 +6,15 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/EditableText.h"
+#include "Components/TextBlock.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "SideScroller/SideScrollerGameInstance.h"
 #include "SideScroller/GameModes/LevelGameMode.h"
 #include "SideScroller/GameModes/SideScrollerGameModeBase.h"
+#include "SideScroller/GameStates/Level1GameState.h"
 #include "SideScroller/GameStates/LobbyGameState.h"
 #include "SideScroller/SaveGames/SideScrollerSaveGame.h"
 
@@ -54,7 +57,6 @@ APC_PlayerFox::APC_PlayerFox()
 	this->GetCharacterMovement()->SetIsReplicated(true);
 	this->SetReplicates(true);
 	this->CurrentRotation = MovingLeftRotation;
-	// this->NameBanner->SetIsReplicated(true);
 }
 
 void APC_PlayerFox::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -73,6 +75,36 @@ void APC_PlayerFox::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAction("SpectatePrevPlayer", IE_Pressed, this, &APC_PlayerFox::SpectatePrevPlayer);
 }
 
+void APC_PlayerFox::DoLevelWelcome()
+{
+	const ASideScrollerGameState* GameState = Cast<ASideScrollerGameState>(GetWorld()->GetGameState());
+	if (GameState != nullptr)
+	{
+		const FString GameMessage = FString::Printf( TEXT("Level %i Begin!"), GameState->GetCurrentLevel());
+		DisplayGameMessage(FText::FromString(GameMessage));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning,
+			TEXT("APC_PlayerFox::DoLevelWelcome - Not a SideScrollerGameState. Not displaying level welcome message.")
+		);
+	}
+
+	UGameplayStatics::SpawnSoundAttached(
+		this->LevelStartSound,
+		this->GetSprite(),
+		TEXT("StartLevelSound")
+	);
+
+	GetWorld()->GetTimerManager().SetTimer(
+		this->LevelStartMessageTimerHandle,
+		this,
+		&APC_PlayerFox::HideGameMessage,
+		LevelStartMessageTime,
+		false
+	);
+}
+
 void APC_PlayerFox::BeginPlay()
 {
 	Super::BeginPlay();
@@ -81,11 +113,14 @@ void APC_PlayerFox::BeginPlay()
 	AddToPlayersArray();
 	LoadProfilePlayerName();
 	PlayerHUDSetup();
+	PlayerGameMessageSetup();
 
 	this->NameBanner->SetText(GetPlayerName());
 	this->LastCheckpointLocation = this->GetSprite()->GetComponentLocation(); 
 	this->StandingFriction = this->GetCharacterMovement()->BrakingFrictionFactor;
 	this->NormalWalkingSpeed = this->GetCharacterMovement()->MaxWalkSpeed;
+
+	DoLevelWelcome();
 }
 
 void APC_PlayerFox::LoadProfilePlayerName()
@@ -519,6 +554,46 @@ void APC_PlayerFox::PlayerHUDTeardown()
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("APC_PlayerFox::PlayerHUDTeardown - WidgetPlayerHUDInstance is null"))
+	}
+}
+
+void APC_PlayerFox::PlayerGameMessageSetup()
+{
+	if (WidgetPlayerGameMessage) {
+		this->WidgetPlayerGameMessageInstance = CreateWidget<UUserWidget>(
+			GetWorld(), WidgetPlayerGameMessage
+		);
+		this->WidgetPlayerGameMessageInstance->SetVisibility(ESlateVisibility::Hidden);
+		this->WidgetPlayerGameMessageInstance->AddToViewport();
+	}
+}
+
+void APC_PlayerFox::DisplayGameMessage(FText Message)
+{
+	if (this->WidgetPlayerGameMessageInstance != nullptr)
+	{
+		const FName TextBlockName = "UserMessageTB";
+		UTextBlock* TextBlock =  Cast<UTextBlock>(
+			this->WidgetPlayerGameMessageInstance->GetWidgetFromName(TextBlockName)
+		);
+
+		if (TextBlock != nullptr)
+		{
+			TextBlock->SetText(Message);
+			this->WidgetPlayerGameMessageInstance->SetVisibility(ESlateVisibility::Visible);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("APC_PlayerFox::DisplayGameMessage - cant display message. no textblock."));
+		}
+	}
+}
+
+void APC_PlayerFox::HideGameMessage() const
+{
+	if (this->WidgetPlayerGameMessageInstance != nullptr)
+	{
+		this->WidgetPlayerGameMessageInstance->SetVisibility(ESlateVisibility::Hidden);
 	}
 }
 

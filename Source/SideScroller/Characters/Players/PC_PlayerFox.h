@@ -178,6 +178,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void PrintPlayersList(TArray<APC_PlayerFox*> PlayersArray);
 
+	UFUNCTION(BlueprintCallable)
+	void DisplayGameMessage(FText Message);
+
+	UFUNCTION(BlueprintCallable)
+	void HideGameMessage() const;
+
 private:
 	UPROPERTY()
 	bool bCanShoot = true;
@@ -196,6 +202,12 @@ private:
 	
 	UPROPERTY(EditAnywhere, replicated)
 	UUserWidget* WidgetPlayerHUDInstance;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UUserWidget> WidgetPlayerGameMessage;
+	
+	UPROPERTY()
+	UUserWidget* WidgetPlayerGameMessageInstance;
 	
 	UPROPERTY(EditAnywhere)
 	FVector LastCheckpointLocation;
@@ -238,6 +250,9 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	USoundBase* WalkSound;
+
+	UPROPERTY(EditAnywhere)
+	USoundBase* LevelStartSound;
 
 	UPROPERTY(EditAnywhere, replicated)
 	bool bIsCrouching = false;
@@ -339,7 +354,13 @@ private:
 
 	UFUNCTION(BlueprintCallable)
 	void PlayerHUDTeardown();
-
+	
+	UFUNCTION(BlueprintCallable)
+	void PlayerGameMessageSetup();
+	
+	UFUNCTION()
+	void DoLevelWelcome();
+	
 	UPROPERTY(EditAnywhere)
 	FVector CrouchProjectileSpawnPoint = FVector(0.f, 0.f, 5.f);
 
@@ -354,6 +375,11 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	FString PlayerName;
+
+	FTimerHandle LevelStartMessageTimerHandle;
+
+	UPROPERTY(EditAnywhere)
+	float LevelStartMessageTime = 3.f;
 	
 protected:
 	/*True means that we're currently in air - or falling*/
