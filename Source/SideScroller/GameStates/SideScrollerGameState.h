@@ -13,8 +13,13 @@ UCLASS()
 class SIDESCROLLER_API ASideScrollerGameState : public AGameStateBase
 {
 	GENERATED_BODY()
+
+public:
+	int GetCurrentLevel() const;
 	
 protected:
 	virtual void BeginPlay() override;
-	
+
+	UPROPERTY()
+	int CurrentLevel = 0;
 };

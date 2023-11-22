@@ -3,3 +3,9 @@
 
 #include "Level1GameState.h"
 
+void ASideScrollerGameState::BeginPlay()
+{
+	Super::BeginPlay();
+
+	CurrentLevel = 1;
+}

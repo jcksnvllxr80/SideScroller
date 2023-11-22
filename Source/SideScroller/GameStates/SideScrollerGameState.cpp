@@ -8,3 +8,8 @@ void ASideScrollerGameState::BeginPlay()
 	Super::BeginPlay();
 	
 }
+
+int ASideScrollerGameState::GetCurrentLevel() const
+{
+	return CurrentLevel;
+}

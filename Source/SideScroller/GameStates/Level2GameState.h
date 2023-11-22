@@ -13,5 +13,7 @@ UCLASS()
 class SIDESCROLLER_API ALevel2GameState : public ASideScrollerGameState
 {
 	GENERATED_BODY()
-	
+
+protected:
+	virtual void BeginPlay() override;
 };
