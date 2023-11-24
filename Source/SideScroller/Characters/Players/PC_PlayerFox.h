@@ -3,6 +3,7 @@
 #include "SideScroller/Climbables/BaseClimbable.h"
 #include "SideScroller/Characters/BasePaperCharacter.h"
 #include "PaperFlipbook.h"
+#include "Components/TextBlock.h"
 #include "Components/TextRenderComponent.h"
 #include "SideScroller/Interfaces/InteractInterface.h"
 #include "SideScroller/Interfaces/ProjectileInterface.h"
@@ -357,7 +358,8 @@ private:
 	
 	UFUNCTION(BlueprintCallable)
 	void PlayerGameMessageSetup();
-	
+	void GetMessageWidgetTextBlock(UTextBlock*& TextBlock) const;
+
 	UFUNCTION()
 	void DoLevelWelcome();
 	
