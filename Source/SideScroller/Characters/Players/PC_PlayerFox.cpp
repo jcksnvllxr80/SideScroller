@@ -556,11 +556,31 @@ void APC_PlayerFox::PlayerHUDTeardown()
 {
 	if (this->WidgetPlayerHUDInstance != nullptr)
 	{
+		UE_LOG(LogTemp, Display,
+			TEXT("APC_PlayerFox::PlayerHUDTeardown - Tearing down WidgetPlayerHUDInstance")
+		)
 		this->WidgetPlayerHUDInstance->RemoveFromParent();
 	}
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("APC_PlayerFox::PlayerHUDTeardown - WidgetPlayerHUDInstance is null"))
+	}
+}
+
+void APC_PlayerFox::PlayerMessageWidgetTeardown()
+{
+	if (this->WidgetPlayerGameMessageInstance != nullptr)
+	{
+		UE_LOG(LogTemp, Display,
+			TEXT("APC_PlayerFox::PlayerMessageWidgetTeardown - Tearing down WidgetPlayerGameMessageInstance")
+		)
+		this->WidgetPlayerGameMessageInstance->RemoveFromParent();
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning,
+			TEXT("APC_PlayerFox::PlayerMessageWidgetTeardown - WidgetPlayerGameMessageInstance is null")
+		)
 	}
 }
 
@@ -570,7 +590,7 @@ void APC_PlayerFox::PlayerGameMessageSetup()
 		this->WidgetPlayerGameMessageInstance = CreateWidget<UUserWidget>(
 			GetWorld(), WidgetPlayerGameMessage
 		);
-		// this->WidgetPlayerGameMessageInstance->SetVisibility(ESlateVisibility::Hidden);
+		this->WidgetPlayerGameMessageInstance->SetVisibility(ESlateVisibility::Hidden);
 		this->WidgetPlayerGameMessageInstance->AddToViewport();
 	}
 }
@@ -597,8 +617,8 @@ void APC_PlayerFox::DisplayGameMessage(FText Message)
 				TEXT("APC_PlayerFox::DoLevelWelcome - Displaying level welcome message, %s."),
 				*Message.ToString()
 			);
-			// TextBlock->SetVisibility(ESlateVisibility::Visible);
-			// this->WidgetPlayerGameMessageInstance->SetVisibility(ESlateVisibility::Visible);
+			TextBlock->SetVisibility(ESlateVisibility::Visible);
+			this->WidgetPlayerGameMessageInstance->SetVisibility(ESlateVisibility::Visible);
 		}
 		else
 		{
@@ -620,9 +640,9 @@ void APC_PlayerFox::HideGameMessage() const
 				TEXT("APC_PlayerFox::DoLevelWelcome - Hiding user message by displaying empty string.")
 			);
 			TextBlock->SetText(FText::FromString(TEXT("")));
-			// TextBlock->SetVisibility(ESlateVisibility::Hidden);
+			TextBlock->SetVisibility(ESlateVisibility::Hidden);
 		}
-		// this->WidgetPlayerGameMessageInstance->SetVisibility(ESlateVisibility::Hidden);
+		this->WidgetPlayerGameMessageInstance->SetVisibility(ESlateVisibility::Hidden);
 	}
 	else
 	{

@@ -355,9 +355,14 @@ private:
 
 	UFUNCTION(BlueprintCallable)
 	void PlayerHUDTeardown();
-	
+
+	UFUNCTION(BlueprintCallable)
+	void PlayerMessageWidgetTeardown();
+
 	UFUNCTION(BlueprintCallable)
 	void PlayerGameMessageSetup();
+
+	UFUNCTION(BlueprintCallable)
 	void GetMessageWidgetTextBlock(UTextBlock*& TextBlock) const;
 
 	UFUNCTION()
