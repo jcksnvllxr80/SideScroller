@@ -590,59 +590,18 @@ void APC_PlayerFox::PlayerGameMessageSetup()
 		this->WidgetPlayerGameMessageInstance = CreateWidget<UUserWidget>(
 			GetWorld(), WidgetPlayerGameMessage
 		);
-		this->WidgetPlayerGameMessageInstance->SetVisibility(ESlateVisibility::Hidden);
 		this->WidgetPlayerGameMessageInstance->AddToViewport();
 	}
 }
 
 void APC_PlayerFox::GetMessageWidgetTextBlock(UTextBlock*& TextBlock) const
 {
-	const FName TextBlockName = "UserMessageTB";
-	TextBlock = Cast<UTextBlock>(
-		this->WidgetPlayerGameMessageInstance->GetWidgetFromName(TextBlockName)
-	);
-}
-
-void APC_PlayerFox::DisplayGameMessage(FText Message)
-{
 	if (this->WidgetPlayerGameMessageInstance != nullptr)
 	{
-		UTextBlock* TextBlock;
-		GetMessageWidgetTextBlock(TextBlock);
-
-		if (TextBlock != nullptr)
-		{
-			TextBlock->SetText(Message);
-			UE_LOG(LogTemp, Display,
-				TEXT("APC_PlayerFox::DoLevelWelcome - Displaying level welcome message, %s."),
-				*Message.ToString()
-			);
-			TextBlock->SetVisibility(ESlateVisibility::Visible);
-			this->WidgetPlayerGameMessageInstance->SetVisibility(ESlateVisibility::Visible);
-		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("APC_PlayerFox::DisplayGameMessage - cant display message. no textblock."));
-		}
-	}
-}
-
-void APC_PlayerFox::HideGameMessage() const
-{
-	if (this->WidgetPlayerGameMessageInstance != nullptr)
-	{
-		UTextBlock* TextBlock;
-		GetMessageWidgetTextBlock(TextBlock);
-
-		if (TextBlock != nullptr)
-		{
-			UE_LOG(LogTemp, Display,
-				TEXT("APC_PlayerFox::DoLevelWelcome - Hiding user message by displaying empty string.")
-			);
-			TextBlock->SetText(FText::FromString(TEXT("")));
-			TextBlock->SetVisibility(ESlateVisibility::Hidden);
-		}
-		this->WidgetPlayerGameMessageInstance->SetVisibility(ESlateVisibility::Hidden);
+		const FName TextBlockName = "UserMessageTB";
+		TextBlock = Cast<UTextBlock>(
+			this->WidgetPlayerGameMessageInstance->GetWidgetFromName(TextBlockName)
+		);
 	}
 	else
 	{
@@ -650,10 +609,43 @@ void APC_PlayerFox::HideGameMessage() const
 	}
 }
 
+void APC_PlayerFox::DisplayGameMessage(FText Message)
+{
+	UTextBlock* TextBlock;
+	GetMessageWidgetTextBlock(TextBlock);
+
+	if (TextBlock != nullptr)
+	{
+		TextBlock->SetText(Message);
+		UE_LOG(LogTemp, Display,
+			TEXT("APC_PlayerFox::DoLevelWelcome - Displaying level welcome message, %s."),
+			*Message.ToString()
+		);
+		TextBlock->SetVisibility(ESlateVisibility::Visible);
+	}
+}
+
+void APC_PlayerFox::HideGameMessage() const
+{
+
+	UTextBlock* TextBlock;
+	GetMessageWidgetTextBlock(TextBlock);
+
+	if (TextBlock != nullptr)
+	{
+		UE_LOG(LogTemp, Display,
+			TEXT("APC_PlayerFox::DoLevelWelcome - Hiding user message by displaying empty string.")
+		);
+		TextBlock->SetVisibility(ESlateVisibility::Hidden);
+	}
+
+}
+
 void APC_PlayerFox::DeathCleanUp()
 {
 	this->RemoveFromPlayersArray();
 	this->PlayerHUDTeardown();
+	this->PlayerMessageWidgetTeardown();
 	this->MoveSpectatorsToNewPlayer();
 }
 
