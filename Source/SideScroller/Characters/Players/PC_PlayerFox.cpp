@@ -605,7 +605,9 @@ void APC_PlayerFox::GetMessageWidgetTextBlock(UTextBlock*& TextBlock) const
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("APC_PlayerFox::HideGameMessage - cant hide game message. no widget."));
+		UE_LOG(LogTemp, Warning,
+			TEXT("APC_PlayerFox::GetMessageWidgetTextBlock - cant get game message text block. no widget.")
+		);
 	}
 }
 
