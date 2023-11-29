@@ -18,6 +18,9 @@
 bool UMainMenu::Initialize()
 {
 	const bool SuccessfulInit = Super::Initialize();
+
+	LoadPlayerData();
+	
 	if (!SuccessfulInit) return false;
 	
 	if (OpenHostMenuButton)
@@ -181,9 +184,9 @@ bool UMainMenu::Initialize()
 			TEXT("UMainMenu::Initialize - VolumeSelectSlider is set to %f."),
 			PlayerProfile->VolumeLevel
 		);
-		VolumeSelectSlider->SetValue(PlayerProfile->VolumeLevel);
-
 		VolumeSelectSlider->OnValueChanged.AddDynamic(this, &UMainMenu::SetVolume);
+
+		VolumeSelectSlider->SetValue(PlayerProfile->VolumeLevel);
 	}
 	else
 	{
@@ -202,8 +205,6 @@ UMainMenu::UMainMenu(const FObjectInitializer & ObjectInitializer)
 	ServerRowClass = ServerRowBPClass.Class;
 	SetIsFocusable(true);
 	// bIsFocusable = true;  // deprecated
-
-	LoadPlayerData();
 }
 
 void UMainMenu::LoadPlayerData()
@@ -212,7 +213,7 @@ void UMainMenu::LoadPlayerData()
 	if (GameInstance == nullptr)
 	{
 		UE_LOG(LogTemp, Error,
-			TEXT("UMainMenu::LoadPlayerProfile - Can't LoadPlayerProfile. GameInstance is null!")
+			TEXT("UMainMenu::LoadPlayerData - Can't LoadPlayerData. GameInstance is null!")
 		);
 		return;
 	}
@@ -221,7 +222,7 @@ void UMainMenu::LoadPlayerData()
 	if (PlayerProfile == nullptr)
 	{
 		UE_LOG(LogTemp, Warning,
-			TEXT("UMainMenu::LoadPlayerProfile - Can't LoadPlayerProfile. PlayerProfile is null!")
+			TEXT("UMainMenu::LoadPlayerData - Can't LoadPlayerData. PlayerProfile is null!")
 		);
 	}
 }
@@ -284,6 +285,11 @@ void UMainMenu::SetServerList(TArray<FServerData> ServersData)
 int UMainMenu::GetNumberOfPlayers()
 {
 	return NumPlayersSpinBox->GetValue();
+}
+
+float UMainMenu::GetVolumeSliderValue()
+{
+	return VolumeSelectSlider->GetValue();
 }
 
 void UMainMenu::HostServer()

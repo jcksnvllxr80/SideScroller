@@ -25,6 +25,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	int GetNumberOfPlayers();
+	
+	UFUNCTION(BlueprintCallable)
+	float GetVolumeSliderValue();
 
 private:
 	void LoadPlayerData();
