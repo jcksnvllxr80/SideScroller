@@ -83,6 +83,7 @@ void APC_PlayerFox::DoLevelWelcome()
 		UE_LOG(LogTemp, Warning,
 			TEXT("APC_PlayerFox::DoLevelWelcome - Not a SideScrollerGameState. Not displaying level welcome message.")
 		);
+		return;
 	}
 
 	if (GetWorld()->GetGameState()->GetName().Contains("Level"))
@@ -249,6 +250,35 @@ void APC_PlayerFox::SetInteractableObject(UPrimitiveComponent* InteractableObj)
 void APC_PlayerFox::ClearInteractableObject()
 {
 	this->InteractableObject = nullptr;
+}
+
+void APC_PlayerFox::DoLevelComplete()
+{
+	const ASideScrollerGameState* GameState = Cast<ASideScrollerGameState>(GetWorld()->GetGameState());
+	if (GameState == nullptr)
+	{
+		UE_LOG(LogTemp, Warning,
+			TEXT("APC_PlayerFox::DoLevelComplete - Not a SideScrollerGameState. Not displaying level complete message.")
+		);
+		return;
+	}
+	
+	const FString GameMessage = FString::Printf( TEXT("Level %i Complete!"), GameState->GetCurrentLevel());
+	DisplayGameMessage(FText::FromString(GameMessage));
+		
+	UGameplayStatics::SpawnSoundAttached(
+		this->LevelCompleteSound,
+		this->GetSprite(),
+		TEXT("CompleteLevelSound")
+	);
+
+	GetWorld()->GetTimerManager().SetTimer(
+		this->LevelCompleteMessageTimerHandle,
+		this,
+		&APC_PlayerFox::HideGameMessage,
+		LevelCompleteMessageTime,
+		false
+	);
 }
 
 bool APC_PlayerFox::FoundPlayerToSpectate(APC_PlayerFox* Player)

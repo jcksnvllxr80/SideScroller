@@ -23,7 +23,7 @@ public:
 
 private:
 	UFUNCTION()
-	void PrepForNextLevel(const APC_PlayerFox* Player);
+	void PrepForNextLevel(APC_PlayerFox* Player);
 
 	UFUNCTION()
 	static void CallNextLevelStart(AGameModePlayerController* GameModePlayerController);

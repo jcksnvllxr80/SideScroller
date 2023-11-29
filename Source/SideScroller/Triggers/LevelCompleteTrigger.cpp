@@ -15,7 +15,7 @@ void ALevelCompleteTrigger::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
 
-	const APC_PlayerFox* Player = dynamic_cast<APC_PlayerFox*>(OtherActor);
+	APC_PlayerFox* Player = dynamic_cast<APC_PlayerFox*>(OtherActor);
 	if (Player == nullptr)
 	{
 		UE_LOG(LogTemp, Display,
@@ -32,7 +32,7 @@ void ALevelCompleteTrigger::NotifyActorBeginOverlap(AActor* OtherActor)
 	PrepForNextLevel(Player);
 }
 
-void ALevelCompleteTrigger::PrepForNextLevel(const APC_PlayerFox* Player)
+void ALevelCompleteTrigger::PrepForNextLevel(APC_PlayerFox* Player)
 {
 	AGameModePlayerController* GameModePlayerController = Cast<AGameModePlayerController>(Player->GetController());
 	if (GameModePlayerController == nullptr)
@@ -43,7 +43,8 @@ void ALevelCompleteTrigger::PrepForNextLevel(const APC_PlayerFox* Player)
 		return;
 	}
 
-	// TODO: show level complete banner / celebration
+	// show level complete banner / celebration
+	Player->DoLevelComplete();
 
 	StartNextLevelDelayDelegate.BindUFunction(
 		this,

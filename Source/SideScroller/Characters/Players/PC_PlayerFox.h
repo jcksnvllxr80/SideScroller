@@ -77,6 +77,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ClearInteractableObject();
 
+	UFUNCTION(BlueprintCallable)
+	void DoLevelComplete();
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UPaperFlipbook* RunAnimation;
 
@@ -255,6 +258,9 @@ private:
 	UPROPERTY(EditAnywhere)
 	USoundBase* LevelStartSound;
 
+	UPROPERTY(EditAnywhere)
+	USoundBase* LevelCompleteSound;
+
 	UPROPERTY(EditAnywhere, replicated)
 	bool bIsCrouching = false;
 
@@ -385,8 +391,13 @@ private:
 
 	FTimerHandle LevelStartMessageTimerHandle;
 
+	FTimerHandle LevelCompleteMessageTimerHandle;
+
 	UPROPERTY(EditAnywhere)
 	float LevelStartMessageTime = 3.f;
+
+	UPROPERTY(EditAnywhere)
+	float LevelCompleteMessageTime = 3.f;
 	
 protected:
 	/*True means that we're currently in air - or falling*/
