@@ -397,7 +397,6 @@ void APC_PlayerFox::Spectate() const
 		return;
 	}
 
-	// PlayerController->SetViewTargetWithBlend(SpectableActor);
 	try
 	{
 		PlayerController->SetViewTargetWithBlend(SpectableActor);

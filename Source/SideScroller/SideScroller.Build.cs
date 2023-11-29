@@ -8,6 +8,8 @@ public class SideScroller : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
+		bEnableExceptions = true;
+		
 		PublicDependencyModuleNames.AddRange(new string[] {
 			"Core", "CoreUObject", "Engine", "InputCore", "UMG", "AIModule", "OnlineSubsystem", "OnlineSubsystemSteam"
 		});
