@@ -86,8 +86,15 @@ void APC_PlayerFox::DoLevelWelcome()
 		return;
 	}
 
+	UE_LOG(LogTemp, Display,
+		TEXT("APC_PlayerFox::DoLevelWelcome - GameState is %s."),
+		*GetWorld()->GetGameState()->GetName()
+	);
+	
 	if (GetWorld()->GetGameState()->GetName().Contains("Level"))
 	{
+		UE_LOG(LogTemp, Display, TEXT("APC_PlayerFox::DoLevelWelcome - Displaying level welcome message."))
+		
 		const FString GameMessage = FString::Printf( TEXT("Level %i Begin!"), GameState->GetCurrentLevel());
 		DisplayGameMessage(FText::FromString(GameMessage));
 		
@@ -620,6 +627,7 @@ void APC_PlayerFox::PlayerGameMessageSetup()
 			GetWorld(), WidgetPlayerGameMessage
 		);
 		this->WidgetPlayerGameMessageInstance->AddToViewport();
+		HideGameMessage();
 	}
 }
 
@@ -665,7 +673,7 @@ void APC_PlayerFox::HideGameMessage() const
 	if (TextBlock != nullptr)
 	{
 		UE_LOG(LogTemp, Display,
-			TEXT("APC_PlayerFox::DoLevelWelcome - Hiding user message by displaying empty string.")
+			TEXT("APC_PlayerFox::DoLevelWelcome - Hiding user message.")
 		);
 		TextBlock->SetVisibility(ESlateVisibility::Hidden);
 	}
