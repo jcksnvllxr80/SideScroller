@@ -16,7 +16,7 @@ class SIDESCROLLER_API ALobbyGameMode : public ASideScrollerGameModeBase
 
 public:
 	UFUNCTION(BlueprintCallable)
-	void LogPlayerCount() const;
+	void LogPlayerCount(FString FunctionName) const;
 
 	UFUNCTION(BlueprintCallable)
 	void StartGame();

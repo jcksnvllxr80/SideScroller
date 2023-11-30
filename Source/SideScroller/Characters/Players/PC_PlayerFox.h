@@ -101,7 +101,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float SlideAngleDeg = 15.f;
 
-	UPROPERTY(EditAnywhere, Category = Camera)
+	UPROPERTY(EditAnywhere, replicated, Category = Camera)
 	UTextRenderComponent* NameBanner;
 	
 	FTimerHandle ShootTimerHandle;
@@ -252,7 +252,7 @@ private:
 	UPROPERTY(EditAnywhere)
 	USoundBase* JumpSound;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, replicated)
 	USoundBase* WalkSound;
 
 	UPROPERTY(EditAnywhere)

@@ -32,7 +32,7 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 	Super::PostLogin(NewPlayer);
 	++NumberOfPlayers;
 	SetNumPlayersToStart();
-	LogPlayerCount();
+	LogPlayerCount("PostLogin");
 	EnablePlayerGameModeInput(NewPlayer);
 	
 	if(NumberOfPlayers >= MinPlayersToStartGame)
@@ -55,7 +55,7 @@ void ALobbyGameMode::Logout(AController* Exiting)
 {
 	Super::Logout(Exiting);
 	--NumberOfPlayers;
-	LogPlayerCount();
+	LogPlayerCount("Logout");
 }
 
 void ALobbyGameMode::SetNumPlayersToStart()
@@ -67,10 +67,11 @@ void ALobbyGameMode::SetNumPlayersToStart()
 	}
 }
 
-void ALobbyGameMode::LogPlayerCount() const
+void ALobbyGameMode::LogPlayerCount(const FString FunctionName) const
 {
 	UE_LOG(LogTemp, Display,
-		   TEXT("There are %i players in the lobby (out of %i needed)."),
+		   TEXT("ALobbyGameMode::%s - There are %i players in the lobby (out of %i needed)."),
+		   *FunctionName,
 		   NumberOfPlayers,
 		   MinPlayersToStartGame
 	);

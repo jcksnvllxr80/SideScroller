@@ -181,7 +181,8 @@ void APC_PlayerFox::GetLifetimeReplicatedProps( TArray< FLifetimeProperty > & Ou
 	DOREPLIFETIME(APC_PlayerFox, bIsSliding);
 	DOREPLIFETIME(APC_PlayerFox, bOnLadder);
 	DOREPLIFETIME(APC_PlayerFox, CurrentRotation);
-	// DOREPLIFETIME(APC_PlayerFox, NameBanner);
+	DOREPLIFETIME(APC_PlayerFox, NameBanner);
+	DOREPLIFETIME(APC_PlayerFox, WalkSound);
 }
 
 int APC_PlayerFox::GetAccumulatedPoints() const
