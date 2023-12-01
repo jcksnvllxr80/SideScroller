@@ -101,7 +101,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float SlideAngleDeg = 15.f;
 
-	UPROPERTY(EditAnywhere, replicated, Category = Camera)
+	UPROPERTY(EditAnywhere, Category = Camera)
 	UTextRenderComponent* NameBanner;
 	
 	FTimerHandle ShootTimerHandle;
@@ -386,7 +386,7 @@ private:
 	UPROPERTY(VisibleAnywhere, replicated)
 	FString SpectatorsStr;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Replicated)
 	FString PlayerName;
 
 	FTimerHandle LevelStartMessageTimerHandle;

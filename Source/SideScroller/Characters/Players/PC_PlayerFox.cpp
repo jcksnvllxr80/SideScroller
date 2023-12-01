@@ -51,12 +51,11 @@ APC_PlayerFox::APC_PlayerFox()
 	this->GetCharacterMovement()->SetWalkableFloorAngle(60.f);
 	this->GetCharacterMovement()->MaxAcceleration = 400.f;
 	this->GetCharacterMovement()->BrakingFrictionFactor = 0.65;
-	
+
 	this->GetSprite()->SetIsReplicated(true);
 	this->GetCharacterMovement()->SetIsReplicated(true);
 	this->SetReplicates(true);
 	this->CurrentRotation = MovingLeftRotation;
-	// this->NameBanner->SetIsReplicated(true);
 }
 
 void APC_PlayerFox::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -181,7 +180,7 @@ void APC_PlayerFox::GetLifetimeReplicatedProps( TArray< FLifetimeProperty > & Ou
 	DOREPLIFETIME(APC_PlayerFox, bIsSliding);
 	DOREPLIFETIME(APC_PlayerFox, bOnLadder);
 	DOREPLIFETIME(APC_PlayerFox, CurrentRotation);
-	DOREPLIFETIME(APC_PlayerFox, NameBanner);
+	DOREPLIFETIME(APC_PlayerFox, PlayerName);
 	DOREPLIFETIME(APC_PlayerFox, WalkSound);
 }
 
