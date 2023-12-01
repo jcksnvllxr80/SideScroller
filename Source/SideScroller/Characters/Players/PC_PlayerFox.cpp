@@ -149,7 +149,17 @@ void APC_PlayerFox::LoadProfilePlayerName()
 		return;  // no game instance - early return
 	}
 
-	this->PlayerName = GameInstance->GetPlayerProfile()->PlayerName;
+	if (GetLocalRole() == ROLE_AutonomousProxy ||
+		(GetLocalRole() == ROLE_Authority &&
+			Cast<APlayerController>(this->GetController()) == GetWorld()->GetFirstPlayerController())
+	) {
+		this->PlayerName = GameInstance->GetPlayerProfile()->PlayerName;
+	}
+	else if (GetLocalRole() == ROLE_SimulatedProxy)
+	{
+		// TODO: get name from server with remote procedure call
+		this->PlayerName = "BoogieMane";
+	}
 }
 
 void APC_PlayerFox::Tick(const float DeltaTime)
