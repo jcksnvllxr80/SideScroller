@@ -137,6 +137,23 @@ void APC_PlayerFox::BeginPlay()
 	DoLevelWelcome();
 }
 
+void APC_PlayerFox::Tick(const float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	// CumulativeTime += DeltaTime;
+	// if (CumulativeTime > 0.5f)
+	// {
+	// 	LogSpeed();
+	// 	LogRotation();
+	// 	LogLocation();
+	// 	CumulativeTime = 0.f;
+	// }
+	
+	UpdateAnimation();
+	UpdateNameBanner();
+}
+
 void APC_PlayerFox::LoadProfilePlayerName()
 {
 	if (GameInstance == nullptr)
@@ -160,22 +177,6 @@ void APC_PlayerFox::LoadProfilePlayerName()
 		// TODO: get name from server with remote procedure call
 		this->PlayerName = "BoogieMane";
 	}
-}
-
-void APC_PlayerFox::Tick(const float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-	// CumulativeTime += DeltaTime;
-	// if (CumulativeTime > 0.5f)
-	// {
-	// 	LogSpeed();
-	// 	LogRotation();
-	// 	LogLocation();
-	// 	CumulativeTime = 0.f;
-	// }
-	
-	UpdateAnimation();
 }
 
 void APC_PlayerFox::GetLifetimeReplicatedProps( TArray< FLifetimeProperty > & OutLifetimeProps ) const
@@ -754,6 +755,32 @@ void APC_PlayerFox::UpdateRotation(const float Value)
 	// 	*this->GetActorLocation().ToString(),
 	// 	*this->GetProjectileSpawnPoint()->GetRelativeLocation().ToString()
 	// );
+}
+
+void APC_PlayerFox::UpdateNameBanner()
+{
+	Super::OnRep_PlayerState();
+	LoadProfilePlayerName();
+	
+	FString RoleStrBuilder;
+	ENetRole CurrentRole = GetLocalRole();
+	if (CurrentRole == ENetRole::ROLE_Authority)
+	{
+		RoleStrBuilder = TEXT("ROLE_Authority");
+
+	}
+	else if (CurrentRole == ENetRole::ROLE_AutonomousProxy)
+	{
+		RoleStrBuilder = TEXT("ROLE_AutonomousProxy");
+	}
+	else
+	{
+		RoleStrBuilder = TEXT("ROLE_SimulatedProxy");
+	}
+	
+	RoleStrBuilder.Append("_");
+	RoleStrBuilder.Append(this->PlayerName);
+	NameBanner->SetText(FText::FromString(RoleStrBuilder));
 }
 
 void APC_PlayerFox::SetOverlappingClimbable(bool OverlappingClimbable, ABaseClimbable* OverlappedClimbable)

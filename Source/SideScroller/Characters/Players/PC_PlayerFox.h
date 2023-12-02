@@ -410,4 +410,7 @@ protected:
 	
 	UFUNCTION(BlueprintCallable, Category = "UpdateAnimationProperties")
 	void UpdateRotation(const float Value);
+	
+	UFUNCTION(BlueprintCallable, Category = "UpdateAnimationProperties")
+	void UpdateNameBanner();
 };
