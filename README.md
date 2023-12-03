@@ -53,7 +53,36 @@ Testing can be done one of three ways:
 
 ### 2. Package it
 
-using the packaging selections (`deleopment`` for quick packing) in UE (Unreal Editor), choose the proper platform for your dev machine.
+#### in editor:
+
+using the packaging selections (`development` for quick packing) in UE (Unreal Editor), choose the proper platform for your dev machine.
+
+#### from powershell command line:
+
+```shell
+& F:\UE_5.2\Engine\Build\BatchFiles\RunUAT.bat BuildCookRun -project="C:\Users\A-A-Ron\git\SideScroller\SideScroller.uproject" -noP4 -platform=Win64 -clientconfig=Development -serverconfig=Development -cook -allmaps -NoCompile -stage -pak -archive -archivedirectory="C:\Users\A-A-Ron\Desktop\Games\sidescroller"
+```
+##### Run packaged game from powershell (3 player game)
+
+copy package to 2 more locations (may have to create the `sidescroller1` and `sidescroller2` locations)
+```shell
+cp -R C:\Users\A-A-Ron\Desktop\Games\sidescroller\Windows C:\Users\A-A-Ron\Desktop\Games\sidescroller1\;
+cp -R C:\Users\A-A-Ron\Desktop\Games\sidescroller\Windows C:\Users\A-A-Ron\Desktop\Games\sidescroller2\;
+```
+
+run all three executables
+```shell
+ C:\Users\A-A-Ron\Desktop\Games\sidescroller\Windows\SideScroller.exe;
+ C:\Users\A-A-Ron\Desktop\Games\sidescroller1\Windows\SideScroller.exe;
+ C:\Users\A-A-Ron\Desktop\Games\sidescroller2\Windows\SideScroller.exe;
+```
+
+remove the packaged game files from all three locations
+```shell
+rmdir C:\Users\A-A-Ron\Desktop\Games\sidescroller\Windows;
+rmdir C:\Users\A-A-Ron\Desktop\Games\sidescroller1\Windows;
+rmdir C:\Users\A-A-Ron\Desktop\Games\sidescroller2\Windows;
+```
 
 ### 3. Run it in PowerShell
 
