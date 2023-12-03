@@ -137,21 +137,6 @@ void APC_PlayerFox::BeginPlay()
 	DoLevelWelcome();
 }
 
-void APC_PlayerFox::LoadProfilePlayerName()
-{
-	if (GameInstance == nullptr)
-	{
-		UE_LOG(LogTemp, Error,
-			TEXT("APC_PlayerFox::LoadProfilePlayerName - No GameInstance. Using default PlayerName")
-		);
-
-		this->PlayerName = this->GetName();
-		return;  // no game instance - early return
-	}
-
-	this->PlayerName = GameInstance->GetPlayerProfile()->PlayerName;
-}
-
 void APC_PlayerFox::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -166,6 +151,49 @@ void APC_PlayerFox::Tick(const float DeltaTime)
 	// }
 	
 	UpdateAnimation();
+	UpdateNameBanner();
+}
+
+void APC_PlayerFox::LoadProfilePlayerName()
+{
+	if (GameInstance == nullptr)
+	{
+		UE_LOG(LogTemp, Error,
+			TEXT("APC_PlayerFox::LoadProfilePlayerName - No GameInstance. Using default PlayerName")
+		);
+
+		this->PlayerName = this->GetName();
+		return;  // no game instance - early return
+	}
+
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("APC_PlayerFox::LoadProfilePlayerName - Not getting name. Cant find World."))
+		return;  // dont go any further, cant find world
+	}
+	
+	const ENetRole CurrentRole = GetLocalRole();
+	if (Cast<APlayerController>(this->GetController()) == World->GetFirstPlayerController())
+	{
+		if (!bPlayerNameSet)
+		{
+			if (CurrentRole == ROLE_Authority || CurrentRole == ROLE_AutonomousProxy)
+			{
+				this->PlayerName = GameInstance->GetPlayerProfile()->PlayerName;
+				this->bPlayerNameSet = true;
+			}
+		}
+
+		if (!bPlayerNameSentToServer)
+		{
+			if (CurrentRole == ROLE_AutonomousProxy)
+			{
+				SendPlayerNameToServer(this->PlayerName);
+				this->bPlayerNameSentToServer = true;
+			}
+		}
+	}
 }
 
 void APC_PlayerFox::GetLifetimeReplicatedProps( TArray< FLifetimeProperty > & OutLifetimeProps ) const
@@ -680,6 +708,16 @@ void APC_PlayerFox::HideGameMessage() const
 
 }
 
+void APC_PlayerFox::SendPlayerNameToServer_Implementation(const FString& ClientPlayerName)
+{
+	this->PlayerName = ClientPlayerName;
+}
+
+bool APC_PlayerFox::SendPlayerNameToServer_Validate(const FString& ClientPlayerName)
+{
+	return ClientPlayerName != "";
+}
+
 void APC_PlayerFox::DeathCleanUp()
 {
 	this->RemoveFromPlayersArray();
@@ -744,6 +782,15 @@ void APC_PlayerFox::UpdateRotation(const float Value)
 	// 	*this->GetActorLocation().ToString(),
 	// 	*this->GetProjectileSpawnPoint()->GetRelativeLocation().ToString()
 	// );
+}
+
+void APC_PlayerFox::UpdateNameBanner()
+{
+	if (NameBanner->Text.EqualTo(FText::FromString("")))
+	{
+		LoadProfilePlayerName();
+		NameBanner->SetText(FText::FromString(this->PlayerName));
+	}
 }
 
 void APC_PlayerFox::SetOverlappingClimbable(bool OverlappingClimbable, ABaseClimbable* OverlappedClimbable)
