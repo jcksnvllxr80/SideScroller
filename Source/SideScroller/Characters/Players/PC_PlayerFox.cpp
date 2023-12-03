@@ -176,26 +176,22 @@ void APC_PlayerFox::LoadProfilePlayerName()
 	const ENetRole CurrentRole = GetLocalRole();
 	if (Cast<APlayerController>(this->GetController()) == World->GetFirstPlayerController())
 	{
-		if (CurrentRole == ROLE_AutonomousProxy || CurrentRole == ROLE_Authority)
+		if (!bPlayerNameSet)
 		{
-			this->PlayerName = GameInstance->GetPlayerProfile()->PlayerName;
+			if (CurrentRole == ROLE_Authority || CurrentRole == ROLE_AutonomousProxy)
+			{
+				this->PlayerName = GameInstance->GetPlayerProfile()->PlayerName;
+				this->bPlayerNameSet = true;
+			}
 		}
-	}
-	else
-	{
-		if (CurrentRole == ROLE_Authority)
+
+		if (!bPlayerNameSentToServer)
 		{
-			// TODO: need to figure out how to get this, it should replicate
-			// this->PlayerName = "ClientOnServer";
-		}
-		else if (CurrentRole == ROLE_SimulatedProxy)
-		{
-			// TODO: get name from server with remote procedure call
-			// this->PlayerName = "ServerOrAnotherClientOnClient";
-		}
-		else
-		{
-			this->PlayerName = "BoogieMane";
+			if (CurrentRole == ROLE_AutonomousProxy)
+			{
+				SendPlayerNameToServer(this->PlayerName);
+				this->bPlayerNameSentToServer = true;
+			}
 		}
 	}
 }
@@ -712,6 +708,16 @@ void APC_PlayerFox::HideGameMessage() const
 
 }
 
+void APC_PlayerFox::SendPlayerNameToServer_Implementation(const FString& ClientPlayerName)
+{
+	this->PlayerName = ClientPlayerName;
+}
+
+bool APC_PlayerFox::SendPlayerNameToServer_Validate(const FString& ClientPlayerName)
+{
+	return ClientPlayerName != "";
+}
+
 void APC_PlayerFox::DeathCleanUp()
 {
 	this->RemoveFromPlayersArray();
@@ -780,28 +786,11 @@ void APC_PlayerFox::UpdateRotation(const float Value)
 
 void APC_PlayerFox::UpdateNameBanner()
 {
-	Super::OnRep_PlayerState();
-	LoadProfilePlayerName();
-	
-	FString RoleStrBuilder;
-	ENetRole CurrentRole = GetLocalRole();
-	if (CurrentRole == ENetRole::ROLE_Authority)
+	if (NameBanner->Text.EqualTo(FText::FromString("")))
 	{
-		RoleStrBuilder = TEXT("ROLE_Authority");
-
+		LoadProfilePlayerName();
+		NameBanner->SetText(FText::FromString(this->PlayerName));
 	}
-	else if (CurrentRole == ENetRole::ROLE_AutonomousProxy)
-	{
-		RoleStrBuilder = TEXT("ROLE_AutonomousProxy");
-	}
-	else
-	{
-		RoleStrBuilder = TEXT("ROLE_SimulatedProxy");
-	}
-	
-	RoleStrBuilder.Append("_");
-	RoleStrBuilder.Append(this->PlayerName);
-	NameBanner->SetText(FText::FromString(RoleStrBuilder));
 }
 
 void APC_PlayerFox::SetOverlappingClimbable(bool OverlappingClimbable, ABaseClimbable* OverlappedClimbable)

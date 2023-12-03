@@ -133,7 +133,7 @@ public:
 	void UseAction();
 	
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
-
+	
 	UFUNCTION(BlueprintCallable)
 	void LoadProfilePlayerName();
 	
@@ -189,6 +189,15 @@ public:
 	void HideGameMessage() const;
 
 private:
+	UPROPERTY()
+	bool bPlayerNameSentToServer = false;
+
+	UPROPERTY()
+	bool bPlayerNameSet = false;
+
+	UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
+	void SendPlayerNameToServer(const FString& ClientPlayerName);
+	
 	UPROPERTY()
 	bool bCanShoot = true;
 
