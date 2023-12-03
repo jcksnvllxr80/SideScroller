@@ -166,16 +166,37 @@ void APC_PlayerFox::LoadProfilePlayerName()
 		return;  // no game instance - early return
 	}
 
-	if (GetLocalRole() == ROLE_AutonomousProxy ||
-		(GetLocalRole() == ROLE_Authority &&
-			Cast<APlayerController>(this->GetController()) == GetWorld()->GetFirstPlayerController())
-	) {
-		this->PlayerName = GameInstance->GetPlayerProfile()->PlayerName;
-	}
-	else if (GetLocalRole() == ROLE_SimulatedProxy)
+	UWorld* World = GetWorld();
+	if (World == nullptr)
 	{
-		// TODO: get name from server with remote procedure call
-		this->PlayerName = "BoogieMane";
+		UE_LOG(LogTemp, Warning, TEXT("APC_PlayerFox::LoadProfilePlayerName - Not getting name. Cant find World."))
+		return;  // dont go any further, cant find world
+	}
+	
+	const ENetRole CurrentRole = GetLocalRole();
+	if (Cast<APlayerController>(this->GetController()) == World->GetFirstPlayerController())
+	{
+		if (CurrentRole == ROLE_AutonomousProxy || CurrentRole == ROLE_Authority)
+		{
+			this->PlayerName = GameInstance->GetPlayerProfile()->PlayerName;
+		}
+	}
+	else
+	{
+		if (CurrentRole == ROLE_Authority)
+		{
+			// TODO: need to figure out how to get this, it should replicate
+			// this->PlayerName = "ClientOnServer";
+		}
+		else if (CurrentRole == ROLE_SimulatedProxy)
+		{
+			// TODO: get name from server with remote procedure call
+			// this->PlayerName = "ServerOrAnotherClientOnClient";
+		}
+		else
+		{
+			this->PlayerName = "BoogieMane";
+		}
 	}
 }
 
