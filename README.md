@@ -59,9 +59,16 @@ using the packaging selections (`development` for quick packing) in UE (Unreal E
 
 #### from powershell command line:
 
+*without compile*
 ```shell
 & F:\UE_5.2\Engine\Build\BatchFiles\RunUAT.bat BuildCookRun -project="C:\Users\A-A-Ron\git\SideScroller\SideScroller.uproject" -noP4 -platform=Win64 -clientconfig=Development -serverconfig=Development -cook -allmaps -NoCompile -stage -pak -archive -archivedirectory="C:\Users\A-A-Ron\Desktop\Games\sidescroller"
 ```
+
+*with compile*
+```shell
+& F:\UE_5.2\Engine\Build\BatchFiles\RunUAT.bat BuildCookRun -project="C:\Users\A-A-Ron\git\SideScroller\SideScroller.uproject" -noP4 -platform=Win64 -clientconfig=Development -serverconfig=Development -cook -allmaps -build -stage -pak -archive -archivedirectory="C:\Users\A-A-Ron\Desktop\Games\sidescroller"
+```
+
 ##### Run packaged game from powershell (3 player game)
 
 copy package to 2 more locations (may have to create the `sidescroller1` and `sidescroller2` locations)
