@@ -56,6 +56,7 @@ APC_PlayerFox::APC_PlayerFox()
 	this->GetCharacterMovement()->SetIsReplicated(true);
 	this->SetReplicates(true);
 	this->CurrentRotation = MovingLeftRotation;
+	this->LastRotation = this->CurrentRotation;
 }
 
 void APC_PlayerFox::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -708,6 +709,26 @@ void APC_PlayerFox::HideGameMessage() const
 
 }
 
+void APC_PlayerFox::SendVerticalAxisInputToServer_Implementation(const float Z)
+{
+	ClimbUpAxisInputCallback(Z);
+}
+
+bool APC_PlayerFox::SendVerticalAxisInputToServer_Validate(const float Z)
+{
+	return true;
+}
+
+void APC_PlayerFox::SendRotationToServer_Implementation(const float Value)
+{
+	UpdateRotation(Value);
+}
+
+bool APC_PlayerFox::SendRotationToServer_Validate(const float Value)
+{
+	return true;
+}
+
 void APC_PlayerFox::SendPlayerNameToServer_Implementation(const FString& ClientPlayerName)
 {
 	this->PlayerName = ClientPlayerName;
@@ -782,6 +803,15 @@ void APC_PlayerFox::UpdateRotation(const float Value)
 	// 	*this->GetActorLocation().ToString(),
 	// 	*this->GetProjectileSpawnPoint()->GetRelativeLocation().ToString()
 	// );
+
+	if (this->LastRotation != this->CurrentRotation)
+	{
+		this->LastRotation = this->CurrentRotation;
+		if (GetLocalRole() == ROLE_AutonomousProxy)
+		{
+			SendRotationToServer(Value);
+		}
+	}
 }
 
 void APC_PlayerFox::UpdateNameBanner()
@@ -1055,6 +1085,11 @@ void APC_PlayerFox::ClimbUpAxisInputCallback(const float Z)
 		CrouchClimbDown();
 	} else {
 		StopCrouchClimb();
+	}
+
+	if (GetLocalRole() == ROLE_AutonomousProxy)
+	{
+		SendVerticalAxisInputToServer(Z);
 	}
 }
 

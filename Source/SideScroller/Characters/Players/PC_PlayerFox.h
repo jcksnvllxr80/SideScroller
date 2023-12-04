@@ -197,10 +197,19 @@ private:
 
 	UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
 	void SendPlayerNameToServer(const FString& ClientPlayerName);
+
+	UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
+	void SendRotationToServer(const float Value);
+
+	UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
+	void SendVerticalAxisInputToServer(const float Z);
 	
 	UPROPERTY()
 	bool bCanShoot = true;
 
+	UPROPERTY()
+	FRotator LastRotation;
+	
 	UPROPERTY()
 	UPrimitiveComponent* InteractableObject;
 
