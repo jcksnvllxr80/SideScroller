@@ -61,12 +61,12 @@ using the packaging selections (`development` for quick packing) in UE (Unreal E
 
 *without compile*
 ```shell
-& F:\UE_5.2\Engine\Build\BatchFiles\RunUAT.bat BuildCookRun -project="C:\Users\A-A-Ron\git\SideScroller\SideScroller.uproject" -noP4 -platform=Win64 -clientconfig=Development -serverconfig=Development -cook -allmaps -NoCompile -stage -pak -archive -archivedirectory="C:\Users\A-A-Ron\Desktop\Games\sidescroller"
+F:\UE_5.2\Engine\Build\BatchFiles\RunUAT.bat BuildCookRun -project="C:\Users\A-A-Ron\git\SideScroller\SideScroller.uproject" -noP4 -platform=Win64 -clientconfig=Development -serverconfig=Development -cook -allmaps -NoCompile -stage -pak -archive -archivedirectory="C:\Users\A-A-Ron\Desktop\Games\sidescroller"
 ```
 
 *with compile*
 ```shell
-& F:\UE_5.2\Engine\Build\BatchFiles\RunUAT.bat BuildCookRun -project="C:\Users\A-A-Ron\git\SideScroller\SideScroller.uproject" -noP4 -platform=Win64 -clientconfig=Development -serverconfig=Development -cook -allmaps -build -stage -pak -archive -archivedirectory="C:\Users\A-A-Ron\Desktop\Games\sidescroller"
+F:\UE_5.2\Engine\Build\BatchFiles\RunUAT.bat BuildCookRun -project="C:\Users\A-A-Ron\git\SideScroller\SideScroller.uproject" -noP4 -platform=Win64 -clientconfig=Development -serverconfig=Development -cook -allmaps -build -stage -pak -archive -archivedirectory="C:\Users\A-A-Ron\Desktop\Games\sidescroller"
 ```
 
 ##### Run packaged game from powershell (3 player game)
@@ -79,9 +79,9 @@ cp -R C:\Users\A-A-Ron\Desktop\Games\sidescroller\Windows C:\Users\A-A-Ron\Deskt
 
 run all three executables
 ```shell
- C:\Users\A-A-Ron\Desktop\Games\sidescroller\Windows\SideScroller.exe;
- C:\Users\A-A-Ron\Desktop\Games\sidescroller1\Windows\SideScroller.exe;
- C:\Users\A-A-Ron\Desktop\Games\sidescroller2\Windows\SideScroller.exe;
+C:\Users\A-A-Ron\Desktop\Games\sidescroller\Windows\SideScroller.exe;
+C:\Users\A-A-Ron\Desktop\Games\sidescroller1\Windows\SideScroller.exe;
+C:\Users\A-A-Ron\Desktop\Games\sidescroller2\Windows\SideScroller.exe;
 ```
 
 remove the packaged game files from all three locations
@@ -91,15 +91,15 @@ rmdir C:\Users\A-A-Ron\Desktop\Games\sidescroller1\Windows;
 rmdir C:\Users\A-A-Ron\Desktop\Games\sidescroller2\Windows;
 ```
 
-### 3. Run it in PowerShell
+### 3. Run it from command line
 
 #### example commands:
 
-##### WINDOWS
+##### WINDOWS (PowerShell)
 ```shell
- & F:\UE_5.2\Engine\Binaries\Win64\UnrealEditor.exe C:\Users\A-A-Ron\git\SideScroller\SideScroller.uproject /Game/Maps/Map_MainMenu -game -log -v -windowed resx=1280 resy=720
+& F:\UE_5.2\Engine\Binaries\Win64\UnrealEditor.exe C:\Users\A-A-Ron\git\SideScroller\SideScroller.uproject /Game/Maps/Map_MainMenu -game -log -v -windowed resx=1280 resy=720
 ```
-##### MacOS
+##### MacOS (Terminal)
 ```shell
 "/Users/Shared/Epic Games/UE_5.2/Engine/Binaries/Mac/UnrealEditor.app/Contents/MacOS/UnrealEditor" $HOME/git/SideScroller/SideScroller.uproject  /Game/Maps/Map_MainMenu -game -log -v -windowed resx=1280 resy=720 &
 ```
