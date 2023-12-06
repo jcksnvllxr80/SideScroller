@@ -74,7 +74,13 @@ void APC_PlayerFox::BeginPlay()
 	this->StandingFriction = this->GetCharacterMovement()->BrakingFrictionFactor;
 	this->NormalWalkingSpeed = this->GetCharacterMovement()->MaxWalkSpeed;
 
-	DoLevelWelcome();
+	GetWorld()->GetTimerManager().SetTimer(
+		this->LevelWelcomeDelayTimerHandle,
+		this,
+		&APC_PlayerFox::DoLevelWelcome,
+		LevelWelcomeDelayTime,
+		false
+	);
 }
 
 void APC_PlayerFox::Tick(const float DeltaTime)

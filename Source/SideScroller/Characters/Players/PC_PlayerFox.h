@@ -411,6 +411,11 @@ private:
 
 	FTimerHandle LevelCompleteMessageTimerHandle;
 
+	FTimerHandle LevelWelcomeDelayTimerHandle;
+
+	UPROPERTY(EditAnywhere)
+	float LevelWelcomeDelayTime = 0.5;
+	
 	UPROPERTY(EditAnywhere)
 	float LevelStartMessageTime = 3.f;
 

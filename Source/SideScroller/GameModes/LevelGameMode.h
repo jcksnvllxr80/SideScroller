@@ -26,7 +26,7 @@ private:
 	void SpawnPlayerChosenCharacters();
 
 	UPROPERTY(EditAnywhere)
-	float SpawnPlayerChosenCharDelayTimer = 0.1;
+	float SpawnPlayerChosenCharDelayTimer = 0.3;
 	
 	FTimerHandle SpawnPlayerChosenCharDelayTimerHandle;
 
