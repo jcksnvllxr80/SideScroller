@@ -255,7 +255,7 @@ private:
 
 	float NormalWalkingSpeed;
 
-	UPROPERTY(EditAnywhere, replicated)
+	UPROPERTY(EditAnywhere)
 	float MaxRunningSpeed = 500.f;
 	
 	UPROPERTY(EditAnywhere)
@@ -342,10 +342,10 @@ private:
 	UFUNCTION(BlueprintCallable)
 	void LogRotation();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
 	void SetRunVelocity();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
 	void SetWalkVelocity();
 	
 	UFUNCTION(BlueprintCallable)
