@@ -69,7 +69,7 @@ void ALever::PlayLeverMoveSound() const
 	);
 }
 
-void ALever::ToggleLever()
+void ALever::ToggleLever_Implementation()
 {
 	PlayLeverMoveSound();
 
@@ -80,4 +80,9 @@ void ALever::ToggleLever()
 		LeverMoveTime,
 		false
 	);
+}
+
+bool ALever::ToggleLever_Validate()
+{
+	return true;
 }

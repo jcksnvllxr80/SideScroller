@@ -4,6 +4,7 @@
 
 #include "Blueprint/UserWidget.h"
 #include "Components/BoxComponent.h"
+#include "Net/UnrealNetwork.h"
 #include "SideScroller/Characters/Players/PC_PlayerFox.h"
 
 ABaseInteractable::ABaseInteractable()
@@ -34,6 +35,9 @@ ABaseInteractable::ABaseInteractable()
 			)
 		}
 	}
+	
+	this->SetReplicates(true);
+	this->InteractableFlipbook->SetIsReplicated(true);
 }
 
 void ABaseInteractable::BeginPlay()
@@ -124,4 +128,11 @@ void ABaseInteractable::NotifyActorEndOverlap(AActor* OtherActor)
 	}
 
 	PlayerFox->ClearInteractableObject();
+}
+
+void ABaseInteractable::GetLifetimeReplicatedProps( TArray< FLifetimeProperty > & OutLifetimeProps ) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ABaseInteractable, bIsTrue);
+	DOREPLIFETIME(ABaseInteractable, InteractableFlipbook);
 }

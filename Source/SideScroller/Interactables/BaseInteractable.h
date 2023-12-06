@@ -38,7 +38,7 @@ private:
 	UWidgetComponent* InteractPrompt;
 
 protected:
-	UPROPERTY()
+	UPROPERTY(replicated)
 	UPaperFlipbookComponent* InteractableFlipbook;
 
 	UPROPERTY()
@@ -54,7 +54,7 @@ protected:
 		const FHitResult& SweepResult
 	);
 
-	UPROPERTY()
+	UPROPERTY(replicated)
 	bool bIsTrue;
 	
 	UFUNCTION()

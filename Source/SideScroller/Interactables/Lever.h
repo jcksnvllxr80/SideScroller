@@ -28,7 +28,7 @@ private:
 	UPROPERTY(EditAnywhere)
 	TArray<class AMovingPlatform*> PlatformsToTrigger;
 	
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
 	void ToggleLever();
 
 	UFUNCTION()
