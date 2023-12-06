@@ -59,6 +59,41 @@ APC_PlayerFox::APC_PlayerFox()
 	this->LastRotation = this->CurrentRotation;
 }
 
+void APC_PlayerFox::BeginPlay()
+{
+	Super::BeginPlay();
+
+	GameInstance = dynamic_cast<USideScrollerGameInstance*>(GetGameInstance());
+	AddToPlayersArray();
+	LoadProfilePlayerName();
+	PlayerHUDSetup();
+	PlayerGameMessageSetup();
+
+	this->NameBanner->SetText(GetPlayerName());
+	this->LastCheckpointLocation = this->GetSprite()->GetComponentLocation(); 
+	this->StandingFriction = this->GetCharacterMovement()->BrakingFrictionFactor;
+	this->NormalWalkingSpeed = this->GetCharacterMovement()->MaxWalkSpeed;
+
+	DoLevelWelcome();
+}
+
+void APC_PlayerFox::Tick(const float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	// CumulativeTime += DeltaTime;
+	// if (CumulativeTime > 0.5f)
+	// {
+	// 	LogSpeed();
+	// 	LogRotation();
+	// 	LogLocation();
+	// 	CumulativeTime = 0.f;
+	// }
+	
+	UpdateAnimation();
+	UpdateNameBanner();
+}
+
 void APC_PlayerFox::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -118,41 +153,6 @@ void APC_PlayerFox::DoLevelWelcome()
 			TEXT("APC_PlayerFox::DoLevelWelcome - This is not a Level. Not displaying level welcome message.")
 		);
 	}
-}
-
-void APC_PlayerFox::BeginPlay()
-{
-	Super::BeginPlay();
-
-	GameInstance = dynamic_cast<USideScrollerGameInstance*>(GetGameInstance());
-	AddToPlayersArray();
-	LoadProfilePlayerName();
-	PlayerHUDSetup();
-	PlayerGameMessageSetup();
-
-	this->NameBanner->SetText(GetPlayerName());
-	this->LastCheckpointLocation = this->GetSprite()->GetComponentLocation(); 
-	this->StandingFriction = this->GetCharacterMovement()->BrakingFrictionFactor;
-	this->NormalWalkingSpeed = this->GetCharacterMovement()->MaxWalkSpeed;
-
-	DoLevelWelcome();
-}
-
-void APC_PlayerFox::Tick(const float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-	// CumulativeTime += DeltaTime;
-	// if (CumulativeTime > 0.5f)
-	// {
-	// 	LogSpeed();
-	// 	LogRotation();
-	// 	LogLocation();
-	// 	CumulativeTime = 0.f;
-	// }
-	
-	UpdateAnimation();
-	UpdateNameBanner();
 }
 
 void APC_PlayerFox::LoadProfilePlayerName()
