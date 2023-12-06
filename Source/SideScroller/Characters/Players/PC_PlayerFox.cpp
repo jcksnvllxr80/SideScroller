@@ -209,7 +209,6 @@ void APC_PlayerFox::GetLifetimeReplicatedProps( TArray< FLifetimeProperty > & Ou
 	DOREPLIFETIME(APC_PlayerFox, SpectatorsStr);
 	DOREPLIFETIME(APC_PlayerFox, PlayerBeingSpectated);
 	DOREPLIFETIME(APC_PlayerFox, Spectators);
-	DOREPLIFETIME(APC_PlayerFox, MaxRunningSpeed);
 	DOREPLIFETIME(APC_PlayerFox, bIsClimbing);
 	DOREPLIFETIME(APC_PlayerFox, bIsCrouching);
 	DOREPLIFETIME(APC_PlayerFox, bIsSliding);
@@ -1190,14 +1189,24 @@ void APC_PlayerFox::LogRotation()
 	);
 }
 
-void APC_PlayerFox::SetRunVelocity()
+void APC_PlayerFox::SetRunVelocity_Implementation()
 {
 	this->GetCharacterMovement()->MaxWalkSpeed = MaxRunningSpeed;
 }
 
-void APC_PlayerFox::SetWalkVelocity()
+bool APC_PlayerFox::SetRunVelocity_Validate()
+{
+	return true;
+}
+
+void APC_PlayerFox::SetWalkVelocity_Implementation()
 {
 	this->GetCharacterMovement()->MaxWalkSpeed = NormalWalkingSpeed;
+}
+
+bool APC_PlayerFox::SetWalkVelocity_Validate()
+{
+	return true;
 }
 
 void APC_PlayerFox::LogLocation()
