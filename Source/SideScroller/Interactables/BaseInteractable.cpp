@@ -11,13 +11,13 @@ ABaseInteractable::ABaseInteractable()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
-	InteractableFlipbook = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("DoorFlipbook"));
+	InteractableFlipbook = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("InteractFlipbook"));
 	InteractableFlipbook->SetupAttachment(RootComponent);
 
 	this->InteractPrompt = CreateDefaultSubobject<UWidgetComponent>(TEXT("InteractPromptWidget"));
 	this->InteractPrompt->SetupAttachment(RootComponent);
 	
-	this->InteractableBox = CreateDefaultSubobject<UBoxComponent>(TEXT("DoorInteractBox"));
+	this->InteractableBox = CreateDefaultSubobject<UBoxComponent>(TEXT("InteractBox"));
 	this->InteractableBox->SetupAttachment(InteractableFlipbook);
 	this->InteractableBox->SetHiddenInGame(true);
 	
