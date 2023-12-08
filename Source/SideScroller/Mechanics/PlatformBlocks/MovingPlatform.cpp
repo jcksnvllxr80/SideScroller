@@ -4,11 +4,14 @@
 #include "MovingPlatform.h"
 
 #include "PaperSpriteComponent.h"
+#include "Net/UnrealNetwork.h"
 
 AMovingPlatform::AMovingPlatform()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	GetRenderComponent()->SetMobility(EComponentMobility::Movable);
+
+	this->SetReplicates(true);
 }
 
 void AMovingPlatform::BeginPlay()
@@ -57,4 +60,10 @@ void AMovingPlatform::RemoveActiveTrigger()
 	{
 		ActiveTriggers--;
 	}
+}
+
+void AMovingPlatform::GetLifetimeReplicatedProps( TArray< FLifetimeProperty > & OutLifetimeProps ) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AMovingPlatform, ActiveTriggers);
 }
