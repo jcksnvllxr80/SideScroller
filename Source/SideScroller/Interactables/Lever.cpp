@@ -19,7 +19,10 @@ void ALever::Interact()
 	{
 		SetCanInteract(false);
 		ToggleLever();
+		return;
 	}
+
+	UE_LOG(LogTemp, Display, TEXT("ALever::Interact - Lever not ready to interact."))
 }
 
 void ALever::TurnOffLever()
@@ -69,7 +72,7 @@ void ALever::PlayLeverMoveSound() const
 	);
 }
 
-void ALever::ToggleLever_Implementation()
+void ALever::ToggleLever()
 {
 	PlayLeverMoveSound();
 
@@ -80,9 +83,4 @@ void ALever::ToggleLever_Implementation()
 		LeverMoveTime,
 		false
 	);
-}
-
-bool ALever::ToggleLever_Validate()
-{
-	return true;
 }

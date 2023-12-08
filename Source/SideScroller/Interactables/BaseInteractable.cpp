@@ -11,13 +11,13 @@ ABaseInteractable::ABaseInteractable()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
-	InteractableFlipbook = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("DoorFlipbook"));
+	InteractableFlipbook = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("InteractableFlipbook"));
 	InteractableFlipbook->SetupAttachment(RootComponent);
 
 	this->InteractPrompt = CreateDefaultSubobject<UWidgetComponent>(TEXT("InteractPromptWidget"));
 	this->InteractPrompt->SetupAttachment(RootComponent);
 	
-	this->InteractableBox = CreateDefaultSubobject<UBoxComponent>(TEXT("DoorInteractBox"));
+	this->InteractableBox = CreateDefaultSubobject<UBoxComponent>(TEXT("InteractableBox"));
 	this->InteractableBox->SetupAttachment(InteractableFlipbook);
 	this->InteractableBox->SetHiddenInGame(true);
 	
@@ -135,4 +135,5 @@ void ABaseInteractable::GetLifetimeReplicatedProps( TArray< FLifetimeProperty > 
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ABaseInteractable, bIsTrue);
 	DOREPLIFETIME(ABaseInteractable, InteractableFlipbook);
+	DOREPLIFETIME(ABaseInteractable, bCanInteract);
 }

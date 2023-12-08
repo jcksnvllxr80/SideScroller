@@ -1189,22 +1189,40 @@ void APC_PlayerFox::LogRotation()
 	);
 }
 
-void APC_PlayerFox::SetRunVelocity_Implementation()
+void APC_PlayerFox::SetRunVelocity()
+{
+	this->GetCharacterMovement()->MaxWalkSpeed = MaxRunningSpeed;
+	if (GetLocalRole() == ROLE_AutonomousProxy)
+	{
+		SetRunVelocityRPC();	
+	}
+}
+
+void APC_PlayerFox::SetRunVelocityRPC_Implementation()
 {
 	this->GetCharacterMovement()->MaxWalkSpeed = MaxRunningSpeed;
 }
 
-bool APC_PlayerFox::SetRunVelocity_Validate()
+bool APC_PlayerFox::SetRunVelocityRPC_Validate()
 {
 	return true;
 }
 
-void APC_PlayerFox::SetWalkVelocity_Implementation()
+void APC_PlayerFox::SetWalkVelocity()
+{
+	this->GetCharacterMovement()->MaxWalkSpeed = NormalWalkingSpeed;
+	if (GetLocalRole() == ROLE_AutonomousProxy)
+	{
+		SetWalkVelocityRPC();	
+	}
+}
+
+void APC_PlayerFox::SetWalkVelocityRPC_Implementation()
 {
 	this->GetCharacterMovement()->MaxWalkSpeed = NormalWalkingSpeed;
 }
 
-bool APC_PlayerFox::SetWalkVelocity_Validate()
+bool APC_PlayerFox::SetWalkVelocityRPC_Validate()
 {
 	return true;
 }
