@@ -129,7 +129,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SpectatePrevPlayer();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
 	void UseAction();
 	
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
