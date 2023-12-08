@@ -13,5 +13,11 @@ UCLASS()
 class SIDESCROLLER_API APC_PlayerGhost : public APC_PlayerFox
 {
 	GENERATED_BODY()
+
+public:
+	APC_PlayerGhost();
+
+protected:
+	virtual void BeginPlay() override;
 	
 };
