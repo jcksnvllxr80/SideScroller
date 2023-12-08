@@ -13,7 +13,7 @@ ASpikes::ASpikes()
 	SpikesSprite = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("SpikesSprite"));
 	SpikesSprite->SetupAttachment(RootComponent);
 	
-	this->SpikesBox = CreateDefaultSubobject<UBoxComponent>(TEXT("SpikesInteractBox"));
+	this->SpikesBox = CreateDefaultSubobject<UBoxComponent>(TEXT("DoorInteractBox"));
 	this->SpikesBox->SetupAttachment(SpikesSprite);
 	this->SpikesBox->SetHiddenInGame(true);
 
