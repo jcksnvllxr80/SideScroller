@@ -342,10 +342,17 @@ private:
 	UFUNCTION(BlueprintCallable)
 	void LogRotation();
 
+
 	UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
+	void SetRunVelocityRPC();
+
+	UFUNCTION(BlueprintCallable)
 	void SetRunVelocity();
 
 	UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
+	void SetWalkVelocityRPC();
+
+	UFUNCTION(BlueprintCallable)
 	void SetWalkVelocity();
 	
 	UFUNCTION(BlueprintCallable)
