@@ -106,6 +106,16 @@ rmdir C:\Users\A-A-Ron\Desktop\Games\sidescroller2\Windows;
 
 ---
 
+#### Cleaning up references and moves in the editor 
+
+useful when trying to rename a BP and unreal tells you "there is already a BP with that name", but you know there isn't anymore
+
+```shell
+& F:\UE_5.2\Engine\Binaries\Win64\UnrealEditor.exe C:\Users\A-A-Ron\git\SideScroller\SideScroller.uproject -run=ResavePackages -fixupredirects -autocheckout -projectonly -unattended
+```
+
+---
+
 ### Crash Reports (this has the potential to save you hours [if not days]!!)
 
 If unreal crashes and it isn't apparent as to why, the quickest way to troubleshoot is...
