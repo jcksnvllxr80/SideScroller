@@ -135,4 +135,5 @@ void ABaseInteractable::GetLifetimeReplicatedProps( TArray< FLifetimeProperty > 
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ABaseInteractable, bIsTrue);
 	DOREPLIFETIME(ABaseInteractable, InteractableFlipbook);
+	DOREPLIFETIME(ABaseInteractable, bCanInteract);
 }

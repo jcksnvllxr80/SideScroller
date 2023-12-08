@@ -477,7 +477,7 @@ void APC_PlayerFox::SpectatePrevPlayer()
 	}
 }
 
-void APC_PlayerFox::UseAction()
+void APC_PlayerFox::UseAction_Implementation()
 {
 	if (InteractableObject == nullptr)
 	{
@@ -517,6 +517,11 @@ void APC_PlayerFox::UseAction()
 			*this->GetPlayerName().ToString()
 		)
 	}
+}
+
+bool APC_PlayerFox::UseAction_Validate()
+{
+	return true;
 }
 
 void APC_PlayerFox::MoveSpectatorsToNewPlayer() const

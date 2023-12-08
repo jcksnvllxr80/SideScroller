@@ -28,7 +28,7 @@ public:
 	void SetCanInteract(const bool CanInteract);
 	
 private:
-	UPROPERTY()
+	UPROPERTY(replicated)
 	bool bCanInteract = true;
 
 	UPROPERTY(EditAnywhere)
