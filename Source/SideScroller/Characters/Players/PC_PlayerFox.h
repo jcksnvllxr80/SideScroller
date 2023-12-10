@@ -68,7 +68,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Spectators")
 	void RemoveFromSpectators(APC_PlayerFox* Spectator);
 
-	UFUNCTION(BlueprintCallable, Category = "Death")
+	UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation, Category = "Death")
 	void PlayerDeath();
 
 	UFUNCTION(BlueprintCallable, Category = "Fall")
@@ -234,10 +234,10 @@ private:
 	UPROPERTY(EditAnywhere)
 	FVector LastCheckpointLocation;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, replicated)
 	int NumberOfLives = 5;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, replicated)
 	int AccumulatedPoints = 0;
 
 	UPROPERTY(EditAnywhere)
@@ -251,6 +251,7 @@ private:
 
 	float StandingFriction;
 
+	UPROPERTY(VisibleAnywhere, replicated)
 	bool bIsOutOfLives = false;
 
 	float NormalWalkingSpeed;
