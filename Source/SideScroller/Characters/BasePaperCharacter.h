@@ -39,7 +39,7 @@ public:
 	float GetShootDelayTime() const;
 
 	UFUNCTION(BlueprintCallable)
-	void TryGivingPoints(APC_PlayerFox* DamageCauser);
+	void TryGivingPointsThenDoDeath(APC_PlayerFox* DamageCauser);
 
 	UFUNCTION(BlueprintCallable)
 	virtual void Shoot();
@@ -62,9 +62,16 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void DoHurt(AActor* DamageCauser);
 
+	UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
+	void TakeDamageRPC(float DamageAmount, AActor* DamageCauser);
+	
 	UFUNCTION(BlueprintCallable)
-	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
-	                         AActor* DamageCauser) override;
+	virtual float TakeDamage(
+		float DamageAmount,
+		FDamageEvent const& DamageEvent,
+		AController* EventInstigator,
+		AActor* DamageCauser
+	) override;
 
 	void PrepProjectileLaunch(bool bIsPLayer);
 
@@ -101,7 +108,7 @@ public:
 
 private:
 	// Properties
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, replicated)
 	float Health = 0;
 
 	UPROPERTY(VisibleAnywhere, BluePrintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
@@ -137,4 +144,6 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	float GetFloorAngle();
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };

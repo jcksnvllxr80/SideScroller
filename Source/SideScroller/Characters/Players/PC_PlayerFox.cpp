@@ -203,6 +203,11 @@ void APC_PlayerFox::LoadProfilePlayerName()
 	}
 }
 
+/**
+ * Retrieves the properties that should be replicated for this character's lifetime.
+ *
+ * @param OutLifetimeProps - The array that will contain the replicated properties.
+ */
 void APC_PlayerFox::GetLifetimeReplicatedProps( TArray< FLifetimeProperty > & OutLifetimeProps ) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -216,6 +221,9 @@ void APC_PlayerFox::GetLifetimeReplicatedProps( TArray< FLifetimeProperty > & Ou
 	DOREPLIFETIME(APC_PlayerFox, CurrentRotation);
 	DOREPLIFETIME(APC_PlayerFox, PlayerName);
 	DOREPLIFETIME(APC_PlayerFox, WalkSound);
+	DOREPLIFETIME(APC_PlayerFox, AccumulatedPoints);
+	DOREPLIFETIME(APC_PlayerFox, NumberOfLives);
+	DOREPLIFETIME(APC_PlayerFox, bIsOutOfLives);
 }
 
 int APC_PlayerFox::GetAccumulatedPoints() const
@@ -270,7 +278,9 @@ void APC_PlayerFox::PrintPlayersList(TArray<APC_PlayerFox*> PlayersArray)
 	{
 		if (Player == nullptr)
 		{
-			UE_LOG(LogTemp, Display, TEXT("APC_PlayerFox::PrintPlayersList - Found null Player."));
+			UE_LOG(LogTemp, Display,
+				TEXT("APC_PlayerFox::PrintPlayersList - Found null Player.")
+			);
 			continue;
 		}
 		PlayerArrayStr += (Player->GetName() + (Player->IsDead() ? ": Dead; " : ": Alive; "));
@@ -329,8 +339,8 @@ bool APC_PlayerFox::FoundPlayerToSpectate(APC_PlayerFox* Player)
 		{
 			UE_LOG(LogTemp, Display,
 				TEXT("Removing %s from %s's spectator list."),
-				*this->GetName(),
-				*this->PlayerBeingSpectated->GetName()
+				*this->GetPlayerName().ToString(),
+				*this->PlayerBeingSpectated->GetPlayerName().ToString()
 			);
 			this->PlayerBeingSpectated->RemoveFromSpectators(this);
 		}
@@ -338,8 +348,8 @@ bool APC_PlayerFox::FoundPlayerToSpectate(APC_PlayerFox* Player)
 		
 		UE_LOG(LogTemp, Display,
 			TEXT("Adding %s to %s's spectator list."),
-			*this->GetName(),
-			*this->PlayerBeingSpectated->GetName()
+			*this->GetPlayerName().ToString(),
+			*this->PlayerBeingSpectated->GetPlayerName().ToString()
 		);
 
 		this->PlayerBeingSpectated->AddToSpectators(this);
@@ -543,7 +553,7 @@ void APC_PlayerFox::ReviveAtCheckpoint()
 	this->GetMovementComponent()->StopMovementImmediately();
 }
 
-void APC_PlayerFox::PlayerDeath()
+void APC_PlayerFox::PlayerDeath_Implementation()
 {
 	if (this->NumberOfLives > 0)
 	{
@@ -558,6 +568,11 @@ void APC_PlayerFox::PlayerDeath()
 		this->bIsOutOfLives = true;
 		SpectateNextPlayer();  // SpectateOtherPlayer();
 	}
+}
+
+bool APC_PlayerFox::PlayerDeath_Validate()
+{
+	return true;
 }
 
 void APC_PlayerFox::HandleFallOffLevel()
@@ -1039,19 +1054,19 @@ void APC_PlayerFox::SetSpectatorsStr()
 	{
 		UE_LOG(
 			LogTemp, Display, TEXT("FOR LOOP: one of %s's spectators is: %s"),
-			*this->GetName(),
-			*Spectator->GetName()
+			*this->GetPlayerName().ToString(),
+			*Spectator->GetPlayerName().ToString()
 		);
-		SpectatorsString += Spectator->GetName() + "\n";
+		SpectatorsString += Spectator->GetPlayerName().ToString() + "\n";
 		UE_LOG(
 			LogTemp, Display, TEXT("FOR LOOP: %s's spectators string is %s"),
-			*this->GetName(),
+			*this->GetPlayerName().ToString(),
 			*SpectatorsString
 		);
 	}
 	UE_LOG(
 		LogTemp, Display, TEXT("AFTER FOR LOOP: %s's complete spectator string is %s"),
-		*this->GetName(),
+		*this->GetPlayerName().ToString(),
 		*SpectatorsString
 	);
 	this->SpectatorsStr = SpectatorsString;

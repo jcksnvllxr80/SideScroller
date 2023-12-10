@@ -8,6 +8,7 @@
 #include "Engine/DamageEvents.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 
 #include "Players/PC_PlayerFox.h"
 
@@ -32,6 +33,17 @@ void ABasePaperCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	ProjectileSpawnPoint->SetRelativeLocation(ProjectileSpawnLoc);
+}
+
+/**
+ * Retrieves the properties that should be replicated for this character's lifetime.
+ *
+ * @param OutLifetimeProps - The array that will contain the replicated properties.
+ */
+void ABasePaperCharacter::GetLifetimeReplicatedProps( TArray< FLifetimeProperty > & OutLifetimeProps ) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ABasePaperCharacter, Health);
 }
 
 float ABasePaperCharacter::GetDamage() const
@@ -155,13 +167,40 @@ float ABasePaperCharacter::GetShootDelayTime() const
 	return ShootDelayTime;
 }
 
-void ABasePaperCharacter::TryGivingPoints(APC_PlayerFox* DamageCauser)
+void ABasePaperCharacter::TryGivingPointsThenDoDeath(APC_PlayerFox* DamageCauser)
 {
 	// if the subject (this) of damage is not a Player give points
 	if (const APC_PlayerFox* PlayerFox = UECasts_Private::DynamicCast<APC_PlayerFox*>(this);
 		PlayerFox == nullptr
 	) {
-		if (this->GetController()->GetPawn()->GetClass()->ImplementsInterface(UPointsInterface::StaticClass()))
+		const AController* ThisController = this->GetController();
+		if (ThisController == nullptr)
+		{
+			UE_LOG(LogTemp, Warning,
+				TEXT("ABasePaperCharacter::TryGivingPointsThenDoDeath - ThisController is null, no points or death.")
+			)
+			return;
+		}
+
+		const APawn* ThisPawn = ThisController->GetPawn();
+		if (ThisPawn == nullptr)
+		{
+			UE_LOG(LogTemp, Warning,
+				TEXT("ABasePaperCharacter::TryGivingPointsThenDoDeath - ThisPawn is null, no points or death.")
+			)
+			return;
+		}
+
+		const UClass* ThisPawnClass = ThisPawn->GetClass();
+		if (ThisPawnClass == nullptr)
+		{
+			UE_LOG(LogTemp, Warning,
+				TEXT("ABasePaperCharacter::TryGivingPointsThenDoDeath - ThisPawnClass is null, no points or death.")
+			)
+			return;
+		}
+		
+		if (ThisPawnClass->ImplementsInterface(UPointsInterface::StaticClass()))
 		{
 			Cast<IPointsInterface>(this)->GivePoints(DamageCauser);
 			DoDeath();
@@ -169,8 +208,18 @@ void ABasePaperCharacter::TryGivingPoints(APC_PlayerFox* DamageCauser)
 	}
 }
 
-float ABasePaperCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
-                                      AActor* DamageCauser)
+float ABasePaperCharacter::TakeDamage(
+	float DamageAmount,
+	FDamageEvent const& DamageEvent,
+	AController* EventInstigator,
+	AActor* DamageCauser
+)
+{
+	TakeDamageRPC(DamageAmount, DamageCauser);
+	return DamageAmount;
+}
+
+void ABasePaperCharacter::TakeDamageRPC_Implementation(float DamageAmount, AActor* DamageCauser)
 {
 	this->AddHealth(-DamageAmount);
 	UE_LOG(LogTemp, Verbose, TEXT("%s's health: %f"), *this->GetName(), this->GetHealth());
@@ -179,10 +228,10 @@ float ABasePaperCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Da
 	{
 		if (APC_PlayerFox* PlayerFoxDamageCauser = dynamic_cast<APC_PlayerFox*>(DamageCauser)) {
 			// the damage causer is the player, so give the player points if the object implements points interface
-			TryGivingPoints(PlayerFoxDamageCauser);
+			TryGivingPointsThenDoDeath(PlayerFoxDamageCauser);
 		} else if (APC_PlayerFox* ParentOfDamageCauser = dynamic_cast<APC_PlayerFox*>(DamageCauser->GetOwner())) {
 			// if a PlayerFox's projectile was the damage causer
-			TryGivingPoints(ParentOfDamageCauser);
+			TryGivingPointsThenDoDeath(ParentOfDamageCauser);
 		} else {  // not a player doing the damage
 			// if player is the victim
 			if (APC_PlayerFox* PlayerFoxVictim = dynamic_cast<APC_PlayerFox*>(this)) {
@@ -192,8 +241,11 @@ float ABasePaperCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Da
 	} else {
 		DoHurt(DamageCauser);
 	}
-	
-	return DamageAmount;
+}
+
+bool ABasePaperCharacter::TakeDamageRPC_Validate(float DamageAmount, AActor* DamageCauser)
+{
+	return true;
 }
 
 void ABasePaperCharacter::PrepProjectileLaunch(bool bIsPLayer = true)
