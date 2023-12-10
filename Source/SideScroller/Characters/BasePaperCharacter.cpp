@@ -155,7 +155,7 @@ float ABasePaperCharacter::GetShootDelayTime() const
 	return ShootDelayTime;
 }
 
-void ABasePaperCharacter::TryGivingPoints(APC_PlayerFox* DamageCauser)
+void ABasePaperCharacter::TryGivingPointsThenDoDeath(APC_PlayerFox* DamageCauser)
 {
 	// if the subject (this) of damage is not a Player give points
 	if (const APC_PlayerFox* PlayerFox = UECasts_Private::DynamicCast<APC_PlayerFox*>(this);
@@ -179,10 +179,10 @@ float ABasePaperCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Da
 	{
 		if (APC_PlayerFox* PlayerFoxDamageCauser = dynamic_cast<APC_PlayerFox*>(DamageCauser)) {
 			// the damage causer is the player, so give the player points if the object implements points interface
-			TryGivingPoints(PlayerFoxDamageCauser);
+			TryGivingPointsThenDoDeath(PlayerFoxDamageCauser);
 		} else if (APC_PlayerFox* ParentOfDamageCauser = dynamic_cast<APC_PlayerFox*>(DamageCauser->GetOwner())) {
 			// if a PlayerFox's projectile was the damage causer
-			TryGivingPoints(ParentOfDamageCauser);
+			TryGivingPointsThenDoDeath(ParentOfDamageCauser);
 		} else {  // not a player doing the damage
 			// if player is the victim
 			if (APC_PlayerFox* PlayerFoxVictim = dynamic_cast<APC_PlayerFox*>(this)) {

@@ -39,7 +39,7 @@ public:
 	float GetShootDelayTime() const;
 
 	UFUNCTION(BlueprintCallable)
-	void TryGivingPoints(APC_PlayerFox* DamageCauser);
+	void TryGivingPointsThenDoDeath(APC_PlayerFox* DamageCauser);
 
 	UFUNCTION(BlueprintCallable)
 	virtual void Shoot();
