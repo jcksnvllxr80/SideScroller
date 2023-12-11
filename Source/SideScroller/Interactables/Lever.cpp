@@ -11,6 +11,7 @@ ALever::ALever()
 {
 	InteractableBox->SetRelativeScale3D(FVector(0.5,0.4,0.2));
 	InteractableBox->SetRelativeLocation(FVector(0.0,0.0,0.0));
+	this->SetReplicates(true);
 }
 
 void ALever::Interact()
@@ -63,7 +64,7 @@ void ALever::MoveLever()
 	SetCanInteract(true);
 }
 
-void ALever::PlayLeverMoveSound() const
+void ALever::PlayLeverMoveSound_Implementation() const
 {
 	UGameplayStatics::SpawnSoundAttached(
 		this->LeverMoveSound,

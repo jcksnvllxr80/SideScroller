@@ -40,7 +40,7 @@ private:
 	UFUNCTION(BlueprintCallable)
 	void OpenDoor();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
 	void PlayDoorSound(USoundBase* DoorSound) const;
 	
 	UPROPERTY(EditAnywhere)

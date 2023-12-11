@@ -50,7 +50,7 @@ void ADoor::OpenDoor()
 	SetCanInteract(true);
 }
 
-void ADoor::PlayDoorSound(USoundBase* DoorSound) const
+void ADoor::PlayDoorSound_Implementation(USoundBase* DoorSound) const
 {
 	UGameplayStatics::SpawnSoundAttached(
 		DoorSound,

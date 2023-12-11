@@ -22,7 +22,7 @@ public:
 	virtual void Interact() override;
 
 private:
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
 	void PlayLeverMoveSound() const;
 
 	UPROPERTY(EditAnywhere)
