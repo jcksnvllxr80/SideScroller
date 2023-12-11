@@ -44,7 +44,7 @@ void ALevelCompleteTrigger::PrepForNextLevel(APC_PlayerFox* Player)
 	}
 
 	// show level complete banner / celebration
-	Player->DoLevelComplete();
+	Player->DoLevelCompleteServerRPC();
 
 	StartNextLevelDelayDelegate.BindUFunction(
 		this,

@@ -77,8 +77,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ClearInteractableObject();
 
-	UFUNCTION(BlueprintCallable)
-	void DoLevelComplete();
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
+	void DoLevelCompleteMulticastRPC();
+
+	UFUNCTION(BlueprintCallable, Server, Reliable)
+	void DoLevelCompleteServerRPC();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UPaperFlipbook* RunAnimation;

@@ -303,13 +303,13 @@ void APC_PlayerFox::ClearInteractableObject()
 	this->InteractableObject = nullptr;
 }
 
-void APC_PlayerFox::DoLevelComplete()
+void APC_PlayerFox::DoLevelCompleteMulticastRPC_Implementation()
 {
 	const ASideScrollerGameState* GameState = Cast<ASideScrollerGameState>(GetWorld()->GetGameState());
 	if (GameState == nullptr)
 	{
 		UE_LOG(LogTemp, Warning,
-			TEXT("APC_PlayerFox::DoLevelComplete - Not a SideScrollerGameState. Not displaying level complete message.")
+		       TEXT("APC_PlayerFox::DoLevelComplete - Not a SideScrollerGameState. Not displaying level complete message.")
 		);
 		return;
 	}
@@ -330,6 +330,11 @@ void APC_PlayerFox::DoLevelComplete()
 		LevelCompleteMessageTime,
 		false
 	);
+}
+
+void APC_PlayerFox::DoLevelCompleteServerRPC_Implementation()
+{
+	DoLevelCompleteMulticastRPC();
 }
 
 bool APC_PlayerFox::FoundPlayerToSpectate(APC_PlayerFox* Player)
