@@ -219,6 +219,12 @@ float ABasePaperCharacter::TakeDamage(
 	return DamageAmount;
 }
 
+/**
+ * Takes damage from a damage causer and updates the health of the character.
+ *
+ * @param DamageAmount The amount of damage to be applied.
+ * @param DamageCauser The actor that caused the damage.
+ */
 void ABasePaperCharacter::TakeDamageRPC_Implementation(float DamageAmount, AActor* DamageCauser)
 {
 	this->AddHealth(-DamageAmount);
