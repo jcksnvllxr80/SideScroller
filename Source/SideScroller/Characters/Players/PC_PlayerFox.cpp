@@ -564,7 +564,8 @@ void APC_PlayerFox::PlayerDeath_Implementation()
 	{
 		// take a life away
 		this->NumberOfLives -= 1;
-		
+
+		// TODO: add respawn menu before reviving at checkpoint
 		ReviveAtCheckpoint();
 	} else {
 		this->RemoveFromPlayersArray();

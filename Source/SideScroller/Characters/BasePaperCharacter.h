@@ -53,7 +53,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	USceneComponent* GetProjectileSpawnPoint() const;
 	
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
 	void DoDeath();
 
 	UFUNCTION(BlueprintCallable)

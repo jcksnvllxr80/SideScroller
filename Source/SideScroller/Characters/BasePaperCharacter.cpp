@@ -81,7 +81,7 @@ USceneComponent* ABasePaperCharacter::GetProjectileSpawnPoint() const
 	return ProjectileSpawnPoint;
 }
 
-void ABasePaperCharacter::DoDeath()
+void ABasePaperCharacter::DoDeath_Implementation()
 {
 	this->bIsDead = true;
 	UE_LOG(LogTemp, Display, TEXT("%s's health depleted!"), *this->GetName());
