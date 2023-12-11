@@ -118,6 +118,15 @@ void ABasePaperCharacter::PushHurtCharacter(AActor* DamageCauser)
 	this->LaunchCharacter(FVector(HurtPush, 0.0, 0.0), false, false);
 }
 
+void ABasePaperCharacter::PlayHurtSound_Implementation()
+{
+	UGameplayStatics::SpawnSoundAttached(
+		this->PainSound,
+		this->GetSprite(),
+		TEXT("BasePaperCharacterPain")
+	);
+}
+
 void ABasePaperCharacter::DoHurt(AActor* DamageCauser)
 {
 	if (const APC_PlayerFox* PlayerFox = dynamic_cast<APC_PlayerFox*>(this);
@@ -136,11 +145,7 @@ void ABasePaperCharacter::DoHurt(AActor* DamageCauser)
 		PushHurtCharacter(DamageCauser);
 	}
 
-	UGameplayStatics::SpawnSoundAttached(
-		this->PainSound,
-		this->GetSprite(),
-		TEXT("BasePaperCharacterPain")
-	);
+	PlayHurtSound();
 }
 
 void ABasePaperCharacter::HurtFinishedCallback()

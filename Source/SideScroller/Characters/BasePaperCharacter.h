@@ -59,6 +59,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void PushHurtCharacter(AActor* DamageCauser);
 
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
+	void PlayHurtSound();
+
 	UFUNCTION(BlueprintCallable)
 	void DoHurt(AActor* DamageCauser);
 
