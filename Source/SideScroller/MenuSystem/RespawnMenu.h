@@ -12,7 +12,7 @@ class SIDESCROLLER_API URespawnMenu : public UMenuWidget
 	GENERATED_BODY()
 	
 protected:
-
+	void RunRespawnTimer();
 	UFUNCTION()
 	virtual bool Initialize() override;
 
@@ -26,12 +26,20 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	class UButton* QuitButton;
 	
-	UFUNCTION()
-	void BackToMainMenu();
+	FTimerHandle RespawnDelayTimerHandle;
+
+	UPROPERTY()
+	float RespawnDelayTime = 2.f;
 
 	UFUNCTION()
-	void RestartGame();
+	void Respawn();
+	
+	UFUNCTION()
+	void BackToMainMenu();
 	
 	UFUNCTION()
 	void QuitGame();
+
+	UFUNCTION()
+	void EnableRespawnButton() const;
 };
