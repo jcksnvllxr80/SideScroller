@@ -6,6 +6,9 @@
 #include "Components/BoxComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
+/**
+ * Constructor for APC_Enemy_Eagle.
+ */
 APC_Enemy_Eagle::APC_Enemy_Eagle()
 {
 	PrimaryActorTick.bCanEverTick = false;
@@ -23,6 +26,15 @@ APC_Enemy_Eagle::APC_Enemy_Eagle()
 	this->SetDamage(20.0);
 }
 
+/**
+ * @brief Function called when the enemy eagle starts playing.
+ *
+ * This function is called when the enemy eagle character starts playing. It sets the movement
+ * mode to flying and adjusts the maximum fly speed to 50.0 units per second.
+ *
+ * @param None
+ * @return None
+ */
 void APC_Enemy_Eagle::BeginPlay()
 {
 	Super::BeginPlay();
@@ -31,6 +43,14 @@ void APC_Enemy_Eagle::BeginPlay()
 	this->GetCharacterMovement()->MaxFlySpeed = 50.f;
 }
 
+/**
+ * Sets the transform of the projectile based on the given parameters.
+ *
+ * @param Direction The direction in which the projectile should be launched.
+ * @param MyOwner The actor that owns the projectile.
+ * @param BaseChar The base character that the projectile is targeting.
+ * @param Projectile The projectile to set the transform for.
+ */
 void APC_Enemy_Eagle::SetProjectileTransform(
 	const float Direction,
 	AActor* MyOwner,
@@ -48,6 +68,14 @@ void APC_Enemy_Eagle::SetProjectileTransform(
 	);
 }
 
+/**
+ * Calculates the pitch angle in radians between an enemy character and the player.
+ *
+ * @param BaseChar The enemy character.
+ * @param OwnerRotation The rotation of the enemy character.
+ * @param Direction The direction of the pitch angle.
+ * @return The pitch angle in radians between the enemy character and the player.
+ */
 float APC_Enemy_Eagle::GetEnemyToPlayerPitchRadians(
 	const ABasePaperCharacter* BaseChar,
 	FRotator& OwnerRotation,
