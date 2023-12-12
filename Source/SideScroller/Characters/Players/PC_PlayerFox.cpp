@@ -17,6 +17,10 @@
 #include "SideScroller/GameStates/LobbyGameState.h"
 #include "SideScroller/SaveGames/SideScrollerSaveGame.h"
 
+/**
+ * APC_PlayerFox Constructor.
+ * Initializes the player's attributes and components.
+ */
 APC_PlayerFox::APC_PlayerFox()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -59,6 +63,25 @@ APC_PlayerFox::APC_PlayerFox()
 	this->LastRotation = this->CurrentRotation;
 }
 
+/**
+ * @brief The BeginPlay method is called when the game starts or when the level is being replayed. It initializes
+ * various variables and sets up the player's HUD and game messages.
+ *
+ * @details The BeginPlay method performs the following operations:
+ * <ul>
+ *    <li>Calls the base class implementation of BeginPlay.</li>
+ *    <li>Obtains a reference to the game instance and stores it in the GameInstance variable.</li>
+ *    <li>Adds the player to the players array.</li>
+ *    <li>Loads the player's profile name.</li>
+ *    <li>Performs setup for the player's HUD.</li>
+ *    <li>Performs setup for the player's game messages.</li>
+ *    <li>Sets the NameBanner text to the player's name.</li>
+ *    <li>Stores the current location of the player's sprite in the LastCheckpointLocation variable.</li>
+ *    <li>Stores the braking friction factor and maximum walk speed of the player's character movement component in the
+ *    StandingFriction and NormalWalkingSpeed variables respectively.</li>
+ *    <li>Sets a timer to call the DoLevelWelcome method after a specified delay.</li>
+ * </ul>
+ */
 void APC_PlayerFox::BeginPlay()
 {
 	Super::BeginPlay();
@@ -100,6 +123,15 @@ void APC_PlayerFox::Tick(const float DeltaTime)
 	UpdateNameBanner();
 }
 
+/**
+ * Set up the input bindings for the player controller.
+ *
+ * This method is responsible for binding player input events to specific
+ * functions in the player controller. It sets up the input component and
+ * binds the necessary axis and action events.
+ *
+ * @param PlayerInputComponent The input component to set up.
+ */
 void APC_PlayerFox::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -116,6 +148,15 @@ void APC_PlayerFox::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAction("SpectatePrevPlayer", IE_Pressed, this, &APC_PlayerFox::SpectatePrevPlayer);
 }
 
+/**
+ * @brief Displays a level welcome message.
+ *
+ * This method is responsible for displaying a level welcome message if the game state is a SideScrollerGameState and the current level is identified as a level.
+ *
+ * @param None
+ *
+ * @return None
+ */
 void APC_PlayerFox::DoLevelWelcome()
 {
 	const ASideScrollerGameState* GameState = Cast<ASideScrollerGameState>(GetWorld()->GetGameState());
@@ -161,6 +202,19 @@ void APC_PlayerFox::DoLevelWelcome()
 	}
 }
 
+/**
+ * Loads the player name from the game instance and sets it as the player's name.
+ * If the game instance is null, the player name is set to the object's name.
+ * If the world is null, no further action is taken.
+ * If the local role is either ROLE_Authority or ROLE_AutonomousProxy and the controller is the first player controller
+ * in the world:
+ *   - If the player name is not already set, it is retrieved from the game instance's player profile and the
+ *   bPlayerNameSet flag is set to true.
+ *   - If the player name has not been sent to the server, and the local role is ROLE_AutonomousProxy, the player
+ *   name is sent to the server using SendPlayerNameToServer() and the bPlayerNameSentToServer flag is set to true.
+ *
+ * @param None
+ */
 void APC_PlayerFox::LoadProfilePlayerName()
 {
 	if (GameInstance == nullptr)
@@ -271,6 +325,17 @@ void APC_PlayerFox::SetLastCheckpointLocation(const FVector& Location)
 	this->LastCheckpointLocation = Location;
 }
 
+/**
+ * @brief Prints the list of players.
+ *
+ * This method takes an array of APC_PlayerFox objects and prints the list of players.
+ * The players' names and statuses (dead or alive) are concatenated into a string,
+ * and the string is logged in the Unreal Engine's log window using the Display level.
+ * If a null player is encountered in the array, a log message is displayed indicating
+ * that a null player was found, and the loop continues to the next player.
+ *
+ * @param PlayersArray The array of APC_PlayerFox objects representing the list of players.
+ */
 void APC_PlayerFox::PrintPlayersList(TArray<APC_PlayerFox*> PlayersArray)
 {
 	FString PlayerArrayStr = "";
@@ -303,6 +368,16 @@ void APC_PlayerFox::ClearInteractableObject()
 	this->InteractableObject = nullptr;
 }
 
+/**
+ * @brief Multicast RPC called when the level is complete for the player character control.
+ *
+ * This function is responsible for displaying the level complete message, playing the level complete sound,
+ * and hiding the level complete message after a certain time.
+ *
+ * @param None
+ *
+ * @return None
+ */
 void APC_PlayerFox::DoLevelCompleteMulticastRPC_Implementation()
 {
 	const ASideScrollerGameState* GameState = Cast<ASideScrollerGameState>(GetWorld()->GetGameState());
@@ -337,6 +412,12 @@ void APC_PlayerFox::DoLevelCompleteServerRPC_Implementation()
 	DoLevelCompleteMulticastRPC();
 }
 
+/**
+ * Sets a player as the current player being spectated by this player.
+ *
+ * @param Player The player to be spectated.
+ * @return Whether the player was successfully set as the current player being spectated.
+ */
 bool APC_PlayerFox::FoundPlayerToSpectate(APC_PlayerFox* Player)
 {
 	if (Player != nullptr && Player != this && !Player->IsDead()) {
@@ -364,6 +445,23 @@ bool APC_PlayerFox::FoundPlayerToSpectate(APC_PlayerFox* Player)
 	return false;
 }
 
+/**
+ * @brief Begin spectating a player in the game.
+ *
+ * This method starts the spectating process by searching for a player to spectate.
+ * The method takes in a pointer to the game mode and a flag indicating whether to search in reverse order.
+ *
+ * If the search is not in reverse order, the method iterates through the players array obtained from the game mode
+ * and calls the FoundPlayerToSpectate method for each player until a suitable player is found.
+ *
+ * If the search is in reverse order, the method starts at the last element of the players array and iterates backwards
+ * until the first element, calling the FoundPlayerToSpectate method for each player until a suitable player is found.
+ *
+ * Note that the FoundPlayerToSpectate method should be implemented separately and is not shown in this code sample.
+ *
+ * @param GameMode A pointer to the game mode.
+ * @param SearchInReverse Flag indicating whether to search in reverse order.
+ */
 void APC_PlayerFox::BeginSpectating(const ASideScrollerGameModeBase* GameMode, const bool SearchInReverse = false)
 {
 	TArray<APC_PlayerFox*> PlayersArray = GameMode->GetPlayers();
@@ -384,6 +482,14 @@ void APC_PlayerFox::BeginSpectating(const ASideScrollerGameModeBase* GameMode, c
 	}
 }
 
+/**
+ * @brief Spectate the other player.
+ *
+ * This method allows the player to spectate the other player in the game.
+ * It first checks if the current game mode is an instance of ASideScrollerGameModeBase,
+ * and then calls the BeginSpectating method passing the game mode instance as argument.
+ *
+ */
 void APC_PlayerFox::SpectateOtherPlayer()
 {
 	if (const ASideScrollerGameModeBase* GameMode = dynamic_cast<ASideScrollerGameModeBase*>(
@@ -394,6 +500,17 @@ void APC_PlayerFox::SpectateOtherPlayer()
 	}
 }
 
+/**
+ * @brief Spectates the next player in the game.
+ *
+ * If the current player is dead, it will attempt to spectate the next available player.
+ *
+ * @details This method is part of the APC_PlayerFox class, which inherits from a base class called
+ * ASideScrollerGameModeBase.
+ *
+ * @note This method assumes that the current player is already dead and will only proceed to spectate the next player
+ * if there is one available.
+ */
 void APC_PlayerFox::SpectateNextPlayer()
 {
 	if (const ASideScrollerGameModeBase* GameMode = dynamic_cast<ASideScrollerGameModeBase*>(
@@ -423,6 +540,20 @@ void APC_PlayerFox::SpectateNextPlayer()
 	}
 }
 
+/**
+ * @brief Spectate the player's spectable character.
+ *
+ * This method sets the player's view target to the character being spectated. It requires the player to have a valid
+ * controller and the spectable character to have a valid controller and view target.
+ *
+ * @param None
+ *
+ * @return None
+ *
+ * @note This method will log a warning if the player's controller is not found, cannot be cast to a PlayerController,
+ * or if the spectable character's controller or view target is not found. It will log an error if there is an
+ * exception when setting the view target.
+ */
 void APC_PlayerFox::Spectate() const
 {
 	AController* ThisController = this->GetController();
@@ -463,6 +594,19 @@ void APC_PlayerFox::Spectate() const
 	}
 }
 
+/**
+ * Spectate the previous player.
+ *
+ * This method allows the player to spectate the previous player in the game. It checks if the current player is dead
+ * and retrieves the game mode object. If the current player is dead and the game mode object is valid, the method
+ * finds the index of the player that was last being spectated and iterates through the players array starting from
+ * that index, to find the previous player that can be spectated. Once a suitable player is found, the method tries
+ * to spectate that player. If no previous player is found, or if the player being spectated remains the same, the
+ * method resumes normal spectator mode.
+ *
+ * @param None.
+ * @return None.
+ */
 void APC_PlayerFox::SpectatePrevPlayer()
 {
 	if (const ASideScrollerGameModeBase* GameMode = dynamic_cast<ASideScrollerGameModeBase*>(
@@ -492,6 +636,19 @@ void APC_PlayerFox::SpectatePrevPlayer()
 	}
 }
 
+/**
+ * Executes the use action for the player character.
+ *
+ * @brief Use the currently interactable object if there is one.
+ *
+ * @details This method checks if there is an interactable object available for the player character to interact with.
+ * If there is, it calls the Interact() method on the object implementing the IInteractInterface.
+ * If there isn't, it logs a message indicating that there is no item to interact with.
+ *
+ * @param None.
+ *
+ * @return None.
+ */
 void APC_PlayerFox::UseAction_Implementation()
 {
 	if (InteractableObject == nullptr)
@@ -539,6 +696,11 @@ bool APC_PlayerFox::UseAction_Validate()
 	return true;
 }
 
+/**
+ * Moves all spectators to a new player.
+ *
+ * @param this - The current player.
+ */
 void APC_PlayerFox::MoveSpectatorsToNewPlayer() const
 {
 	TArray<APC_PlayerFox*> PlayerSpectators = this->GetSpectators();
@@ -548,6 +710,16 @@ void APC_PlayerFox::MoveSpectatorsToNewPlayer() const
 	}
 }
 
+/**
+ * @brief Revives the player character at the last checkpoint.
+ *
+ * This method sets the player character's health to its default value and teleports it to
+ * the last checkpoint location. It also stops the player character's movement.
+ *
+ * @param None.
+ *
+ * @return None.
+ */
 void APC_PlayerFox::ReviveAtCheckpoint()
 {
 	// set location back to last checkpoint
@@ -558,6 +730,14 @@ void APC_PlayerFox::ReviveAtCheckpoint()
 	this->GetMovementComponent()->StopMovementImmediately();
 }
 
+/**
+ * @brief Implements the functionality for a player's death.
+ *
+ * This method is called when a player dies. It reduces the number of lives
+ * the player has by one, and then revives the player at the checkpoint.
+ * If the player has no remaining lives, the player is removed from the game,
+ * the death animation is triggered, and the player is set to spectate the next player.
+ */
 void APC_PlayerFox::PlayerDeath_Implementation()
 {
 	if (this->NumberOfLives > 0)
@@ -587,6 +767,20 @@ void APC_PlayerFox::HandleFallOffLevel()
 	PlayerDeath();
 }
 
+/**
+ * @brief Performs the walk animation and plays a walking sound.
+ *
+ * This method is responsible for updating the character's sprite flipbook to the run animation
+ * if it is different from the current flipbook, and playing a walking sound every `FramesPerStep` frames.
+ *
+ * @note This method assumes that `RunAnimation` is a valid flipbook and `WalkSound` is a valid sound.
+ *
+ * @param None.
+ *
+ * @return None.
+ *
+ * @see GetSprite, SetFlipbook, GetPlaybackPositionInFrames, FramesPerStep, UGameplayStatics::SpawnSoundAttached
+ */
 void APC_PlayerFox::DoWalkAnimAndSound()
 {
 	if (this->GetSprite()->GetFlipbook() != RunAnimation) {
@@ -603,6 +797,11 @@ void APC_PlayerFox::DoWalkAnimAndSound()
 	}
 }
 
+/**
+ * This method is responsible for playing the appropriate climb animation and sound.
+ *
+ * @param None
+ */
 void APC_PlayerFox::DoClimbAnimAndSound()
 {
 	if (this->GetVelocity().Z == 0) {
@@ -648,6 +847,16 @@ void APC_PlayerFox::PlayerHUDSetup()
 	}
 }
 
+/**
+ * @brief Tears down the player HUD widget instance.
+ *
+ * This method removes the player HUD widget instance from its parent. If the widget instance
+ * is already null, a warning message will be logged.
+ *
+ * @param None
+ *
+ * @return None
+ */
 void APC_PlayerFox::PlayerHUDTeardown()
 {
 	if (this->WidgetPlayerHUDInstance != nullptr)
@@ -663,6 +872,14 @@ void APC_PlayerFox::PlayerHUDTeardown()
 	}
 }
 
+/**
+ * @brief Tears down the PlayerMessageWidget.
+ *
+ * This method removes the WidgetPlayerGameMessageInstance from the parent if it is not null. If the WidgetPlayerGameMessageInstance is null, a warning log is displayed.
+ *
+ * @param None.
+ * @return None.
+ */
 void APC_PlayerFox::PlayerMessageWidgetTeardown()
 {
 	if (this->WidgetPlayerGameMessageInstance != nullptr)
@@ -680,6 +897,13 @@ void APC_PlayerFox::PlayerMessageWidgetTeardown()
 	}
 }
 
+/**
+ * @brief Sets up the player's game messages.
+ *
+ * This method creates and adds the player's game message widget to the viewport. It also hides the game message.
+ *
+ * @param WidgetPlayerGameMessage The widget template to use for the player's game message.
+ */
 void APC_PlayerFox::PlayerGameMessageSetup()
 {
 	if (WidgetPlayerGameMessage) {
@@ -691,6 +915,11 @@ void APC_PlayerFox::PlayerGameMessageSetup()
 	}
 }
 
+/**
+ * Retrieves the text block widget for displaying game messages.
+ *
+ * @param TextBlock A reference to a UTextBlock pointer to hold the retrieved text block widget.
+ */
 void APC_PlayerFox::GetMessageWidgetTextBlock(UTextBlock*& TextBlock) const
 {
 	if (this->WidgetPlayerGameMessageInstance != nullptr)
@@ -708,6 +937,13 @@ void APC_PlayerFox::GetMessageWidgetTextBlock(UTextBlock*& TextBlock) const
 	}
 }
 
+/**
+ * Displays a game message using the given text.
+ *
+ * @param Message The text to display as the game message.
+ *
+ * @return None.
+ */
 void APC_PlayerFox::DisplayGameMessage(FText Message)
 {
 	UTextBlock* TextBlock;
@@ -724,6 +960,12 @@ void APC_PlayerFox::DisplayGameMessage(FText Message)
 	}
 }
 
+/**
+ * Hides the game message displayed to the player.
+ *
+ * @param None
+ * @return None
+ */
 void APC_PlayerFox::HideGameMessage() const
 {
 
@@ -770,6 +1012,12 @@ bool APC_PlayerFox::SendPlayerNameToServer_Validate(const FString& ClientPlayerN
 	return ClientPlayerName != "";
 }
 
+/**
+ * @brief Clean up when the player character dies.
+ *
+ * This method removes the player character from the players array, tears down the player HUD,
+ * tears down the player message widget, and moves spectators to a new player.
+ */
 void APC_PlayerFox::DeathCleanUp()
 {
 	this->RemoveFromPlayersArray();
@@ -778,6 +1026,12 @@ void APC_PlayerFox::DeathCleanUp()
 	this->MoveSpectatorsToNewPlayer();
 }
 
+/**
+ * Update the animation of the player character based on their current state and movement speed.
+ *
+ * @param None
+ * @return None
+ */
 void APC_PlayerFox::UpdateAnimation()
 {
 	if (this)
@@ -813,6 +1067,11 @@ void APC_PlayerFox::UpdateAnimation()
 	}
 }
 
+/**
+ * Updates the rotation of the player character based on the input value.
+ *
+ * @param Value The input value determining the rotation direction (-1 for left, 0 for no rotation, 1 for right).
+ */
 void APC_PlayerFox::UpdateRotation(const float Value)
 {
 	const FVector ProjSpawnLoc = GetProjectileSpawnPoint()->GetRelativeLocation();
@@ -845,6 +1104,15 @@ void APC_PlayerFox::UpdateRotation(const float Value)
 	}
 }
 
+/**
+ * @brief Update the name banner of the player.
+ *
+ * This method updates the name banner text based on the player's name.
+ * If the current name banner text is empty, it loads the player's profile name and sets it as the name banner text.
+ *
+ * @param None
+ * @return None
+ */
 void APC_PlayerFox::UpdateNameBanner()
 {
 	if (NameBanner->Text.EqualTo(FText::FromString("")))
@@ -854,6 +1122,12 @@ void APC_PlayerFox::UpdateNameBanner()
 	}
 }
 
+/**
+ * Sets the value of the bOverlappingClimbable member variable and performs additional actions based on the provided parameters.
+ *
+ * @param OverlappingClimbable The new value for the bOverlappingClimbable member variable.
+ * @param OverlappedClimbable Pointer to the ABaseClimbable object that is being overlapped.
+ */
 void APC_PlayerFox::SetOverlappingClimbable(bool OverlappingClimbable, ABaseClimbable* OverlappedClimbable)
 {
 	bOverlappingClimbable = OverlappingClimbable;
@@ -866,6 +1140,14 @@ void APC_PlayerFox::SetOverlappingClimbable(bool OverlappingClimbable, ABaseClim
 	}
 }
 
+/**
+ * Sets the transform of a projectile based on the given parameters.
+ *
+ * @param Direction The horizontal direction in which the projectile should move.
+ * @param MyOwner The owner of the projectile.
+ * @param BaseChar The base character associated with the projectile.
+ * @param Projectile The projectile whose transform needs to be set.
+ */
 void APC_PlayerFox::SetProjectileTransform(
 	const float Direction,
 	AActor* MyOwner,
@@ -888,6 +1170,13 @@ void APC_PlayerFox::SetProjectileTransform(
 	}
 }
 
+/**
+ * CrouchClimbDown method is used to handle the logic of crouching and climbing down.
+ * It checks various conditions and performs the necessary actions based on those conditions.
+ *
+ * @param void
+ * @return void
+ */
 void APC_PlayerFox::CrouchClimbDown()
 {
 	// Run slide ////////////
@@ -977,6 +1266,13 @@ void APC_PlayerFox::CrouchClimbDown()
 	}
 }
 
+/**
+ * Climb up the ladder if the player is overlapping a climbable object.
+ * If the player is not overlapping a climbable object, shoot upward by setting up necessary variables.
+ *
+ * @param None.
+ * @return None.
+ */
 void APC_PlayerFox::ClimbUp()
 {
 	if (bOverlappingClimbable)
@@ -1000,6 +1296,12 @@ void APC_PlayerFox::ClimbUp()
 	}
 }
 
+/**
+ * Stops the crouch climb action if the character is currently crouching.
+ *
+ * @param void
+ * @return void
+ */
 void APC_PlayerFox::StopCrouchClimb()
 {
 	if (this->bIsCrouching)
@@ -1038,6 +1340,13 @@ void APC_PlayerFox::StopCrouchClimb()
 	this->StopClimb();
 }
 
+/**
+ * Stops the climb action of the fox player.
+ *
+ * @param None
+ *
+ * @return None
+ */
 void APC_PlayerFox::StopClimb()
 {
 	if (this->bOnLadder && this->GetVelocity().Z != 0)
@@ -1053,6 +1362,14 @@ TArray<APC_PlayerFox*> APC_PlayerFox::GetSpectators() const
 	return this->Spectators;
 }
 
+/**
+ * SetSpectatorsStr method sets the SpectatorsStr member variable of the APC_PlayerFox class.
+ * The SpectatorsStr is a string that represents all the spectators of the APC_PlayerFox instance.
+ * This method creates the SpectatorsStr by looping through each spectator and concatenating their names.
+ *
+ * @param None
+ * @return None
+ */
 void APC_PlayerFox::SetSpectatorsStr()
 {
 	FString SpectatorsString = "";
@@ -1078,6 +1395,11 @@ void APC_PlayerFox::SetSpectatorsStr()
 	this->SpectatorsStr = SpectatorsString;
 }
 
+/**
+ * Returns the spectator string representation.
+ *
+ * @return The spectator string representation as FText.
+ */
 FText APC_PlayerFox::GetSpectatorsAsStr() const
 {
 	// UE_LOG(
@@ -1088,17 +1410,39 @@ FText APC_PlayerFox::GetSpectatorsAsStr() const
 	return FText::FromString(this->SpectatorsStr);
 }
 
+/**
+ * Retrieves the name of the player.
+ *
+ * @return The name of the player.
+ */
 FText APC_PlayerFox::GetPlayerName() const
 {
 	return FText::FromString(this->PlayerName);
 }
 
+/**
+ * Add a player to the list of spectators.
+ *
+ * This method adds the specified player to the list of spectators for this instance.
+ * After adding the player, the SetSpectatorsStr() method is called to update the spectators string.
+ *
+ * @param Spectator The player to be added as a spectator.
+ *
+ * @see SetSpectatorsStr
+ */
 void APC_PlayerFox::AddToSpectators(APC_PlayerFox* Spectator)
 {
 	this->Spectators.Add(Spectator);
 	this->SetSpectatorsStr();
 }
 
+/**
+ * @brief Removes a player from the spectators list.
+ *
+ * This method removes the given player from the spectators list of the calling player.
+ *
+ * @param Spectator The player to be removed from the spectators list.
+ */
 void APC_PlayerFox::RemoveFromSpectators(APC_PlayerFox* const Spectator)
 {
 	if (this->Spectators.Contains(Spectator))
@@ -1108,6 +1452,20 @@ void APC_PlayerFox::RemoveFromSpectators(APC_PlayerFox* const Spectator)
 	}
 }
 
+/**
+ * ClimbUpAxisInputCallback
+ *
+ * @param Z The input value along the Z-axis
+ *
+ * This method is called when the user provides input for climbing up or down. It handles the logic for climbing up,
+ * crouch climbing down, and stopping the crouch climb.
+ * If the input value is greater than 0, it calls the ClimbUp method.
+ * If the input value is less than 0, it calls the CrouchClimbDown method.
+ * If the input value is 0, it calls the StopCrouchClimb method.
+ *
+ * Additionally, if the local role of the player is ROLE_AutonomousProxy, it sends the vertical axis input value
+ * to the server using the SendVerticalAxisInputToServer method.
+ */
 void APC_PlayerFox::ClimbUpAxisInputCallback(const float Z)
 {
 	if (Z > 0) {
@@ -1124,6 +1482,31 @@ void APC_PlayerFox::ClimbUpAxisInputCallback(const float Z)
 	}
 }
 
+/**
+ * Move the player character horizontally to the right based on the input axis.
+ *
+ * @param Axis The input axis value for moving right. Positive value indicates moving right and negative value indicates
+ * moving left.
+ *
+ * @note This method should not be called if the player character is in the hurt animation or is crouching.
+ *
+ * @details
+ * This method updates the rotation of the player character based on the input axis.
+ * If the player character is on a ladder, it moves horizontally at a reduced speed compared to normal movement.
+ * If the player character is not on a ladder, it moves horizontally at the normal speed.
+ *
+ * If the player character is not overlapping with a climbable object and is not falling,
+ * the movement mode is set to walking.
+ *
+ * @see APC_PlayerFox::UpdateRotation
+ * @see APC_PlayerFox::GetSprite
+ * @see APC_PlayerFox::GetCharacterMovement
+ * @see APC_PlayerFox::GetMovementComponent
+ * @see APC_PlayerFox::AddMovementInput
+ * @see APC_PlayerFox::bOverlappingClimbable
+ * @see APC_PlayerFox::bIsFalling
+ * @see ECharacterMovementType
+ **/
 void APC_PlayerFox::MoveRight(const float Axis)
 {
 	// early return if player in hurt animation right now
@@ -1159,6 +1542,11 @@ void APC_PlayerFox::MoveRight(const float Axis)
 	}
 }
 
+/**
+ * Climb the object.
+ *
+ * @param Value The value to control the climbing movement.
+ */
 void APC_PlayerFox::Climb(const float Value)
 {
 	if (!this->bIsClimbing){
@@ -1169,6 +1557,18 @@ void APC_PlayerFox::Climb(const float Value)
 	AddMovementInput(GetActorUpVector(), Value);
 }
 
+/**
+ * @brief Function to make the player character jump.
+ *
+ * This function is responsible for making the player character jump. It checks
+ * if the character is currently in a hurt animation, and if so, it does an
+ * early return and doesn't allow the jump. If the character is not currently
+ * jumping or on a ladder, it plays a jump sound and calls the parent class's
+ * jump function to perform the actual jump.
+ *
+ * @param None
+ * @return None
+ */
 void APC_PlayerFox::Jump()
 {
 	// early return if player in hurt animation right now
@@ -1185,18 +1585,48 @@ void APC_PlayerFox::Jump()
 	}
 }
 
+/**
+ * Increases the player's money stash by a given monetary value.
+ *
+ * @param MonetaryValue The amount of money to be added to the money stash.
+ */
 void APC_PlayerFox::TakeMoney(int MonetaryValue)
 {
 	this->MoneyStash += MonetaryValue;
 	UE_LOG(LogTemp, Verbose, TEXT("%s's money stash is now %i!"), *this->GetName(), this->MoneyStash);
 }
 
+/**
+ * @brief Takes healing and increases the player's health.
+ *
+ * This function takes a healing value as a parameter and increases the player's health by that value.
+ *
+ * @param HealingValue   The amount of healing to add to the player's health.
+ *
+ * @see APC_PlayerFox::AddHealth
+ * @see APC_PlayerFox::GetName
+ * @see APC_PlayerFox::GetHealth
+ * @see UE_LOG
+ *
+ * @note This function does not return anything.
+ * @note This function assumes that the player's health is a float value.
+ * @note This function assumes that the player's health can be accessed and modified through the AddHealth() and
+ * GetHealth() functions respectively.
+ * @note This function assumes that the player's name can be accessed through the GetName() function.
+ * @note This function assumes that the Unreal Engine logging system is available and can be used with UE_LOG.
+ * @note This function is a member of the APC_PlayerFox class.
+ */
 void APC_PlayerFox::TakeHealing(const float HealingValue)
 {
 	this->AddHealth(HealingValue);
 	UE_LOG(LogTemp, Verbose, TEXT("%s's health is now %f!"), *this->GetName(), this->GetHealth());
 }
 
+/**
+ * Adds the specified number of cherries to the player's cherry stash.
+ *
+ * @param NumCherries The number of cherries to add to the stash.
+ */
 void APC_PlayerFox::TakeCherries(int NumCherries)
 {
 	this->CherryStash += NumCherries;
@@ -1215,6 +1645,16 @@ void APC_PlayerFox::LogRotation()
 	);
 }
 
+/**
+ * @brief Sets the run velocity of the Fox player character.
+ *
+ * This method sets the maximum walk speed of the Fox player character to the specified running speed.
+ * If the local role of the character is ROLE_AutonomousProxy (controller on client), it also calls the
+ * SetRunVelocityRPC() method which is ran on the server.
+ *
+ * @param None
+ * @return None
+ */
 void APC_PlayerFox::SetRunVelocity()
 {
 	this->GetCharacterMovement()->MaxWalkSpeed = MaxRunningSpeed;
@@ -1224,6 +1664,20 @@ void APC_PlayerFox::SetRunVelocity()
 	}
 }
 
+/**
+ * @brief Implementation of the SetRunVelocityRPC method.
+ *
+ * This method sets the maximum running speed for the character's movement.
+ *
+ * @param MaxRunningSpeed The new maximum running speed for the character.
+ *
+ * @details This method sets the MaxWalkSpeed property of the character's movement component
+ *          to the specified MaxRunningSpeed value.
+ *
+ * @note This method is called remotely and implemented on the server side.
+ *
+ * @see GetCharacterMovement(), MaxWalkSpeed
+ */
 void APC_PlayerFox::SetRunVelocityRPC_Implementation()
 {
 	this->GetCharacterMovement()->MaxWalkSpeed = MaxRunningSpeed;
@@ -1234,6 +1688,21 @@ bool APC_PlayerFox::SetRunVelocityRPC_Validate()
 	return true;
 }
 
+/**
+ * @brief Sets the walk velocity of the player's character.
+ *
+ * This method sets the maximum walk speed of the player's character to the value specified by the NormalWalkingSpeed
+ * variable.
+ * If the player's role is autonomous proxy (controller on client), it also calls the SetWalkVelocityRPC method which
+ * is ran on the server.
+ *
+ * @note This method should be called whenever the walk velocity of the character needs to be changed.
+ *
+ * @see SetWalkVelocityRPC()
+ *
+ * @param None.
+ * @return None.
+ */
 void APC_PlayerFox::SetWalkVelocity()
 {
 	this->GetCharacterMovement()->MaxWalkSpeed = NormalWalkingSpeed;
@@ -1243,6 +1712,16 @@ void APC_PlayerFox::SetWalkVelocity()
 	}
 }
 
+/**
+ * @brief Sets the walk velocity of the player fox's character movement.
+ *
+ * This method is called to set the max walk speed of the character movement
+ * component of the player fox. It is an implementation of the RPC (Remote Procedure Call)
+ * function.
+ *
+ * @param None.
+ * @return None.
+ */
 void APC_PlayerFox::SetWalkVelocityRPC_Implementation()
 {
 	this->GetCharacterMovement()->MaxWalkSpeed = NormalWalkingSpeed;
@@ -1258,6 +1737,12 @@ void APC_PlayerFox::LogLocation()
 	UE_LOG(LogTemp, VeryVerbose, TEXT("%s's location is %s!"), *this->GetName(), *this->GetActorLocation().ToString());
 }
 
+/**
+ * Opens the menu based on the game mode.
+ *
+ * This method is responsible for opening the menu based on the current game mode. If the game mode is a level game mode,
+ * the in-game menu will be opened. If the game mode is a lobby game mode, the character selection menu will be opened.
+ */
 void APC_PlayerFox::OpenMenu()
 {
 	const ALevelGameMode* LevelGameMode = dynamic_cast<ALevelGameMode*>(GetWorld()->GetAuthGameMode());
@@ -1274,6 +1759,16 @@ void APC_PlayerFox::OpenMenu()
 	}
 }
 
+/**
+ * Opens the in-game menu.
+ *
+ * This method is responsible for opening the in-game menu. It pauses the game
+ * and calls the `InGameLoadMenu` method of the game instance.
+ *
+ * @param None
+ *
+ * @return None
+ */
 void APC_PlayerFox::OpenInGameMenu()
 {
 	if (GameInstance != nullptr) {
@@ -1285,11 +1780,29 @@ void APC_PlayerFox::OpenInGameMenu()
 	}
 }
 
+/**
+ * @brief Sets the flag indicating whether the player can shoot again.
+ *
+ * This method sets the value of the member variable `bCanShoot` to `true`.
+ *
+ * @param None.
+ * @return None.
+ */
 void APC_PlayerFox::CanShootAgain()
 {
 	this->bCanShoot = true;
 }
 
+/** Shoots a projectile if the player is allowed to shoot.
+ *
+ * If the player's ability to shoot is set to true (bCanShoot), this method will perform the following actions:
+ *  - Call the Super class's Shoot method
+ *  - Set bCanShoot to false to prevent shooting again until delay time has elapsed
+ *  - Start a timer that will call the CanShootAgain method after the specified delay time
+ *
+ * @param None
+ * @return None
+ */
 void APC_PlayerFox::Shoot()
 {
 	if (this->bCanShoot)

@@ -56,6 +56,14 @@ void ABasePaperCharacter::SetDamage(const float DamageAmount)
 	this->Damage = DamageAmount;
 }
 
+/**
+ * Adds the specified value to the character's health.
+ *
+ * This function increases the character's current health by the specified value, clamping the result between 0
+ * and the character's default health.
+ *
+ * @param HealthValue The value to add to the character's health.
+ */
 void ABasePaperCharacter::AddHealth(const float HealthValue)
 {
 	this->SetHealth(FMath::Clamp(this->Health + HealthValue, 0.f, this->DefaultHealth));
@@ -81,6 +89,12 @@ USceneComponent* ABasePaperCharacter::GetProjectileSpawnPoint() const
 	return ProjectileSpawnPoint;
 }
 
+/**
+ * Implements the logic for character death.
+ *
+ * Marks the character as dead, disables collision, sets death animation, and spawns death sound.
+ * Finally, sets a timer to destroy the actor after the death animation finishes playing.
+ */
 void ABasePaperCharacter::DoDeath_Implementation()
 {
 	this->bIsDead = true;
@@ -103,6 +117,11 @@ void ABasePaperCharacter::DoDeath_Implementation()
 	);
 }
 
+/**
+ * Moves the character some distance away from the enemy after damage has been incurred.
+ *
+ * @param DamageCauser The actor causing the damage.
+ */
 void ABasePaperCharacter::PushHurtCharacter(AActor* DamageCauser)
 {
 	// move character some distance away from the enemy after damage incurred
@@ -118,6 +137,18 @@ void ABasePaperCharacter::PushHurtCharacter(AActor* DamageCauser)
 	this->LaunchCharacter(FVector(HurtPush, 0.0, 0.0), false, false);
 }
 
+/**
+ * @param None
+ *
+ * PlayHurtSound_Implementation is a method implemented in the ABasePaperCharacter class that is used to play a pain
+ * sound when the character is hurt.
+ 
+ * The method uses the UGameplayStatics::SpawnSoundAttached function to spawn a sound attached to the character's sprite.
+ * The pain sound to be played is specified by the PainSound member
+ * variable of the character.
+ *
+ * @return None
+ */
 void ABasePaperCharacter::PlayHurtSound_Implementation()
 {
 	UGameplayStatics::SpawnSoundAttached(
@@ -127,6 +158,16 @@ void ABasePaperCharacter::PlayHurtSound_Implementation()
 	);
 }
 
+/**
+ * @brief Inflict damage to the character and trigger the hurt sequence.
+ *
+ * This method is called to inflict damage to the character and trigger the hurt sequence. It is primarily designed
+ * for use in games and is specific to the ABasePaperCharacter class. It changes the character's sprite flipbook to
+ * display the hurt animation, sets a timer to restore the original sprite after a specified time, and calls the
+ * PushHurtCharacter method to apply various effects based on the damage causer. Finally, it plays a hurt sound effect.
+ *
+ * @param DamageCauser A pointer to the actor that caused the damage.
+ */
 void ABasePaperCharacter::DoHurt(AActor* DamageCauser)
 {
 	if (const APC_PlayerFox* PlayerFox = dynamic_cast<APC_PlayerFox*>(this);
@@ -158,6 +199,11 @@ bool ABasePaperCharacter::IsDead() const
 	return this->bIsDead;
 }
 
+/**
+ * Calculate the angle between the character's up vector and the floor normal.
+ *
+ * @return The angle between the character's up vector and the floor normal in degrees.
+ */
 float ABasePaperCharacter::GetFloorAngle()
 {
 	const FFindFloorResult TheFloor = this->GetCharacterMovement()->CurrentFloor;
@@ -172,6 +218,15 @@ float ABasePaperCharacter::GetShootDelayTime() const
 	return ShootDelayTime;
 }
 
+/**
+ * Method to try giving points and then perform death.
+ *
+ * This method is used to give points to the attacking player and perform death if the subject of damage is not a Player.
+ * It checks if the subject is a Player character, and if not, it retrieves the controller, pawn, and pawn class.
+ * If the pawn class implements the PointsInterface, it calls the GivePoints() method on itself and then performs death.
+ *
+ * @param DamageCauser The PlayerFox character that caused the damage.
+ */
 void ABasePaperCharacter::TryGivingPointsThenDoDeath(APC_PlayerFox* DamageCauser)
 {
 	// if the subject (this) of damage is not a Player give points
@@ -259,6 +314,15 @@ bool ABasePaperCharacter::TakeDamageRPC_Validate(float DamageAmount, AActor* Dam
 	return true;
 }
 
+/**
+ * Prepares the launch of a projectile.
+ *
+ * This method is responsible for spawning a projectile and preparing it for launch.
+ *
+ * @param bIsPlayer Determines if the caller is a player.
+ *                  If true, the sprite's relative rotation is used to calculate the launch direction.
+ *                  If false, the actor's rotation is used to calculate the launch direction.
+ */
 void ABasePaperCharacter::PrepProjectileLaunch(bool bIsPLayer = true)
 {
 	float Yaw;
@@ -306,6 +370,13 @@ void ABasePaperCharacter::PrepProjectileLaunch(bool bIsPLayer = true)
 	}
 }
 
+/**
+ * @brief Checks if the player can shoot a projectile.
+ *
+ * @return Returns true if the player can shoot; false otherwise.
+ *
+ * @param None.
+ */
 bool ABasePaperCharacter::PlayerCanShoot()
 {
 	APC_PlayerFox* Player = UECasts_Private::DynamicCast<APC_PlayerFox*>(this);
@@ -333,6 +404,14 @@ bool ABasePaperCharacter::PlayerCanShoot()
 	return false;
 }
 
+/**
+ * Checks if the enemy character can shoot.
+ *
+ * @return true if the enemy character is able to shoot, false otherwise.
+ *
+ * @param none
+ *
+ */
 bool ABasePaperCharacter::EnemyCanShoot()
 {
 	AEnemyCollisionPaperCharacter* EnemyAI = UECasts_Private::DynamicCast<AEnemyCollisionPaperCharacter*>(this);
@@ -355,6 +434,13 @@ bool ABasePaperCharacter::EnemyCanShoot()
 	return false;
 }
 
+/**
+ * @brief Shoots a projectile if the player or enemy can shoot.
+ *
+ * This method checks if the player or enemy can shoot by calling the PlayerCanShoot() and EnemyCanShoot() methods.
+ * If the player can shoot, it prepares and launches the projectile by calling the PrepProjectileLaunch(true) method.
+ * If the enemy can shoot, it prepares and launches the projectile by calling the PrepProjectileLaunch(false) method.
+ */
 void ABasePaperCharacter::Shoot()
 {
 	if (PlayerCanShoot())
@@ -367,6 +453,16 @@ void ABasePaperCharacter::Shoot()
 	}
 }
 
+/**
+ * @brief Destroys the actor.
+ *
+ * This method is used to destroy the actor. If the actor is of type "PlayFox", it will not be destroyed and instead,
+ * the "DeathCleanUp()" method of "PlayFox" will be called.
+ *
+ * @param None.
+ *
+ * @return None.
+ */
 void ABasePaperCharacter::DestroyActor()
 {
 	// early return if this is a PlayFox because we dont want to destroy players so they can spectate
