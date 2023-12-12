@@ -12,7 +12,9 @@ class SIDESCROLLER_API URespawnMenu : public UMenuWidget
 	GENERATED_BODY()
 	
 protected:
+	UFUNCTION()
 	void RunRespawnTimer();
+	
 	UFUNCTION()
 	virtual bool Initialize() override;
 
