@@ -8,6 +8,12 @@ void UMenuWidget::SetMenuInterface(IMenuInterface* _MenuInterface)
 	this->MenuInterface = _MenuInterface;
 }
 
+/**
+ * Adds the menu widget to the viewport, sets up input mode, and shows the mouse cursor.
+ *
+ * @param None
+ * @return None
+ */
 void UMenuWidget::Setup()
 {
 	this->AddToViewport();
@@ -36,6 +42,17 @@ void UMenuWidget::Setup()
 	}
 }
 
+/**
+ * \brief This method is called when the owning level is removed from the world.
+ * \details It is responsible for executing necessary cleanup operations for the menu widget.
+ *
+ * @param None
+ *
+ * @return None
+ *
+ * @note This method should be called by the engine automatically when the level is removed.
+ *       It should not be called directly by the user.
+ */
 void UMenuWidget::OnLevelRemovedFromWorld()
 {
 	Super::NativeDestruct();

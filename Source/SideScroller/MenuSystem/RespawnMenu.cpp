@@ -110,6 +110,7 @@ void URespawnMenu::Respawn()
 						*PlayerPawnToRespawn->GetPlayerName().ToString()
 					);
 					PlayerPawnToRespawn->ReviveAtCheckpoint();
+					BackToGame();
 				}
 			}
 		}
@@ -189,4 +190,19 @@ void URespawnMenu::RunRespawnTimer()
 void URespawnMenu::EnableRespawnButton() const
 {
 	RespawnButton->SetIsEnabled(true);
+}
+
+/**
+ * @brief Resumes the game from the respawn menu.
+ *
+ * This method is called when the player chooses to go back to the game from the respawn menu.
+ * It removes the current level from the world, resumes the game by setting the pause state of
+ * the player controller to false.
+ *
+ * @param None
+ * @return None
+ */
+void URespawnMenu::BackToGame()
+{
+	OnLevelRemovedFromWorld();
 }

@@ -417,6 +417,12 @@ private:
 	 */
 	TSubclassOf<class UUserWidget> GameOverMenuClass = nullptr;
 
+	/**
+	 * The RespawnMenuClass variable is a TSubclassOf<UUserWidget> type variable used to hold the class of the
+	 * respawn menu widget. It is assigned with nullptr by default.
+	 *
+	 * @see UUserWidget
+	 */
 	TSubclassOf<class UUserWidget>  RespawnMenuClass = nullptr;
 	
 	/**

@@ -166,4 +166,18 @@ private:
 	 */
 	UFUNCTION()
 	void EnableRespawnButton() const;
+
+	/**
+	 * @brief Function to return back to the game.
+	 *
+	 * This function removes the level from the world, resumes the game, and allows the player to continue playing.
+	 *
+	 * @param None
+	 * @return None
+	 *
+	 * @note This function is marked as a UFUNCTION to collaborate with Unreal's reflection system.
+	 * @warning This function assumes that there is a valid world and player controller present.
+	 */
+	UFUNCTION()
+	void BackToGame();
 };

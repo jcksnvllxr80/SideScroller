@@ -744,7 +744,6 @@ void APC_PlayerFox::PlayerDeath_Implementation()
 	{
 		// take a life away
 		this->NumberOfLives -= 1;
-		
 		GameInstance->RespawnLoadMenu();
 	} else {
 		this->RemoveFromPlayersArray();

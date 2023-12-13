@@ -54,6 +54,10 @@ USideScrollerGameInstance::USideScrollerGameInstance(const FObjectInitializer & 
 	if (!InGameMenuBPClass.Class) return;
 	InGameMenuClass = InGameMenuBPClass.Class;
 
+	ConstructorHelpers::FClassFinder<UUserWidget> RespawnMenuBPClass(TEXT("/Game/MenuSystem/WBP_RespawnMenu"));
+	if (!RespawnMenuBPClass.Class) return;
+	RespawnMenuClass = RespawnMenuBPClass.Class;
+
 	ConstructorHelpers::FClassFinder<UUserWidget> GameOverMenuBPClass(TEXT("/Game/MenuSystem/WBP_GameOverMenu"));
 	if (!GameOverMenuBPClass.Class) return;
 	GameOverMenuClass = GameOverMenuBPClass.Class;
