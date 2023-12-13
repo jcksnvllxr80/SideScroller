@@ -88,11 +88,16 @@ void URespawnMenu::BackToMainMenu()
 	}
 }
 
+
 /**
- * Respawns the player at the last checkpoint.
+ * Respawn the player at the last checkpoint.
  *
- * @param none
- * @return none
+ * This method is called when the player wants to respawn and presses the respawnbutton.
+ * The player will respawn at the last checkpoint.
+ * It first checks if the world is valid and if the player controller is available.
+ * Then it retrieves the pawn to respawn.
+ * If the pawn is of type APC_PlayerFox, it revives the player at the checkpoint,
+ * logs a message indicating the respawned player, and goes back to the game.
  */
 void URespawnMenu::Respawn()
 {
