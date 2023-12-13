@@ -731,15 +731,26 @@ void APC_PlayerFox::ReviveAtCheckpoint()
 }
 
 /**
- * @brief Implements the functionality for a player's death.
+ * PlayerDeath_Implementation is a method in the APC_PlayerFox class that is called when the player dies.
+ * It is responsible for handling the player's death by performing the following actions:
+ * - Respawn the player at the last checkpoint location, offset by the RespawnLocationOffset.
+ * - If the player has remaining lives:
+ *     - Decrement the number of lives by 1.
+ *     - Call the RespawnLoadMenu method of the GameInstance.
+ * - If the player is out of lives:
+ *     - Remove the player from the players array.
+ *     - Call the DoDeath method of the APC_PlayerFox.
+ *     - Set the bIsOutOfLives flag to true.
+ *     - Call the SpectateNextPlayer method of APC_PlayerFox.
  *
- * This method is called when a player dies. It reduces the number of lives
- * the player has by one, and then revives the player at the checkpoint.
- * If the player has no remaining lives, the player is removed from the game,
- * the death animation is triggered, and the player is set to spectate the next player.
+ * Note: This method does not have any parameters.
  */
 void APC_PlayerFox::PlayerDeath_Implementation()
 {
+	this->SetActorLocation(
+		RespawnLocationOffset, false, nullptr, ETeleportType::ResetPhysics
+	);
+	
 	if (this->NumberOfLives > 0)
 	{
 		// take a life away

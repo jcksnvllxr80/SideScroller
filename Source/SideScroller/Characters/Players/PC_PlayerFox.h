@@ -199,14 +199,16 @@ public:
 	void RemoveFromSpectators(APC_PlayerFox* Spectator);
 
 	/**
-	 * @brief Trigger the death of a player.
+	 * @brief Function called when the player dies.
 	 *
-	 * This method is used to handle the death of a player. It is marked as BlueprintCallable, Server, Reliable,
-	 * WithValidation, and belongs to the category "Death".
+	 * This function is called to handle player death. It is a reliable server function
+	 * that can be called by the client. It is used to check whether the death is valid
+	 * and to perform necessary actions accordingly. This function is categorized under
+	 * "Death" category.
 	 *
-	 * @param None.
+	 * @param None
 	 *
-	 * @return None.
+	 * @return None
 	 */
 	UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation, Category = "Death")
 	void PlayerDeath();
@@ -385,6 +387,25 @@ public:
 	 * @see FTimerHandle
 	 */
 	FTimerHandle ShootTimerHandle;
+
+	/**
+	 * @brief The offset used to calculate the respawn location of a character.
+	 *
+	 * This variable represents the offset from the original spawn location that is used to calculate the respawn
+	 * location of a character. It is a vector consisting of three components: X, Y, and Z, representing the
+	 * displacement along the x, y, and z axes respectively.
+	 *
+	 * The variable is decorated with the UPROPERTY macro, which allows it to be edited in the editor. This means
+	 * that the value can be modified in real-time while the game is running. The EditAnywhere specifier makes the
+	 * variable editable from any location in the editor, including the Details panel.
+	 *
+	 * It is initialized with the FVector constructor, which takes three arguments representing the initial values
+	 * of X, Y, and Z respectively. In this case, the initial X value is 0.0, the initial Y value is 100.0, and
+	 * the initial Z value is 0.0. This means that the respawn location will be offset 100 units in the positive
+	 * Y direction from the original spawn location.
+	 */
+	UPROPERTY(EditAnywhere)
+	FVector RespawnLocationOffset = FVector(0.0, 0.0, -3000.0);;
 
 	/**
 	 * \brief Takes money from the player's stash
