@@ -6,6 +6,14 @@
 #include "Components/Button.h"
 #include "SideScroller/Characters/Players/PC_PlayerFox.h"
 
+/**
+ * @brief Initializes the respawn menu.
+ *
+ * This method initializes the respawn menu by setting up button click events and checking for button references.
+ * If the initialization is successful, the respawn button is disabled, and the respawn timer is started.
+ *
+ * @return Returns true if initialization is successful, otherwise false.
+ */
 bool URespawnMenu::Initialize()
 {
 	const bool SuccessfulInit = Super::Initialize();
@@ -54,6 +62,17 @@ bool URespawnMenu::Initialize()
 	return true;
 }
 
+/**
+ * @brief Returns the user to the main menu.
+ *
+ * This method is used to navigate back to the main menu by calling the LoadMainMenu() method from the MenuInterface.
+ * If the MenuInterface is found, it will call the LoadMainMenu() method. If not found, it will log an error message
+ * and return.
+ *
+ * @param None.
+ *
+ * @return None.
+ */
 void URespawnMenu::BackToMainMenu()
 {
 	if (MenuInterface)
@@ -69,6 +88,12 @@ void URespawnMenu::BackToMainMenu()
 	}
 }
 
+/**
+ * Respawns the player at the last checkpoint.
+ *
+ * @param none
+ * @return none
+ */
 void URespawnMenu::Respawn()
 {
 	if (const UWorld* World = GetWorld())
@@ -101,6 +126,16 @@ void URespawnMenu::Respawn()
 	}
 }
 
+/**
+ * @brief Quit the game.
+ *
+ * This method quits the game by executing the quit console command in the player controller.
+ *
+ * @param None.
+ * @return None.
+ *
+ * @sa URespawnMenu::QuitGame()
+ */
 void URespawnMenu::QuitGame()
 {
 	if (const UWorld* World = GetWorld())
@@ -123,6 +158,12 @@ void URespawnMenu::QuitGame()
 	}
 }
 
+/**
+ * Runs the respawn timer to display a countdown on the respawn menu.
+ *
+ * @param None
+ * @return None
+ */
 void URespawnMenu::RunRespawnTimer()
 {
 	// TODO: show respawn countdown on respawn menu
@@ -136,6 +177,15 @@ void URespawnMenu::RunRespawnTimer()
 	);
 }
 
+/**
+ * @brief Enables the respawn button.
+ *
+ * This method is used to enable the respawn button in the respawn menu.
+ *
+ * @param None.
+ *
+ * @return None.
+ */
 void URespawnMenu::EnableRespawnButton() const
 {
 	RespawnButton->SetIsEnabled(true);
