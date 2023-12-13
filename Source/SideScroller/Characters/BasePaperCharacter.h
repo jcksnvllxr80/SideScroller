@@ -465,47 +465,88 @@ private:
 	float HurtAnimationTime = 0.5;
 
 	/**
-	 *
+	 * Timer handle for the death timer.
 	 */
 	FTimerHandle DeathTimerHandle;
 
 	/**
+	 * @brief The handle for the hurt timer.
 	 *
+	 * This variable is used to track a timer that is used to handle hurt events in the application.
+	 * It is an instance of the FTimerHandle class.
+	 *
+	 * The FTimerHandle class is used to manage and control timers in the application, allowing for the
+	 * scheduling and cancellation of timed events.
 	 */
 	FTimerHandle HurtTimerHandle;
 
 	/**
+	 * @brief The amount of damage inflicted by an entity or an action.
 	 *
+	 * Damage represents the numerical value that determines the impact of an attack or any harmful effect in a game
+	 * or simulation. The value of Damage can be customized within the game editor or a designated property panel.
+	 *
+	 * Usage:
+	 *  - Assign a value to set the amount of damage a specific entity or action can inflict.
+	 *  - Modify the value during gameplay to simulate different levels of attacks or damage.
 	 */
 	UPROPERTY(EditAnywhere)
 	float Damage = 10.0;
 
 	/**
+	 * @brief The delay time (in seconds) between each shot as defined in the Unreal Engine Editor.
 	 *
+	 * @note This variable can be modified in the Unreal Engine Editor.
+	 * @note The delay time determines how long the system waits before allowing the player to shoot again.
+	 * @note The default value is 2.0 seconds.
 	 */
 	UPROPERTY(EditAnywhere)
 	float ShootDelayTime = 2.0;
 
 	/**
+	 * @brief The amount of force applied to the character when hurt.
 	 *
+	 * This variable represents the amount of force applied to the character
+	 * when they are hurt. The force is applied as a push-back effect. The value
+	 * is in units per second.
+	 *
+	 * @details The default value of this variable is 20.0. It can be modified
+	 * in real-time through the Unreal Engine editor as it is marked with the
+	 * EditAnywhere specifier. The force applied is relative to the character's
+	 * mass and will push them away from the source of damage.
+	 *
+	 * @see UPROPERTY()
+	 * @see EditAnywhere
 	 */
 	UPROPERTY(EditAnywhere)
 	float HurtPushAmount = 20.f;
 
 	/**
+	 * @brief Indicates whether the object is dead or alive.
 	 *
+	 * This variable is of boolean type and is used to keep track of the
+	 * status of the object. If the value is true, it means the object is
+	 * dead. If the value is false, it means the object is alive.
 	 */
 	bool bIsDead = false;
 
 protected:
 	/**
+	 * @brief DefaultHealth variable is used to store the default health value for a character.
 	 *
+	 * This variable is an Unreal Property (UPROPERTY) that can be edited anywhere.
+	 * The value of DefaultHealth is set to 100.0 by default.
+	 *
+	 * @note This variable is typically used in character classes or game mode classes to define the initial health
+	 * value for characters.
 	 */
 	UPROPERTY(EditAnywhere)
 	float DefaultHealth = 100.0;
 
 	/**
+	 * @brief Calculates the angle between the character's current floor and the character's UpVector.
 	 *
+	 * @return The floor angle in degrees.
 	 */
 	UFUNCTION(BlueprintCallable)
 	float GetFloorAngle();
@@ -513,7 +554,8 @@ protected:
 	/**
 	 * Retrieves the lifetime replicated properties for this actor.
 	 *
-	 * This method is called during replication to collect the properties that should be replicated for the actor's lifetime.
+	 * This method is called during replication to collect the properties that should be replicated for the actor's
+	 * lifetime.
 	 *
 	 * @param OutLifetimeProps The output array that will contain the lifetime replicated properties.
 	 * @see FLifetimeProperty
