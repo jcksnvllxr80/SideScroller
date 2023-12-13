@@ -319,6 +319,47 @@ void USideScrollerGameInstance::InGameLoadMenu()
 }
 
 /**
+ * @brief Respawn and load the menu.
+ *
+ * This method is responsible for respawning the player character and loading the respawn menu.
+ * If the respawn menu blueprint class is found, it creates an instance of the UMenuWidget and sets up the menu
+ * interface. If the respawn menu blueprint class is not found, an error message will be logged.
+ *
+ * @param None.
+ * @return None.
+ */
+void USideScrollerGameInstance::RespawnLoadMenu()
+{
+	if (RespawnMenuClass)
+	{
+		UE_LOG(LogTemp, Display,
+			TEXT("USideScrollerGameInstance::RespawnLoadMenu - Found Respawn Menu blueprint class %s."),
+			*RespawnMenuClass->GetName()
+		);
+		if (UMenuWidget* RespawnMenu = CreateWidget<UMenuWidget>(this, RespawnMenuClass))
+		{
+			RespawnMenu->Setup();
+			RespawnMenu->SetMenuInterface(this);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error,
+				TEXT("USideScrollerGameInstance::RespawnLoadMenu - Cant create UMenuWidget Menu from "
+					"Respawn menu blueprint class.")
+			)
+			return;
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error,
+			TEXT("USideScrollerGameInstance::RespawnLoadMenu - Cant find the Respawn Menu blueprint class.")
+		)
+		return;
+	}
+}
+
+/**
  * Selects the character load menu.
  *
  * The method creates a SelectCharacterMenu widget and sets up its properties.

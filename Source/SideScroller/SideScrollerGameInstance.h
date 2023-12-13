@@ -224,6 +224,15 @@ public:
 	void InGameLoadMenu();
 
 	/**
+	 * RespawnLoadMenu method is responsible for displaying the Respawn Menu widget.
+	 *
+	 * @param None
+	 * @return None
+	 */
+	UFUNCTION(BlueprintCallable)
+	void RespawnLoadMenu();
+
+	/**
 	 * SelectCharacterLoadMenu
 	 *
 	 * Opens the Select Character load menu if the blueprint class is available.
@@ -361,6 +370,7 @@ private:
 	 * MainMenuClass represents the class of the main menu user widget.
 	 */
 	TSubclassOf<class UUserWidget> MainMenuClass = nullptr;
+	
 	/**
 	 * @brief This variable represents the User Widget class for the in-game menu.
 	 *
@@ -377,6 +387,7 @@ private:
 	 * @see UUserWidget
 	 */
 	TSubclassOf<class UUserWidget> InGameMenuClass = nullptr;
+	
 	/**
 	 * @brief The class representing the Select Character Menu.
 	 *
@@ -386,10 +397,12 @@ private:
 	 * @see UUserWidget
 	 */
 	TSubclassOf<class UUserWidget> SelectCharacterMenuClass = nullptr;
+	
 	/**
 	 *
 	 */
 	TSubclassOf<class UUserWidget> SettingsMenuClass = nullptr;
+	
 	/**
 	 * @brief Class variable representing the game over menu widget.
 	 *
@@ -403,6 +416,9 @@ private:
 	 * @see CreateWidgetInstance
 	 */
 	TSubclassOf<class UUserWidget> GameOverMenuClass = nullptr;
+
+	TSubclassOf<class UUserWidget>  RespawnMenuClass = nullptr;
+	
 	/**
 	 * @class UMainMenu
 	 * @brief A class representing a main menu in a software application.
@@ -430,6 +446,7 @@ private:
 	 * @see UMainMenu::Interact
 	 */
 	class UMainMenu* Menu;
+	
 	/**
 	 * @brief Declaration of a smart pointer to an online session object.
 	 *
@@ -440,6 +457,7 @@ private:
 	 * @see IOnlineSession
 	 */
 	IOnlineSessionPtr SessionInterface;
+	
 	/**
 	 * @brief The GameSessionSearch variable is a shared pointer to an instance of the FOnlineSessionSearch class.
 	 *
@@ -472,6 +490,7 @@ private:
 	 * @endcode
 	 */
 	TSharedPtr<class FOnlineSessionSearch> GameSessionSearch;
+	
 	/**
 	 * @brief The number of players in the game.
 	 *
@@ -483,6 +502,7 @@ private:
 	 *       course of the game.
 	 */
 	int NumPlayers = 1;
+	
 	/**
 	 * @brief A boolean variable indicating whether the game is ready to start or not.
 	 *
@@ -496,6 +516,7 @@ private:
 	 * required components are ready.
 	 */
 	bool bReadyToStartGame = false;
+	
 	/**
 	 * Callback function called when a game session is complete.
 	 *
