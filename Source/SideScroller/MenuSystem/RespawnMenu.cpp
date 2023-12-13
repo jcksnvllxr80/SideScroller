@@ -24,6 +24,8 @@ bool URespawnMenu::Initialize()
 		RespawnButton->OnClicked.AddDynamic(this, &URespawnMenu::Respawn);
 
 		RespawnButton->SetIsEnabled(false);
+
+		RespawnCountDown = RespawnDelayTime;
 		RunRespawnTimer();
 	}
 	else
@@ -165,6 +167,24 @@ void URespawnMenu::QuitGame()
 }
 
 /**
+ * Sets the text of the respawn button on the respawn menu.
+ *
+ * @param CountDownString The string representing the countdown to respawn.
+ * @return void
+ */
+void URespawnMenu::SetRespawnButtonText(const FString& CountDownString)
+{
+	const FName TextBlockName = "Respawn_TB";
+	RespawnTextBlock = Cast<UTextBlock>(
+		this->GetWidgetFromName(TextBlockName)
+	);
+	if (RespawnTextBlock != nullptr)
+	{
+		RespawnTextBlock->SetText(FText::FromString(CountDownString));
+	}
+}
+
+/**
  * Runs the respawn timer to display a countdown on the respawn menu.
  *
  * @param None
@@ -172,15 +192,24 @@ void URespawnMenu::QuitGame()
  */
 void URespawnMenu::RunRespawnTimer()
 {
-	// TODO: show respawn countdown on respawn menu
-	
-	GetWorld()->GetTimerManager().SetTimer(
-		this->RespawnDelayTimerHandle,
-		this,
-		&URespawnMenu::EnableRespawnButton,
-		RespawnDelayTime,
-		false
-	);
+	if (RespawnCountDown <= 0)
+	{
+		EnableRespawnButton();
+	}
+	else
+	{
+		const FString CurrentCountdownValueString = FString::Printf( TEXT("%i"), RespawnCountDown);
+		SetRespawnButtonText(CurrentCountdownValueString);
+		
+		--RespawnCountDown;
+		GetWorld()->GetTimerManager().SetTimer(
+			this->RespawnDelayTimerHandle,
+			this,
+			&URespawnMenu::RunRespawnTimer,
+			1.f,
+			false
+		);
+	}
 }
 
 /**
@@ -192,8 +221,9 @@ void URespawnMenu::RunRespawnTimer()
  *
  * @return None.
  */
-void URespawnMenu::EnableRespawnButton() const
+void URespawnMenu::EnableRespawnButton()
 {
+	SetRespawnButtonText(FString::Printf( TEXT("RESPAWN")));
 	RespawnButton->SetIsEnabled(true);
 }
 

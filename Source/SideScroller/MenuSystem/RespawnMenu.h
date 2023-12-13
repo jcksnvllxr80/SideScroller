@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "MenuWidget.h"
+#include "Components/TextBlock.h"
 #include "RespawnMenu.generated.h"
 
 /**
@@ -112,7 +113,29 @@ private:
 	 * @note The default value is 2 seconds.
 	 */
 	UPROPERTY()
-	float RespawnDelayTime = 2.f;
+	int RespawnDelayTime = 3;
+
+	/**
+	 * @brief Represents the countdown value for respawning.
+	 *
+	 * The RespawnCountDown variable stores the remaining time in seconds before a player is respawned.
+	 * It is used to keep track of the respawn timer for a particular player.
+	 *
+	 * @note This variable is a UPROPERTY, indicating that it can be accessed and modified from blueprint scripts.
+	 */
+	UPROPERTY()
+	int RespawnCountDown;
+
+	/**
+	 * @var RespawnTextBlock
+	 * @brief A pointer to a UTextBlock widget for displaying the respawn text.
+	 *
+	 * This variable is a UTextBlock pointer that is used to display the respawn text on the screen.
+	 * It is decorated with the UPROPERTY() macro to make it accessible in blueprint classes. The RespawnTextBlock
+	 * widget can be assigned in the editor or programmatically in the code.
+	 */
+	UPROPERTY()
+	UTextBlock* RespawnTextBlock;
 
 	/**
 	 * \brief Respawn the player at the last checkpoint.
@@ -156,6 +179,17 @@ private:
 	void QuitGame();
 
 	/**
+	 * @brief Sets the text of the respawn button in the respawn menu.
+	 *
+	 * The SetRespawnButtonText method sets the text of the respawn button in the respawn menu
+	 * using the provided CountDownString parameter.
+	 *
+	 * @param CountDownString The text string to set as the respawn button text.
+	 */
+	UFUNCTION(BlueprintCallable)
+	void SetRespawnButtonText(const FString& CountDownString);
+
+	/**
 	 * @brief Enable the respawn button.
 	 *
 	 * This method enables the respawn button in the RespawnMenu.
@@ -165,7 +199,7 @@ private:
 	 * @return None.
 	 */
 	UFUNCTION()
-	void EnableRespawnButton() const;
+	void EnableRespawnButton();
 
 	/**
 	 * @brief Function to return back to the game.
