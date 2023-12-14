@@ -214,6 +214,18 @@ public:
 	void PlayerDeath();
 
 	/**
+	 * @brief Performs actions when the player dies.
+	 *
+	 * This method is responsible for handling the death of a player character in the game. It executes the necessary
+	 * actions such as triggering the PlayerDeath event and displaying the respawn menu.
+	 *
+	 * @param None
+	 * @return None
+	 */
+	UFUNCTION(BlueprintCallable)
+	void HandlePlayerDeath();
+	
+	/**
 	 * @brief Handles the event when the player falls off the level.
 	 *
 	 * This method is responsible for handling the event when the player character falls off the level.
@@ -700,8 +712,11 @@ public:
 	 * @param None
 	 * @return None
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void ReviveAtCheckpoint();
+
+	UFUNCTION(BlueprintCallable)
+	void ShowRespawnMenu();
 
 	/**
 	 * @brief Performs clean-up actions upon the player's death.

@@ -720,7 +720,7 @@ void APC_PlayerFox::MoveSpectatorsToNewPlayer() const
  *
  * @return None.
  */
-void APC_PlayerFox::ReviveAtCheckpoint()
+void APC_PlayerFox::ReviveAtCheckpoint_Implementation()
 {
 	// set location back to last checkpoint
 	this->SetHealth(this->DefaultHealth);
@@ -728,6 +728,18 @@ void APC_PlayerFox::ReviveAtCheckpoint()
 		LastCheckpointLocation, false, nullptr, ETeleportType::ResetPhysics
 	);
 	this->GetMovementComponent()->StopMovementImmediately();
+}
+
+void APC_PlayerFox::ShowRespawnMenu()
+{
+	if (!this->bIsOutOfLives)
+	{
+		ASideScrollerGameState* GameState = Cast<ASideScrollerGameState>(GetWorld()->GetGameState());
+		if (GameState != nullptr)
+		{
+			GameState->OpenRespawnMenu();
+		}
+	}
 }
 
 /**
@@ -756,11 +768,7 @@ void APC_PlayerFox::PlayerDeath_Implementation()
 		// take a life away
 		this->NumberOfLives -= 1;
 		
-		ASideScrollerGameState* GameState = Cast<ASideScrollerGameState>(GetWorld()->GetGameState());
-		if (GameState != nullptr)
-		{
-			GameState->OpenRespawnMenu();
-		}
+		// ShowRespawnMenu();
 	} else {
 		this->RemoveFromPlayersArray();
 		this->DoDeath();
@@ -775,10 +783,16 @@ bool APC_PlayerFox::PlayerDeath_Validate()
 	return true;
 }
 
-void APC_PlayerFox::HandleFallOffLevel()
+void APC_PlayerFox::HandlePlayerDeath()
 {
 	// Maybe one color character doesnt die when it falls off, wrap PlayerDeath in that case.
 	PlayerDeath();
+	ShowRespawnMenu();
+}
+
+void APC_PlayerFox::HandleFallOffLevel()
+{
+	HandlePlayerDeath();
 }
 
 /**

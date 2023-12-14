@@ -301,7 +301,7 @@ void ABasePaperCharacter::TakeDamageRPC_Implementation(float DamageAmount, AActo
 		} else {  // not a player doing the damage
 			// if player is the victim
 			if (APC_PlayerFox* PlayerFoxVictim = dynamic_cast<APC_PlayerFox*>(this)) {
-				PlayerFoxVictim->PlayerDeath();
+				PlayerFoxVictim->HandlePlayerDeath();
 			}
 		}
 	} else {
