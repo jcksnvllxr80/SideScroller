@@ -755,7 +755,12 @@ void APC_PlayerFox::PlayerDeath_Implementation()
 	{
 		// take a life away
 		this->NumberOfLives -= 1;
-		GameInstance->RespawnLoadMenu();
+		
+		ASideScrollerGameState* GameState = Cast<ASideScrollerGameState>(GetWorld()->GetGameState());
+		if (GameState != nullptr)
+		{
+			GameState->OpenRespawnMenu();
+		}
 	} else {
 		this->RemoveFromPlayersArray();
 		this->DoDeath();
@@ -1782,14 +1787,14 @@ void APC_PlayerFox::LogLocation()
  */
 void APC_PlayerFox::OpenMenu()
 {
+	// TODO: call this in a separate function on from the server to the client
 	const ALevelGameMode* LevelGameMode = dynamic_cast<ALevelGameMode*>(GetWorld()->GetAuthGameMode());
 	if (LevelGameMode != nullptr)
 	{
 		OpenInGameMenu();
 		return;
 	}
-
-	// TODO: call this in a separate function on from the server to the client
+	
 	ALobbyGameState* GameState = Cast<ALobbyGameState>(GetWorld()->GetGameState());
 	if (GameState != nullptr)
 	{
