@@ -2,8 +2,6 @@
 
 #include "SideScrollerGameState.h"
 
-#include "SideScroller/SideScrollerGameInstance.h"
-
 void ASideScrollerGameState::BeginPlay()
 {
 	Super::BeginPlay();
