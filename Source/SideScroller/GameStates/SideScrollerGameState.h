@@ -18,9 +18,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	int GetCurrentLevel() const;
 	
-	UFUNCTION(BlueprintCallable)
-	void OpenRespawnMenu();
-	
 protected:
 	virtual void BeginPlay() override;
 

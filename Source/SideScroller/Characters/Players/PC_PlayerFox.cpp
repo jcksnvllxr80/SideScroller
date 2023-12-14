@@ -13,6 +13,7 @@
 #include "SideScroller/SideScrollerGameInstance.h"
 #include "SideScroller/GameModes/LevelGameMode.h"
 #include "SideScroller/GameModes/SideScrollerGameModeBase.h"
+#include "SideScroller/GameStates/LevelGameState.h"
 #include "SideScroller/GameStates/LobbyGameState.h"
 #include "SideScroller/SaveGames/SideScrollerSaveGame.h"
 
@@ -734,7 +735,7 @@ void APC_PlayerFox::ShowRespawnMenu()
 {
 	if (!this->bIsOutOfLives)
 	{
-		ASideScrollerGameState* GameState = Cast<ASideScrollerGameState>(GetWorld()->GetGameState());
+		ALevelGameState* GameState = Cast<ALevelGameState>(GetWorld()->GetGameState());
 		if (GameState != nullptr)
 		{
 			GameState->OpenRespawnMenu();

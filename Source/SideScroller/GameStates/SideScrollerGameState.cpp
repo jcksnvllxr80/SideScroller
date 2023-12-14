@@ -14,15 +14,3 @@ int ASideScrollerGameState::GetCurrentLevel() const
 {
 	return CurrentLevel;
 }
-
-void ASideScrollerGameState::OpenRespawnMenu()
-{
-	USideScrollerGameInstance* GameInstance = dynamic_cast<USideScrollerGameInstance*>(GetGameInstance());
-	if (GameInstance != nullptr) {
-		GameInstance->RespawnLoadMenu();
-	} else {
-		UE_LOG(LogTemp, Warning,
-			TEXT("ASideScrollerGameState::OpenRespawnMenu - Cant find GameInstance!")
-		);
-	}
-}
