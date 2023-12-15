@@ -725,13 +725,20 @@ void APC_PlayerFox::ReviveAtCheckpoint_Implementation()
 {
 	// set location back to last checkpoint
 	this->SetHealth(this->DefaultHealth);
+
+	const FVector SpawnLocation = LastCheckpointLocation + RespawnLocationOffset;
 	this->SetActorLocation(
-		LastCheckpointLocation, false, nullptr, ETeleportType::ResetPhysics
+		SpawnLocation, false, nullptr, ETeleportType::ResetPhysics
 	);
 	this->GetMovementComponent()->StopMovementImmediately();
 }
 
-void APC_PlayerFox::ShowRespawnMenu()
+/**
+ * Shows the respawn menu if the player is able to respawn.
+ *
+ * @param None
+ */
+void APC_PlayerFox::ShowRespawnMenuOrSpectate()
 {
 	if (!this->bIsOutOfLives)
 	{
@@ -740,6 +747,10 @@ void APC_PlayerFox::ShowRespawnMenu()
 		{
 			GameState->OpenRespawnMenu();
 		}
+	}
+	else
+	{
+		SpectateNextPlayer();
 	}
 }
 
@@ -761,21 +772,18 @@ void APC_PlayerFox::ShowRespawnMenu()
 void APC_PlayerFox::PlayerDeath_Implementation()
 {
 	this->SetActorLocation(
-		RespawnLocationOffset, false, nullptr, ETeleportType::ResetPhysics
+		DeathHoldLocation, false, nullptr, ETeleportType::ResetPhysics
 	);
 	
 	if (this->NumberOfLives > 0)
 	{
 		// take a life away
 		this->NumberOfLives -= 1;
-		
-		// ShowRespawnMenu();
 	} else {
 		this->RemoveFromPlayersArray();
 		this->DoDeath();
 
 		this->bIsOutOfLives = true;
-		SpectateNextPlayer();  // SpectateOtherPlayer();
 	}
 }
 
@@ -784,11 +792,22 @@ bool APC_PlayerFox::PlayerDeath_Validate()
 	return true;
 }
 
+/**
+ 
+ * @brief Handles the death of the player Fox.
+ *
+ * This method is responsible for the necessary actions that need to be taken when the player Fox dies.
+ * It calls the PlayerDeath() method to handle the death itself and the ShowRespawnMenu() method to display
+ * the respawn menu for the player to choose their next action.
+ *
+ * @param None
+ * @return None
+ */
 void APC_PlayerFox::HandlePlayerDeath()
 {
 	// Maybe one color character doesnt die when it falls off, wrap PlayerDeath in that case.
 	PlayerDeath();
-	ShowRespawnMenu();
+	ShowRespawnMenuOrSpectate();
 }
 
 void APC_PlayerFox::HandleFallOffLevel()

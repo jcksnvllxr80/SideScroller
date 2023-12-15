@@ -401,23 +401,38 @@ public:
 	FTimerHandle ShootTimerHandle;
 
 	/**
-	 * @brief The offset used to calculate the respawn location of a character.
+	 * @brief The offset from the current respawn location.
 	 *
-	 * This variable represents the offset from the original spawn location that is used to calculate the respawn
-	 * location of a character. It is a vector consisting of three components: X, Y, and Z, representing the
-	 * displacement along the x, y, and z axes respectively.
+	 * This property represents the offset from the current respawn location in world space.
+	 * It is used to adjust the position where the player will be respawned.
+	 * The X and Y components of the vector represent the horizontal offset, while the Z component
+	 * represents the vertical offset.
 	 *
-	 * The variable is decorated with the UPROPERTY macro, which allows it to be edited in the editor. This means
-	 * that the value can be modified in real-time while the game is running. The EditAnywhere specifier makes the
-	 * variable editable from any location in the editor, including the Details panel.
+	 * The default value for RespawnLocationOffset is (0.0, 0.0, 50.0).
+	 * You can modify this variable to adjust the respawn location offset as needed for your game.
 	 *
-	 * It is initialized with the FVector constructor, which takes three arguments representing the initial values
-	 * of X, Y, and Z respectively. In this case, the initial X value is 0.0, the initial Y value is 100.0, and
-	 * the initial Z value is 0.0. This means that the respawn location will be offset 100 units in the positive
-	 * Y direction from the original spawn location.
+	 * @see APlayerCharacter, RespawnLocation
 	 */
 	UPROPERTY(EditAnywhere)
-	FVector RespawnLocationOffset = FVector(0.0, 0.0, -3000.0);;
+	FVector RespawnLocationOffset = FVector(0.0, 0.0, 50.0);;
+
+	/**
+	 * @brief The location where the player character is held when they die.
+	 *
+	 * The DeathHoldLocation is a 3D vector that represents the coordinates of the location where the player
+	 * character is held when they die. The coordinates are specified in the world space.
+	 *
+	 * The DeathHoldLocation is used for gameplay purposes, such as transitioning the player character to a specific
+	 * location upon death, or performing specific actions at the death location.
+	 *
+	 * The DeathHoldLocation is an editable property that can be modified in the Unreal Engine editor. Its default
+	 * value is (0.0, 0.0, -3000.0).
+	 *
+	 * @see UPROPERTY
+	 * @see EditAnywhere
+	 */
+	UPROPERTY(EditAnywhere)
+	FVector DeathHoldLocation = FVector(0.0, 0.0, -3000.0);;
 
 	/**
 	 * \brief Takes money from the player's stash
@@ -716,7 +731,7 @@ public:
 	void ReviveAtCheckpoint();
 
 	UFUNCTION(BlueprintCallable)
-	void ShowRespawnMenu();
+	void ShowRespawnMenuOrSpectate();
 
 	/**
 	 * @brief Performs clean-up actions upon the player's death.
