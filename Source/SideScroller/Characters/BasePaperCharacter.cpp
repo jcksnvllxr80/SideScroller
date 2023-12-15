@@ -44,6 +44,7 @@ void ABasePaperCharacter::GetLifetimeReplicatedProps( TArray< FLifetimeProperty 
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ABasePaperCharacter, Health);
+	DOREPLIFETIME(ABasePaperCharacter, bIsDead);
 }
 
 float ABasePaperCharacter::GetDamage() const
@@ -301,7 +302,7 @@ void ABasePaperCharacter::TakeDamageRPC_Implementation(float DamageAmount, AActo
 		} else {  // not a player doing the damage
 			// if player is the victim
 			if (APC_PlayerFox* PlayerFoxVictim = dynamic_cast<APC_PlayerFox*>(this)) {
-				PlayerFoxVictim->HandlePlayerDeath();
+				PlayerFoxVictim->PlayerDeath();
 			}
 		}
 	} else {

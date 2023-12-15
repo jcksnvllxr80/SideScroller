@@ -212,18 +212,6 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation, Category = "Death")
 	void PlayerDeath();
-
-	/**
-	 * @brief Performs actions when the player dies.
-	 *
-	 * This method is responsible for handling the death of a player character in the game. It executes the necessary
-	 * actions such as triggering the PlayerDeath event and displaying the respawn menu.
-	 *
-	 * @param None
-	 * @return None
-	 */
-	UFUNCTION(BlueprintCallable)
-	void HandlePlayerDeath();
 	
 	/**
 	 * @brief Handles the event when the player falls off the level.
@@ -729,9 +717,6 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void ReviveAtCheckpoint();
-
-	UFUNCTION(BlueprintCallable)
-	void ShowRespawnMenuOrSpectate();
 
 	/**
 	 * @brief Performs clean-up actions upon the player's death.
@@ -1356,6 +1341,15 @@ private:
 	 * This function is used to move all the spectators from the current player to a new*/
 	UFUNCTION(BlueprintCallable)
 	void MoveSpectatorsToNewPlayer() const;
+
+	/**
+	 * Opens the respawn menu for the client.
+	 *
+	 * This method is a blueprint callable function that opens the respawn menu for the client using a reliable network
+	 * connection.
+	 */
+	UFUNCTION(BlueprintCallable, Client, Reliable)
+	void OpenRespawnMenuRPC();
 
 	/**
 	 * Checks if a player is valid to be spectated and sets them as the player being spectated.

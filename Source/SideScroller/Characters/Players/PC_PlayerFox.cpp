@@ -514,10 +514,10 @@ void APC_PlayerFox::SpectateOtherPlayer()
  */
 void APC_PlayerFox::SpectateNextPlayer()
 {
-	if (const ASideScrollerGameModeBase* GameMode = dynamic_cast<ASideScrollerGameModeBase*>(
+	const ASideScrollerGameModeBase* GameMode = dynamic_cast<ASideScrollerGameModeBase*>(
 		GetWorld()->GetAuthGameMode()
-		)
-	) {
+	);
+	if (GameMode != nullptr) {
 		if (this->IsDead())
 		{
 			const APC_PlayerFox* LastSpectatedPlayer = this->PlayerBeingSpectated;
@@ -538,6 +538,19 @@ void APC_PlayerFox::SpectateNextPlayer()
 				BeginSpectating(GameMode);
 			}
 		}
+		else
+		{
+			UE_LOG(LogTemp, Warning,
+				TEXT("APC_PlayerFox::SpectateNextPlayer - %s is not dead. Not starting spectate."),
+				*this->GetPlayerName().ToString()
+			)
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning,
+			TEXT("APC_PlayerFox::SpectateNextPlayer - GameMode is nullptr. Not starting spectate.")
+		)
 	}
 }
 
@@ -571,6 +584,12 @@ void APC_PlayerFox::Spectate() const
 		return;
 	}
 
+	if (this->PlayerBeingSpectated == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("APC_PlayerFox::Spectate - PlayerBeingSpectated is nullptr. not spectating"))
+		return;
+	}
+	
 	const AController* SpectableController = this->PlayerBeingSpectated->GetController();
 	if (SpectableController == nullptr)
 	{
@@ -734,23 +753,20 @@ void APC_PlayerFox::ReviveAtCheckpoint_Implementation()
 }
 
 /**
- * Shows the respawn menu if the player is able to respawn.
+ * @brief Opens the respawn menu for the player character.
+ *
+ * This method is used to open the respawn menu for the player character. It checks for a valid
+ * game state and calls the OpenRespawnMenu method on the game state object.
  *
  * @param None
+ * @return None
  */
-void APC_PlayerFox::ShowRespawnMenuOrSpectate()
+void APC_PlayerFox::OpenRespawnMenuRPC_Implementation()
 {
-	if (!this->bIsOutOfLives)
+	ALevelGameState* GameState = Cast<ALevelGameState>(GetWorld()->GetGameState());
+	if (GameState != nullptr)
 	{
-		ALevelGameState* GameState = Cast<ALevelGameState>(GetWorld()->GetGameState());
-		if (GameState != nullptr)
-		{
-			GameState->OpenRespawnMenu();
-		}
-	}
-	else
-	{
-		SpectateNextPlayer();
+		GameState->OpenRespawnMenu();
 	}
 }
 
@@ -779,11 +795,12 @@ void APC_PlayerFox::PlayerDeath_Implementation()
 	{
 		// take a life away
 		this->NumberOfLives -= 1;
+		OpenRespawnMenuRPC();
 	} else {
 		this->RemoveFromPlayersArray();
 		this->DoDeath();
-
 		this->bIsOutOfLives = true;
+		SpectateNextPlayer();
 	}
 }
 
@@ -792,27 +809,10 @@ bool APC_PlayerFox::PlayerDeath_Validate()
 	return true;
 }
 
-/**
- 
- * @brief Handles the death of the player Fox.
- *
- * This method is responsible for the necessary actions that need to be taken when the player Fox dies.
- * It calls the PlayerDeath() method to handle the death itself and the ShowRespawnMenu() method to display
- * the respawn menu for the player to choose their next action.
- *
- * @param None
- * @return None
- */
-void APC_PlayerFox::HandlePlayerDeath()
+void APC_PlayerFox::HandleFallOffLevel()
 {
 	// Maybe one color character doesnt die when it falls off, wrap PlayerDeath in that case.
 	PlayerDeath();
-	ShowRespawnMenuOrSpectate();
-}
-
-void APC_PlayerFox::HandleFallOffLevel()
-{
-	HandlePlayerDeath();
 }
 
 /**

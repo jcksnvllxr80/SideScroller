@@ -528,6 +528,7 @@ private:
 	 * status of the object. If the value is true, it means the object is
 	 * dead. If the value is false, it means the object is alive.
 	 */
+	UPROPERTY(VisibleAnywhere, replicated)
 	bool bIsDead = false;
 
 protected:
