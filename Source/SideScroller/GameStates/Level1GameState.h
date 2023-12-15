@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SideScrollerGameState.h"
+#include "LevelGameState.h"
 #include "Level1GameState.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class SIDESCROLLER_API ALevel1GameState : public ASideScrollerGameState
+class SIDESCROLLER_API ALevel1GameState : public ALevelGameState
 {
 	GENERATED_BODY()
 

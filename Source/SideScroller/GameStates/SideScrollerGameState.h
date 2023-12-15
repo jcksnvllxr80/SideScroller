@@ -15,6 +15,7 @@ class SIDESCROLLER_API ASideScrollerGameState : public AGameStateBase
 	GENERATED_BODY()
 
 public:
+	UFUNCTION(BlueprintCallable)
 	int GetCurrentLevel() const;
 	
 protected:

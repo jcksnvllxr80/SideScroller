@@ -44,6 +44,7 @@ void ABasePaperCharacter::GetLifetimeReplicatedProps( TArray< FLifetimeProperty 
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ABasePaperCharacter, Health);
+	DOREPLIFETIME(ABasePaperCharacter, bIsDead);
 }
 
 float ABasePaperCharacter::GetDamage() const

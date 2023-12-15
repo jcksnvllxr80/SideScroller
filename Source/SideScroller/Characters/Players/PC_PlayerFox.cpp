@@ -6,7 +6,6 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
-#include "Components/EditableText.h"
 #include "Components/TextBlock.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -14,6 +13,7 @@
 #include "SideScroller/SideScrollerGameInstance.h"
 #include "SideScroller/GameModes/LevelGameMode.h"
 #include "SideScroller/GameModes/SideScrollerGameModeBase.h"
+#include "SideScroller/GameStates/LevelGameState.h"
 #include "SideScroller/GameStates/LobbyGameState.h"
 #include "SideScroller/SaveGames/SideScrollerSaveGame.h"
 
@@ -151,7 +151,8 @@ void APC_PlayerFox::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 /**
  * @brief Displays a level welcome message.
  *
- * This method is responsible for displaying a level welcome message if the game state is a SideScrollerGameState and the current level is identified as a level.
+ * This method is responsible for displaying a level welcome message if the game state is a SideScrollerGameState and
+ * the current level is identified as a level.
  *
  * @param None
  *
@@ -513,10 +514,10 @@ void APC_PlayerFox::SpectateOtherPlayer()
  */
 void APC_PlayerFox::SpectateNextPlayer()
 {
-	if (const ASideScrollerGameModeBase* GameMode = dynamic_cast<ASideScrollerGameModeBase*>(
+	const ASideScrollerGameModeBase* GameMode = dynamic_cast<ASideScrollerGameModeBase*>(
 		GetWorld()->GetAuthGameMode()
-		)
-	) {
+	);
+	if (GameMode != nullptr) {
 		if (this->IsDead())
 		{
 			const APC_PlayerFox* LastSpectatedPlayer = this->PlayerBeingSpectated;
@@ -537,6 +538,19 @@ void APC_PlayerFox::SpectateNextPlayer()
 				BeginSpectating(GameMode);
 			}
 		}
+		else
+		{
+			UE_LOG(LogTemp, Warning,
+				TEXT("APC_PlayerFox::SpectateNextPlayer - %s is not dead. Not starting spectate."),
+				*this->GetPlayerName().ToString()
+			)
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning,
+			TEXT("APC_PlayerFox::SpectateNextPlayer - GameMode is nullptr. Not starting spectate.")
+		)
 	}
 }
 
@@ -570,6 +584,12 @@ void APC_PlayerFox::Spectate() const
 		return;
 	}
 
+	if (this->PlayerBeingSpectated == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("APC_PlayerFox::Spectate - PlayerBeingSpectated is nullptr. not spectating"))
+		return;
+	}
+	
 	const AController* SpectableController = this->PlayerBeingSpectated->GetController();
 	if (SpectableController == nullptr)
 	{
@@ -720,39 +740,67 @@ void APC_PlayerFox::MoveSpectatorsToNewPlayer() const
  *
  * @return None.
  */
-void APC_PlayerFox::ReviveAtCheckpoint()
+void APC_PlayerFox::ReviveAtCheckpoint_Implementation()
 {
 	// set location back to last checkpoint
 	this->SetHealth(this->DefaultHealth);
+
+	const FVector SpawnLocation = LastCheckpointLocation + RespawnLocationOffset;
 	this->SetActorLocation(
-		LastCheckpointLocation, false, nullptr, ETeleportType::ResetPhysics
+		SpawnLocation, false, nullptr, ETeleportType::ResetPhysics
 	);
 	this->GetMovementComponent()->StopMovementImmediately();
 }
 
 /**
- * @brief Implements the functionality for a player's death.
+ * @brief Opens the respawn menu for the player character.
  *
- * This method is called when a player dies. It reduces the number of lives
- * the player has by one, and then revives the player at the checkpoint.
- * If the player has no remaining lives, the player is removed from the game,
- * the death animation is triggered, and the player is set to spectate the next player.
+ * This method is used to open the respawn menu for the player character. It checks for a valid
+ * game state and calls the OpenRespawnMenu method on the game state object.
+ *
+ * @param None
+ * @return None
+ */
+void APC_PlayerFox::OpenRespawnMenuRPC_Implementation()
+{
+	ALevelGameState* GameState = Cast<ALevelGameState>(GetWorld()->GetGameState());
+	if (GameState != nullptr)
+	{
+		GameState->OpenRespawnMenu();
+	}
+}
+
+/**
+ * PlayerDeath_Implementation is a method in the APC_PlayerFox class that is called when the player dies.
+ * It is responsible for handling the player's death by performing the following actions:
+ * - Respawn the player at the last checkpoint location, offset by the RespawnLocationOffset.
+ * - If the player has remaining lives:
+ *     - Decrement the number of lives by 1.
+ *     - Call the RespawnLoadMenu method of the GameInstance.
+ * - If the player is out of lives:
+ *     - Remove the player from the players array.
+ *     - Call the DoDeath method of the APC_PlayerFox.
+ *     - Set the bIsOutOfLives flag to true.
+ *     - Call the SpectateNextPlayer method of APC_PlayerFox.
+ *
+ * Note: This method does not have any parameters.
  */
 void APC_PlayerFox::PlayerDeath_Implementation()
 {
+	this->SetActorLocation(
+		DeathHoldLocation, false, nullptr, ETeleportType::ResetPhysics
+	);
+	
 	if (this->NumberOfLives > 0)
 	{
 		// take a life away
 		this->NumberOfLives -= 1;
-
-		// TODO: add respawn menu before reviving at checkpoint
-		ReviveAtCheckpoint();
+		OpenRespawnMenuRPC();
 	} else {
 		this->RemoveFromPlayersArray();
 		this->DoDeath();
-
 		this->bIsOutOfLives = true;
-		SpectateNextPlayer();  // SpectateOtherPlayer();
+		SpectateNextPlayer();
 	}
 }
 
@@ -868,14 +916,17 @@ void APC_PlayerFox::PlayerHUDTeardown()
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("APC_PlayerFox::PlayerHUDTeardown - WidgetPlayerHUDInstance is null"))
+		UE_LOG(LogTemp, Warning,
+			TEXT("APC_PlayerFox::PlayerHUDTeardown - WidgetPlayerHUDInstance is null")
+		)
 	}
 }
 
 /**
  * @brief Tears down the PlayerMessageWidget.
  *
- * This method removes the WidgetPlayerGameMessageInstance from the parent if it is not null. If the WidgetPlayerGameMessageInstance is null, a warning log is displayed.
+ * This method removes the WidgetPlayerGameMessageInstance from the parent if it is not null. If the
+ * WidgetPlayerGameMessageInstance is null, a warning log is displayed.
  *
  * @param None.
  * @return None.
@@ -1079,7 +1130,9 @@ void APC_PlayerFox::UpdateRotation(const float Value)
 	if (Value < 0) {
 		this->CurrentRotation = MovingLeftRotation;
 		this->GetSprite()->SetRelativeRotation(MovingLeftRotation);
-		GetProjectileSpawnPoint()->SetRelativeLocation(FVector(ProjectileSpawnLoc.X * -1.f, ProjSpawnLoc.Y, ProjSpawnLoc.Z));
+		GetProjectileSpawnPoint()->SetRelativeLocation(
+			FVector(ProjectileSpawnLoc.X * -1.f, ProjSpawnLoc.Y, ProjSpawnLoc.Z)
+		);
 	}
 	else if (Value > 0){
 		this->CurrentRotation = MovingRightRotation;
@@ -1123,7 +1176,8 @@ void APC_PlayerFox::UpdateNameBanner()
 }
 
 /**
- * Sets the value of the bOverlappingClimbable member variable and performs additional actions based on the provided parameters.
+ * Sets the value of the bOverlappingClimbable member variable and performs additional actions based on the provided
+ * parameters.
  *
  * @param OverlappingClimbable The new value for the bOverlappingClimbable member variable.
  * @param OverlappedClimbable Pointer to the ABaseClimbable object that is being overlapped.
@@ -1185,7 +1239,9 @@ void APC_PlayerFox::CrouchClimbDown()
 	{
 		// UE_LOG(LogTemp, VeryVerbose, TEXT("X Vel = %f"), VelocityX);
 		// UE_LOG(LogTemp, VeryVerbose, TEXT("APC_PlayerFox::CrouchClimbDown - setting slide (run) to true"));
-		UE_LOG(LogTemp, Display, TEXT("APC_PlayerFox::CrouchClimbDown - setting bIsSliding to true for run."));
+		UE_LOG(LogTemp, Display,
+			TEXT("APC_PlayerFox::CrouchClimbDown - setting bIsSliding to true for run.")
+		);
 		this->bIsSliding = true;
 		this->GetCharacterMovement()->BrakingFrictionFactor = this->CrouchSlideFriction;
 		return;
@@ -1201,7 +1257,9 @@ void APC_PlayerFox::CrouchClimbDown()
 			// UE_LOG(LogTemp, VeryVerbose, TEXT("X Vel = %f"), VelocityX);
 			// UE_LOG(LogTemp, VeryVerbose, TEXT("Floor Angle = %f"), FloorAngleDeg);
 			// UE_LOG(LogTemp, VeryVerbose, TEXT("APC_PlayerFox::CrouchClimbDown - setting slide (hill) to true"));
-			UE_LOG(LogTemp, Verbose, TEXT("APC_PlayerFox::CrouchClimbDown - RIGHT - setting bIsSliding true - hill."));
+			UE_LOG(LogTemp, Verbose,
+				TEXT("APC_PlayerFox::CrouchClimbDown - RIGHT - setting bIsSliding true - hill.")
+			);
 			this->bIsSliding = true;
 			this->GetCharacterMovement()->BrakingFrictionFactor = 0.f;  // this->CrouchSlideFriction;
 			return;
@@ -1212,7 +1270,9 @@ void APC_PlayerFox::CrouchClimbDown()
 			// UE_LOG(LogTemp, VeryVerbose, TEXT("X Vel = %f"), VelocityX);
 			// UE_LOG(LogTemp, VeryVerbose, TEXT("Floor Angle = %f"), FloorAngleDeg);
 			// UE_LOG(LogTemp, VeryVerbose, TEXT("APC_PlayerFox::CrouchClimbDown - setting slide (hill) to true"));
-			UE_LOG(LogTemp, Verbose, TEXT("APC_PlayerFox::CrouchClimbDown - LEFT - setting bIsSliding true - hill."));
+			UE_LOG(LogTemp, Verbose,
+				TEXT("APC_PlayerFox::CrouchClimbDown - LEFT - setting bIsSliding true - hill.")
+			);
 			this->bIsSliding = true;
 			this->GetCharacterMovement()->BrakingFrictionFactor = 0.f;  // this->CrouchSlideFriction;
 			return;
@@ -1228,7 +1288,9 @@ void APC_PlayerFox::CrouchClimbDown()
 			// UE_LOG(LogTemp, VeryVerbose, TEXT("X Vel = %f"), VelocityX);
 			// UE_LOG(LogTemp, VeryVerbose, TEXT("Floor Angle = %f"), FloorAngleDeg);
 			// UE_LOG(LogTemp, VeryVerbose, TEXT("APC_PlayerFox::CrouchClimbDown - setting slide to false"));
-			UE_LOG(LogTemp, Verbose, TEXT("APC_PlayerFox::CrouchClimbDown - RIGHT - setting bIsSliding to false."));
+			UE_LOG(LogTemp, Verbose,
+				TEXT("APC_PlayerFox::CrouchClimbDown - RIGHT - setting bIsSliding to false.")
+			);
 			this->bIsSliding = false;
 			this->GetCharacterMovement()->BrakingFrictionFactor = this->StandingFriction;
 		}
@@ -1237,7 +1299,9 @@ void APC_PlayerFox::CrouchClimbDown()
 			// UE_LOG(LogTemp, VeryVerbose, TEXT("X Vel = %f"), VelocityX);
 			// UE_LOG(LogTemp, VeryVerbose, TEXT("Floor Angle = %f"), FloorAngleDeg);
 			// UE_LOG(LogTemp, VeryVerbose, TEXT("APC_PlayerFox::CrouchClimbDown - setting slide to false"));
-			UE_LOG(LogTemp, Verbose, TEXT("APC_PlayerFox::CrouchClimbDown - LEFT - setting bIsSliding to false."));
+			UE_LOG(LogTemp, Verbose,
+				TEXT("APC_PlayerFox::CrouchClimbDown - LEFT - setting bIsSliding to false.")
+			);
 			this->bIsSliding = false;
 			this->GetCharacterMovement()->BrakingFrictionFactor = this->StandingFriction;
 		}
@@ -1593,7 +1657,9 @@ void APC_PlayerFox::Jump()
 void APC_PlayerFox::TakeMoney(int MonetaryValue)
 {
 	this->MoneyStash += MonetaryValue;
-	UE_LOG(LogTemp, Verbose, TEXT("%s's money stash is now %i!"), *this->GetName(), this->MoneyStash);
+	UE_LOG(LogTemp, Verbose,
+		TEXT("%s's money stash is now %i!"), *this->GetName(), this->MoneyStash
+	);
 }
 
 /**
@@ -1619,7 +1685,9 @@ void APC_PlayerFox::TakeMoney(int MonetaryValue)
 void APC_PlayerFox::TakeHealing(const float HealingValue)
 {
 	this->AddHealth(HealingValue);
-	UE_LOG(LogTemp, Verbose, TEXT("%s's health is now %f!"), *this->GetName(), this->GetHealth());
+	UE_LOG(LogTemp, Verbose,
+		TEXT("%s's health is now %f!"), *this->GetName(), this->GetHealth()
+	);
 }
 
 /**
@@ -1630,12 +1698,18 @@ void APC_PlayerFox::TakeHealing(const float HealingValue)
 void APC_PlayerFox::TakeCherries(int NumCherries)
 {
 	this->CherryStash += NumCherries;
-	UE_LOG(LogTemp, Verbose, TEXT("%s's cherry stash has increased to %d!"), *this->GetName(), this->CherryStash);
+	UE_LOG(LogTemp, Verbose,
+		TEXT("%s's cherry stash has increased to %d!"),
+		*this->GetName(),
+		this->CherryStash
+	);
 }
 
 void APC_PlayerFox::LogSpeed()
 {
-	UE_LOG(LogTemp, VeryVerbose, TEXT("%s's speed is %f!"), *this->GetName(), this->GetVelocity().Size());
+	UE_LOG(LogTemp, VeryVerbose,
+		TEXT("%s's speed is %f!"), *this->GetName(), this->GetVelocity().Size()
+	);
 }
 
 void APC_PlayerFox::LogRotation()
@@ -1734,7 +1808,9 @@ bool APC_PlayerFox::SetWalkVelocityRPC_Validate()
 
 void APC_PlayerFox::LogLocation()
 {
-	UE_LOG(LogTemp, VeryVerbose, TEXT("%s's location is %s!"), *this->GetName(), *this->GetActorLocation().ToString());
+	UE_LOG(LogTemp, VeryVerbose,
+		TEXT("%s's location is %s!"), *this->GetName(), *this->GetActorLocation().ToString()
+	);
 }
 
 /**
@@ -1745,6 +1821,7 @@ void APC_PlayerFox::LogLocation()
  */
 void APC_PlayerFox::OpenMenu()
 {
+	// TODO: call this in a separate function on from the server to the client
 	const ALevelGameMode* LevelGameMode = dynamic_cast<ALevelGameMode*>(GetWorld()->GetAuthGameMode());
 	if (LevelGameMode != nullptr)
 	{
@@ -1772,11 +1849,14 @@ void APC_PlayerFox::OpenMenu()
 void APC_PlayerFox::OpenInGameMenu()
 {
 	if (GameInstance != nullptr) {
+		// TODO: remove pause and make this function call on server
 		GetWorld()->GetFirstPlayerController()->SetPause(true);
 		GameInstance->InGameLoadMenu();
 	}
 	else {
-		UE_LOG(LogTemp, Warning, TEXT("APC_PlayerFox::OpenInGameMenu - Can't open InGameMenu. GameInstance is null!"));
+		UE_LOG(LogTemp, Warning,
+			TEXT("APC_PlayerFox::OpenInGameMenu - Can't open InGameMenu. GameInstance is null!")
+		);
 	}
 }
 
