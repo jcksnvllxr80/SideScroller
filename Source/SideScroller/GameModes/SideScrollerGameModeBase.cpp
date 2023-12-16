@@ -9,6 +9,11 @@
 #include "SideScroller/MenuSystem/MainMenu.h"
 #include "UObject/ConstructorHelpers.h"
 
+/**
+ * @brief Default constructor for ASideScrollerGameModeBase.
+ *
+ * Initializes the PrimaryActorTick and sets the DefaultPawnClass to a specified Blueprint class.
+ */
 ASideScrollerGameModeBase::ASideScrollerGameModeBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -23,6 +28,16 @@ ASideScrollerGameModeBase::ASideScrollerGameModeBase()
 	}
 }
 
+/**
+ * @brief BeginPlay method
+ *
+ * This method is called when the game starts or when the level is loaded. It plays the background music at the
+ * beginning of the game.
+ *
+ * @param None
+ *
+ * @return None
+ */
 void ASideScrollerGameModeBase::BeginPlay()
 {
 	/**
@@ -33,6 +48,11 @@ void ASideScrollerGameModeBase::BeginPlay()
 	UGameplayStatics::PlaySound2D(AActor::GetWorld(), BackgroundMusic);
 }
 
+/**
+ * Quits the game without prompting the user for confirmation.
+ *
+ * @param QuitPreference  The preference for quitting the game.
+ */
 void ASideScrollerGameModeBase::QuitGameHard() const
 {
 	// hard coded quit game 
@@ -45,6 +65,11 @@ void ASideScrollerGameModeBase::QuitGameHard() const
 	);
 }
 
+/**
+ * The Tick method is called every frame to update the game state.
+ *
+ * @param DeltaTime The time between the current frame and the last frame.
+ */
 void ASideScrollerGameModeBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -78,6 +103,9 @@ void ASideScrollerGameModeBase::Tick(float DeltaTime)
 	}
 }
 
+/**
+ * Prints a list of players along with their status (alive or dead).
+ */
 void ASideScrollerGameModeBase::PrintPlayersList()
 {
 	if (Players.IsEmpty())
@@ -99,6 +127,14 @@ void ASideScrollerGameModeBase::PrintPlayersList()
 	UE_LOG(LogTemp, Display, TEXT("List of Players is %s"), *PlayerArrayStr);
 }
 
+/**
+ * Logs out a player from the game.
+ *
+ * This method is called when a player controller logs out of the game. It destroys the player's character
+ * (if it is a `APC_PlayerFox`), removes the player from the players array, and calls the superclass's `Logout` method.
+ *
+ * @param Exiting The controller for the player that is logging out.
+ */
 void ASideScrollerGameModeBase::Logout(AController* Exiting)
 {
 	APC_PlayerFox* PlayerFox = Cast<APC_PlayerFox>(Exiting->GetPawn());
@@ -121,11 +157,25 @@ void ASideScrollerGameModeBase::Logout(AController* Exiting)
 	Super::Logout(Exiting);
 }
 
+/**
+ * @brief Adds a player to the game mode.
+ *
+ * This method adds the given player to the game mode's list of players.
+ *
+ * @param PlayerFox The player to be added.
+ *
+ * @note The player will be added to the game mode's list of players.
+ */
 void ASideScrollerGameModeBase::AddPlayer(APC_PlayerFox* PlayerFox)
 {
 	this->Players.Add(PlayerFox);
 }
 
+/**
+ * Removes a player from the Players array.
+ *
+ * @param PlayerFox The player to remove.
+ */
 void ASideScrollerGameModeBase::RemovePlayer(APC_PlayerFox* PlayerFox)
 {
 	if (Players.Contains(PlayerFox))
@@ -139,17 +189,35 @@ void ASideScrollerGameModeBase::RemovePlayer(APC_PlayerFox* PlayerFox)
 	}
 }
 
+/**
+ * Returns an array of 'APC_PlayerFox*' pointers representing the players in the game.
+ *
+ * @return The array of players.
+ */
 TArray<APC_PlayerFox*> ASideScrollerGameModeBase::GetPlayers() const
 {
 	return Players;
 }
 
+/**
+ * @brief Travels to the Game Over Menu level.
+ *
+ * This method sets the bUseSeamlessTravel flag to true and performs a server travel to the Game Over Menu level.
+ *
+ * @param None.
+ * @return None.
+ */
 void ASideScrollerGameModeBase::TravelToGameOverMenu()
 {
 	bUseSeamlessTravel = true;
 	GetWorld()->ServerTravel("/Game/Maps/Map_GameOverMenu?listen");
 }
 
+/**
+ * Enables the game mode input for the specified player.
+ *
+ * @param NewPlayer The player controller to enable the game mode input for.
+ */
 void ASideScrollerGameModeBase::EnablePlayerGameModeInput(APlayerController* NewPlayer)
 {
 	if (NewPlayer != nullptr)

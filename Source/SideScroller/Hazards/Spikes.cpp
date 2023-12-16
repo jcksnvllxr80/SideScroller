@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Spikes.h"
 
 #include "PaperSpriteComponent.h"
@@ -8,6 +7,9 @@
 #include "Engine/DamageEvents.h"
 #include "SideScroller/Characters/BasePaperCharacter.h"
 
+/**
+ * Constructor for the ASpikes class.
+ */
 ASpikes::ASpikes()
 {
 	SpikesSprite = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("SpikesSprite"));
@@ -23,6 +25,21 @@ ASpikes::ASpikes()
 	this->GetRenderComponent()->CanCharacterStepUpOn = ECB_No;
 }
 
+/**
+ * @brief Callback function that is invoked when an actor is hit by the spikes.
+ *
+ * This function is called when the spikes hit an actor. It logs a message with the names of the hit actor and the
+ * spikes. If the hit actor is a subclass of ABasePaperCharacter, it calls the TakeDamage function on the hit actor
+ * to apply damage.
+ *
+ * @param HitComponent The primitive component that was hit by the spikes.
+ * @param OtherActor The actor that was hit by the spikes.
+ * @param OtherComp The primitive component of the actor that was hit by the spikes.
+ * @param NormalImpulse The impulse imparted by the spikes on the hit actor.
+ * @param Hit The hit result containing information about the hit.
+ *
+ * @return None
+ */
 void ASpikes::OnHit(
 	UPrimitiveComponent* HitComponent,
 	AActor* OtherActor,
@@ -44,6 +61,12 @@ void ASpikes::OnHit(
 
 }
 
+/**
+ * @brief Called when the game starts or when spawned.
+ *
+ * This method is called when the game starts or when the ASpikes object is spawned in the world.
+ * It is responsible for setting up the collision profiles and adding a dynamic hit event listener.
+ */
 void ASpikes::BeginPlay()
 {
 	Super::BeginPlay();
