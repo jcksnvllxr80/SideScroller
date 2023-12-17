@@ -82,6 +82,16 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UPaperFlipbookComponent* GetProjectileFlipbook() const;
 
+	/**
+	 * Plays the sound effect for when a projectile is spawned.
+	 *
+	 * This method is declared as a UFUNCTION to be accessible in Blueprint graphs.
+	 * It is also declared as NetMulticast and Reliable to ensure that the sound effect is played on
+	 * all clients reliably.
+	 */
+	UFUNCTION(Blueprintable, NetMulticast, Reliable)
+	void PlayProjectileSpawnSound();
+
 private:
 	/**
 	 * @class TravelAnimation

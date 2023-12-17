@@ -89,6 +89,18 @@ UPaperFlipbookComponent* ABaseProjectile::GetProjectileFlipbook() const
 }
 
 /**
+ * Plays the sound effect when the projectile is spawned.
+ */
+void ABaseProjectile::PlayProjectileSpawnSound_Implementation()
+{
+	UGameplayStatics::SpawnSoundAttached(
+		this->LaunchSound,
+		this->ProjectileFlipbook,
+		TEXT("ProjectileLaunch")
+	);
+}
+
+/**
  * Launches the projectile in the specified direction.
  *
  * @param Direction The direction in which to launch the projectile.
@@ -126,11 +138,7 @@ void ABaseProjectile::LaunchProjectile(const float Direction)
 	const ABasePaperCharacter* BaseChar = dynamic_cast<ABasePaperCharacter*>(MyOwner);
 	if (BaseChar == nullptr) return;
 
-	UGameplayStatics::SpawnSoundAttached(
-		this->LaunchSound,
-		this->ProjectileFlipbook,
-		TEXT("ProjectileLaunch")
-	);
+	PlayProjectileSpawnSound();
 	
 	this->SetLifeSpan(ProjectileInLifespan);
 

@@ -30,7 +30,6 @@ APC_AIController::APC_AIController()
 void APC_AIController::BeginPlay()
 {
 	Super::BeginPlay();
-	PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 }
 
 /**
@@ -70,13 +69,12 @@ bool APC_AIController::UpdateFocusPawn()
 		UE_LOG(LogTemp, Warning, TEXT("APC_AIController::UpdateFocusPawn - No update. Cant find GameState."));
 		return false;
 	}
-
-	APawn* ClosestPlayerPawn = this->PlayerPawn;
+	
 	for (APlayerState* PlayerStateI : GameState->PlayerArray)
 	{
-		if (ClosestPlayerPawn == nullptr)
+		if (this->PlayerPawn == nullptr)
 		{
-			ClosestPlayerPawn = PlayerStateI->GetPawn();
+			this->PlayerPawn = PlayerStateI->GetPawn();
 		}
 		else
 		{
