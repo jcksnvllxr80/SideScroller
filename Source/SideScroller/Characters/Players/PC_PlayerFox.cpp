@@ -369,6 +369,8 @@ void APC_PlayerFox::ClearInteractableObject()
 	this->InteractableObject = nullptr;
 }
 
+// ReSharper disable once CppDoxygenUnresolvedReference
+// ReSharper disable once CppDoxygenUnresolvedReference
 /**
  * @brief Multicast RPC called when the level is complete for the player character control.
  *

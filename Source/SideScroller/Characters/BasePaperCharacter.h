@@ -265,6 +265,21 @@ public:
 	) override;
 
 	/**
+	 * Spawns a projectile with the given direction.
+	 *
+	 * This method is a BlueprintCallable function, meaning it can be called from within Blueprint Graphs.
+	 * The Server attribute ensures that this method is only executed on the server side.
+	 * The Reliable attribute guarantees that the method will be executed and will reach the server consistently.
+	 * The WithValidation attribute ensures that the method is validated before it is executed on the server.
+	 *
+	 * @param Direction The direction in which the projectile should be spawned.
+	 *
+	 * @see UFUNCTION
+	 */
+	UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
+	void SpawnProjectile(float Direction);
+	
+	/**
 	 * @brief Prepares for launching a projectile.
 	 *
 	 * This method is used to prepare for launching a projectile. It takes a boolean parameter
