@@ -3,6 +3,11 @@
 
 #include "SideScrollerSaveGame.h"
 
+/**
+ * @brief Constructor for the USideScrollerSaveGame class.
+ *
+ * Initializes the member variables for the save game instance.
+ */
 USideScrollerSaveGame::USideScrollerSaveGame()
 {
 	PlayerName = TEXT("Default");

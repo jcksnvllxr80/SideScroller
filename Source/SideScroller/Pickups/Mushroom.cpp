@@ -5,7 +5,9 @@
 
 #include "Sidescroller/Characters/Players/PC_PlayerFox.h"
 
-// Sets default values
+/**
+ * \brief Default constructor for AMushroom which sets up the actor.
+ */
 AMushroom::AMushroom()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -15,20 +17,35 @@ AMushroom::AMushroom()
 	this->GetPickupBox()->SetRelativeLocation(FVector(0.0,0.0,0.0));
 }
 
-// Called when the game starts or when spawned
+/**
+ * @brief Called when the game starts
+ *
+ * Initializes the Mushroom actor
+ */
 void AMushroom::BeginPlay()
 {
 	Super::BeginPlay();
 
 }
 
-// Called every frame
+/**
+ * @brief This method is called every frame to update the state of the Mushroom actor.
+ *
+ * @param DeltaTime The time in seconds since the last frame.
+ */
 void AMushroom::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
 
+/**
+ * Gives a pickup to the specified player character.
+ * This function is called when the player character overlaps with a mushroom pickup.
+ * The pickup will grant healing to the player character based on the HealingValue of the mushroom.
+ *
+ * @param OverlappingActor The player character that is overlapping with the mushroom pickup.
+ */
 void AMushroom::GivePickup(APC_PlayerFox* OverlappingActor)
 {
 	OverlappingActor->TakeHealing(this->HealingValue);

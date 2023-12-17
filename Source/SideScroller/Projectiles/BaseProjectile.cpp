@@ -11,7 +11,15 @@
 #include "SideScroller/Characters/BasePaperCharacter.h"
 #include "SideScroller/Interfaces/ProjectileInterface.h"
 
-// Sets default values
+/**
+ * Initializes the ABaseProjectile instance.
+ *
+ * @param ProjectileFlipbook The flipbook component used to display the projectile.
+ * @param ProjectileBox The collision component used for detecting collisions.
+ * @param ProjectileMovementComp The movement component used for controlling the projectile's movement.
+ *
+ * @return None.
+ */
 ABaseProjectile::ABaseProjectile()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -33,7 +41,11 @@ ABaseProjectile::ABaseProjectile()
     ProjectileMovementComp->SetIsReplicated(true);
 }
 
-// Called when the game starts or when spawned
+/**
+ * Begins the play of the projectile.
+ *
+ * This method initializes the projectile's collision settings and sets the initial and maximum movement speed.
+ */
 void ABaseProjectile::BeginPlay()
 {
 	Super::BeginPlay();
@@ -44,21 +56,57 @@ void ABaseProjectile::BeginPlay()
 	ProjectileMovementComp->MaxSpeed = MovementSpeed;
 }
 
+/**
+ * @brief Gets the movement speed of the projectile.
+ *
+ * @return The movement speed of the projectile.
+ */
 float ABaseProjectile::GetMovementSpeed() const
 {
 	return MovementSpeed;
 }
 
+/**
+ * @brief Get the Projectile Movement Component
+ *
+ * This method returns the Projectile Movement Component associated with the current projectile object.
+ *
+ * @return A pointer to the UProjectileMovementComponent, or nullptr if none is found.
+ */
 UProjectileMovementComponent* ABaseProjectile::GetProjectileMovementComp() const
 {
 	return ProjectileMovementComp;
 }
 
+/**
+ * @brief Get the flipbook component of the projectile
+ *
+ * @return UPaperFlipbookComponent* - The flipbook component of the projectile
+ */
 UPaperFlipbookComponent* ABaseProjectile::GetProjectileFlipbook() const
 {
 	return ProjectileFlipbook;
 }
 
+/**
+ * Launches the projectile in the specified direction.
+ *
+ * @param Direction The direction in which to launch the projectile.
+ *
+ * @note The projectile must have an owner associated with it in order for it to be launched. If the projectile does
+ * not have an owner, a warning message will be logged and the function will exit without performing
+ * any further actions.
+ *
+ * If the owner of the projectile implements the UProjectileInterface, the SetProjectileTransform() method will
+ * be called on the owner to adjust the projectile's transform based on the direction, owner, and base
+ * character information.
+ *
+ * The lifespan of the projectile will be set to the value specified by the ProjectileInLifespan property.
+ *
+ * The LaunchSound will be played and attached to the ProjectileFlipbook, with the tag "ProjectileLaunch".
+ *
+ * A verbose log message will be outputted indicating the name of the projectile and its owner.
+ */
 void ABaseProjectile::LaunchProjectile(const float Direction)
 {
 	AActor* MyOwner = GetOwner();
@@ -98,6 +146,15 @@ void ABaseProjectile::LaunchProjectile(const float Direction)
 	);
 }
 
+/**
+ * The OnHit method is called when the projectile hits another component or actor.
+ *
+ * @param HitComp The primitive component that was hit.
+ * @param OtherActor The actor that was hit.
+ * @param OtherComp The primitive component that was hit on the other actor.
+ * @param NormalImpulse The impulse applied to the hit component.
+ * @param Hit The hit result containing detailed information about the hit.
+ */
 void ABaseProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
                             FVector NormalImpulse, const FHitResult& Hit)
 {
@@ -137,6 +194,17 @@ void ABaseProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
 	}
 }
 
+/**
+ * \brief Performs collision animation and sound effects for the projectile.
+ *
+ * This method is responsible for playing the collision animation, stopping the projectile movement,
+ * disabling collision, setting the appropriate loop and flipbook for the projectile,
+ * setting a timer to destroy the projectile actor after the collision animation has finished,
+ * playing a hit sound at the collision location, and inflicting damage to the other character actor.
+ *
+ * \param MyOwner The owner of the projectile.
+ * \param OtherBasePaperActor The other character actor that the projectile has collided with.
+ */
 void ABaseProjectile::DoCollisionAnimAndSound(const AActor* MyOwner, ABasePaperCharacter* OtherBasePaperActor)
 {
 	this->SetLifeSpan(CollisionAnimationTime);
@@ -161,6 +229,12 @@ void ABaseProjectile::DoCollisionAnimAndSound(const AActor* MyOwner, ABasePaperC
 	);
 }
 
+/**
+ * Destroys the actor and clears the collision timer.
+ *
+ * @param None
+ * @return None
+ */
 void ABaseProjectile::DestroyActor()
 {
 	UE_LOG(LogTemp, Display, TEXT("Destroying %s!"), *this->GetName());
