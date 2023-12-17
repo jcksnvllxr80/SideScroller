@@ -1,11 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
+// ReSharper disable CppDoxygenUnresolvedReference
 #include "BasePaperCharacter.h"
 
 #include "Enemies/EnemyCollisionPaperCharacter.h"
 #include "PaperFlipbookComponent.h"
-#include "Engine/DamageEvents.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
@@ -316,6 +316,56 @@ bool ABasePaperCharacter::TakeDamageRPC_Validate(float DamageAmount, AActor* Dam
 }
 
 /**
+ * Spawns a projectile.
+ *
+ * @param Direction The direction in which the projectile will be launched.
+ *
+ * This method spawns a projectile at the location and rotation of the `ProjectileSpawnPoint` component of
+ * the character. The created projectile is set as owned by the character and then launched in the specified direction.
+ *
+ * @remarks
+ * This method is an implementation of the virtual method `SpawnProjectile_Implementation` declared in the
+ * `ABasePaperCharacter` class.
+ *
+ * @see
+ * - `ProjectileSpawnPoint` - The component used as the spawn location and rotation for the projectile.
+ * - `ProjectileClass` - The class used to spawn the projectile.
+ * - `ABaseProjectile` - The base class of the spawned projectile.
+ * - `SetOwner()` - Method to set the owner of the spawned projectile.
+ * - `LaunchProjectile()` - Method to launch the spawned projectile in a specific direction.
+ */
+void ABasePaperCharacter::SpawnProjectile_Implementation(float Direction)
+{
+	const FVector ProjectileSpawnLocation = ProjectileSpawnPoint->GetComponentLocation();
+	const FRotator ProjectileSpawnRotation = ProjectileSpawnPoint->GetComponentRotation();
+	ABaseProjectile* TempProjectile = GetWorld()->SpawnActor<ABaseProjectile>(
+		ProjectileClass,
+		ProjectileSpawnLocation,
+		ProjectileSpawnRotation
+	);
+		
+	TempProjectile->SetOwner(this);
+	TempProjectile->LaunchProjectile(Direction);
+	UE_LOG(
+		LogTemp, Verbose, TEXT("ABasePaperCharacter::PrepProjectileLaunch - Owner of spawned projectile, %s, is %s!"),
+		*TempProjectile->GetName(),
+		*TempProjectile->GetOwner()->GetName()
+	);
+}
+
+/**
+ * Validates the spawning of a projectile in a given direction.
+ *
+ * @param Direction The direction in which the projectile will be spawned.
+ * @return True if the projectile spawn is valid, false otherwise.
+ */
+bool ABasePaperCharacter::SpawnProjectile_Validate(float Direction)
+{
+	return true;
+}
+
+// ReSharper disable once CppDoxygenUnresolvedReference
+/**
  * Prepares the launch of a projectile.
  *
  * This method is responsible for spawning a projectile and preparing it for launch.
@@ -346,21 +396,7 @@ void ABasePaperCharacter::PrepProjectileLaunch(bool bIsPLayer = true)
 	
 	if (ProjectileClass)
 	{
-		const FVector ProjectileSpawnLocation = ProjectileSpawnPoint->GetComponentLocation();
-		const FRotator ProjectileSpawnRotation = ProjectileSpawnPoint->GetComponentRotation();
-		ABaseProjectile* TempProjectile = GetWorld()->SpawnActor<ABaseProjectile>(
-			ProjectileClass,
-			ProjectileSpawnLocation,
-			ProjectileSpawnRotation
-		);
-		
-		TempProjectile->SetOwner(this);
-		TempProjectile->LaunchProjectile(Direction);
-		UE_LOG(
-			LogTemp, Verbose, TEXT("ABasePaperCharacter::PrepProjectileLaunch - Owner of spawned projectile, %s, is %s!"),
-			*TempProjectile->GetName(),
-			*TempProjectile->GetOwner()->GetName()
-		);
+		SpawnProjectile(Direction);
 	}
 	else
 	{
@@ -375,8 +411,6 @@ void ABasePaperCharacter::PrepProjectileLaunch(bool bIsPLayer = true)
  * @brief Checks if the player can shoot a projectile.
  *
  * @return Returns true if the player can shoot; false otherwise.
- *
- * @param None.
  */
 bool ABasePaperCharacter::PlayerCanShoot()
 {
@@ -409,9 +443,6 @@ bool ABasePaperCharacter::PlayerCanShoot()
  * Checks if the enemy character can shoot.
  *
  * @return true if the enemy character is able to shoot, false otherwise.
- *
- * @param none
- *
  */
 bool ABasePaperCharacter::EnemyCanShoot()
 {
@@ -459,10 +490,6 @@ void ABasePaperCharacter::Shoot()
  *
  * This method is used to destroy the actor. If the actor is of type "PlayFox", it will not be destroyed and instead,
  * the "DeathCleanUp()" method of "PlayFox" will be called.
- *
- * @param None.
- *
- * @return None.
  */
 void ABasePaperCharacter::DestroyActor()
 {

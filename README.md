@@ -1,6 +1,7 @@
 # SideScroller Demo in Unreal Engine 5.2
 
-Just messing around with Unreal Engine and C++ to create a Mario-like game.
+Just messing around with Unreal Engine and C++ to create a Mario-like game.  
+**NOTE**: *95% of the documentation in the classes was done with JetBrains AI Assistant.*
 
 ![Game Image](Content/Assets/Images/SideScroller.png)
 

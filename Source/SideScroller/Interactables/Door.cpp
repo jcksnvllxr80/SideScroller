@@ -5,12 +5,22 @@
 
 #include "Kismet/GameplayStatics.h"
 
+/**
+ * @brief Constructor for the ADoor class.
+ *
+ * This method initializes the InteractableBox scale and location.
+ */
 ADoor::ADoor()
 {
 	InteractableBox->SetRelativeScale3D(FVector(0.5,0.4,0.5));
 	InteractableBox->SetRelativeLocation(FVector(0.0,0.0,0.0));
 }
 
+/**
+ * @brief Method to interact with the door
+ *
+ * This method is used to interact with the door and toggle its state.
+ */
 void ADoor::Interact()
 {
 	if (GetCanInteract())
@@ -20,6 +30,11 @@ void ADoor::Interact()
 	}
 }
 
+/**
+ * Toggles the state of the door.
+ *
+ * @param bIsTrue  The boolean value indicating whether the door is already open or closed.
+ */
 void ADoor::ToggleDoor()
 {
 	if (bIsTrue)
@@ -32,6 +47,12 @@ void ADoor::ToggleDoor()
 	}
 }
 
+/**
+ * @brief Close the door and set it to the closed position.
+ *
+ * This method sets the door to the closed position by updating the flipbook and setting
+ * the interactivity of the door to true.
+ */
 void ADoor::CloseDoor()
 {
 	UE_LOG(LogTemp, Display, TEXT("ADoor::CloseDoor - Setting door to closed"))
@@ -41,6 +62,15 @@ void ADoor::CloseDoor()
 	SetCanInteract(true);
 }
 
+/**
+ * @brief Open the door.
+ *
+ * This method sets the door to open by performing the following actions:
+ * - Prints a log message using UE_LOG to indicate that the door is being set to open.
+ * - Sets the bIsTrue variable to true indicating that the door is open.
+ * - Sets the InteractableFlipbook's flipbook to TruePosition, which represents the open position of the door.
+ * - Enables interaction with the door by setting the CanInteract variable to true.
+ */
 void ADoor::OpenDoor()
 {
 	UE_LOG(LogTemp, Display, TEXT("ADoor::OpenDoor - Setting door to open"))
@@ -50,6 +80,12 @@ void ADoor::OpenDoor()
 	SetCanInteract(true);
 }
 
+/**
+ * Plays the specified door sound when the door is interacted with.
+ *
+ * @param DoorSound The sound to play.
+ * @return void
+ */
 void ADoor::PlayDoorSound_Implementation(USoundBase* DoorSound) const
 {
 	UGameplayStatics::SpawnSoundAttached(
@@ -59,6 +95,15 @@ void ADoor::PlayDoorSound_Implementation(USoundBase* DoorSound) const
 	);
 }
 
+/**
+ * @brief Plays the door close sound and starts a timer to close the door after a delay.
+ *
+ * This method plays the door close sound using the provided sound asset and starts a timer to automatically
+ * close the door after a specified duration.
+ *
+ * @param DoorCloseSound The sound asset to be played when the door is closing.
+ * @return None.
+ */
 void ADoor::CloseDoorSoundAndTimer()
 {
 	PlayDoorSound(DoorCloseSound);
@@ -72,6 +117,16 @@ void ADoor::CloseDoorSoundAndTimer()
 	);
 }
 
+/**
+ * @brief Plays the door open sound and sets a timer to open the door.
+ *
+ * This method plays the door open sound and sets a timer to call the OpenDoor method after a specified duration.
+ *
+ * @param DoorOpenSound The sound to play when the door opens.
+ * @param DoorOpenTime The duration after which the door should open.
+ *
+ * @return None.
+ */
 void ADoor::OpenDoorSoundAndTimer()
 {
 	PlayDoorSound(DoorOpenSound);
@@ -85,6 +140,11 @@ void ADoor::OpenDoorSoundAndTimer()
 	);
 }
 
+/**
+ * @brief Get the state of the door, whether it is open or not.
+ *
+ * @return True if the door is open, false otherwise.
+ */
 bool ADoor::GetIsOpen() const
 {
 	return bIsTrue;

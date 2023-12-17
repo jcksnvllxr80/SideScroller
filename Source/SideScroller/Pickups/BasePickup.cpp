@@ -10,7 +10,14 @@
 #include "Sidescroller/Interfaces/PickupInterface.h"
 #include "Kismet/GameplayStatics.h"
 
-// Sets default values
+/**
+ * ABasePickup constructor.
+ *
+ * It initializes the ABasePickup object by setting up the actor tick, creating a default subobject of
+ * UPaperFlipbookComponent with the name "PickupFlipbook", and attaching it to the root component. It also
+ * creates a default subobject of UBoxComponent with the name "PickupBox", attaches it to the PickupFlipbook
+ * component, and sets it to be hidden in the game.
+ */
 ABasePickup::ABasePickup()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -25,7 +32,12 @@ ABasePickup::ABasePickup()
 }
 
 
-// Called when the game starts or when spawned
+/**
+ * Begins play for the pickup object.
+ *
+ * @param None.
+ * @return None.
+ */
 void ABasePickup::BeginPlay()
 {
 	Super::BeginPlay();
@@ -41,18 +53,41 @@ void ABasePickup::BeginPlay()
 	PickupFlipbook->SetFlipbook(IdleAnimation);
 }
 
-// Called every frame
+/**
+ * @brief Updates the pickup's state every frame.
+ *
+ * This method is called every frame to update the pickup's state based on the elapsed time.
+ *
+ * @param DeltaTime The time in seconds since the last frame.
+ */
 void ABasePickup::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
 
+/**
+ * @brief Get the pickup box component.
+ *
+ * This method returns the UBoxComponent used for collision detection by the pickup object.
+ *
+ * @return A pointer to the UBoxComponent used as the pickup box.
+ */
 UBoxComponent* ABasePickup::GetPickupBox() const
 {
 	return PickupBox;
 }
 
+/**
+ * Called when this pickup begins overlapping with another actor.
+ *
+ * @param OverlappedComponent The primitive component of this pickup that has overlapped with another component.
+ * @param OtherActor The actor that this pickup has overlapped with.
+ * @param OtherComp The primitive component of the other actor that this pickup has overlapped with.
+ * @param OtherBodyIndex The body index of the other actor that this pickup has overlapped with.
+ * @param bFromSweep Indicates whether the overlap was caused by a sweep or not.
+ * @param SweepResult The hit result of the sweep that caused the overlap.
+ */
 void ABasePickup::OnBeginOverlapDelegate(
 	UPrimitiveComponent* OverlappedComponent,
 	AActor* OtherActor,
@@ -92,6 +127,16 @@ void ABasePickup::OnBeginOverlapDelegate(
 	}
 }
 
+/**
+ * @brief Destroys the actor and clears the timer for the item taken.
+ *
+ * This method destroys the actor and clears the timer handle for the item taken. It logs a verbose message indicating
+ * the name of the actor being destroyed.
+ *
+ * @note The actor being destroyed must be derived from the ABasePickup class.
+ *
+ * @see ABasePickup
+ */
 void ABasePickup::DestroyActor()
 {
 	UE_LOG(LogTemp, Verbose, TEXT("Destroying %s!"), *this->GetName());

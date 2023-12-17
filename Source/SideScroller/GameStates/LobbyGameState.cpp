@@ -6,6 +6,13 @@
 #include "SideScroller/SideScrollerGameInstance.h"
 #include "SideScroller/Characters/Players/PC_PlayerFox.h"
 
+/**
+ * BeginPlay method called when the game state starts.
+ * It sets a timer to spawn player character select widgets after a delay.
+ *
+ * @param None
+ * @return None
+ */
 void ALobbyGameState::BeginPlay()
 {
 	Super::BeginPlay();
@@ -19,6 +26,20 @@ void ALobbyGameState::BeginPlay()
 	);
 }
 
+/**
+ * Spawns the character selection menu for the player.
+ *
+ * This function is called when a player spawns in the lobby state and has not already chosen a character.
+ * If the game instance is not available, a warning message is logged and the function returns early.
+ * If a player controller is found, the function checks if the player has already chosen a character.
+ * If the player has not chosen a character, the character selection menu is opened.
+ * If the player has previously chosen a character, a warning message is logged.
+ * If a player controller cannot be found, a warning message is logged.
+ *
+ * @param None
+ * @return None
+ * @note This function assumes there is a valid game instance and player controller available.
+ */
 void ALobbyGameState::PlayerSpawnCharacterSelect()
 {
 	USideScrollerGameInstance* GameInstance = dynamic_cast<USideScrollerGameInstance*>(GetGameInstance());
@@ -53,6 +74,12 @@ void ALobbyGameState::PlayerSpawnCharacterSelect()
 	}
 }
 
+/**
+ * Opens the select character menu.
+ *
+ * @param None
+ * @return None
+ */
 void ALobbyGameState::OpenSelectCharacterMenu()
 {
 	const ALobbyGameState* LobbyGameState = dynamic_cast<ALobbyGameState*>(GetWorld()->GetGameState());

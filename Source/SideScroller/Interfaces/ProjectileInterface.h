@@ -6,7 +6,9 @@
 #include "UObject/Interface.h"
 #include "ProjectileInterface.generated.h"
 
-// This class does not need to be modified.
+/**
+ *
+ */
 UINTERFACE(MinimalAPI)
 class UProjectileInterface : public UInterface
 {
@@ -14,13 +16,22 @@ class UProjectileInterface : public UInterface
 };
 
 /**
- * 
+ * @interface IProjectileInterface
+ * @brief Interface for handling projectiles in a side-scroller game
  */
 class SIDESCROLLER_API IProjectileInterface
 {
 	GENERATED_BODY()
 
 public:
+	/**
+	 * Sets the transform of the projectile.
+	 *
+	 * @param Direction The direction in which to launch the projectile.
+	 * @param MyOwner The owner of the projectile.
+	 * @param BaseChar The base character from which the projectile is fired.
+	 * @param Projectile The projectile to set the transform for.
+	 */
 	UFUNCTION(Category="Projectile")
 	virtual void SetProjectileTransform(
 		const float Direction,

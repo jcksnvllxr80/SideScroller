@@ -5,6 +5,12 @@
 
 #include "SideScroller/Characters/Players/PC_PlayerFox.h"
 
+/**
+ * Notifies this actor when it begins to overlap with another actor.
+ * This method is called by a physics collision system when two actors start to overlap.
+ *
+ * @param OtherActor The actor that this actor is overlapping with.
+ */
 void AFallOffLevelTrigger::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);

@@ -9,6 +9,17 @@
 #include "SideScroller/GameModes/LobbyGameMode.h"
 #include "SideScroller/PlayerStates/PlayerFoxState.h"
 
+/**
+ * @brief Called when the game starts or when the player controller is spawned.
+ *
+ * This method is called when the game starts or when the player controller is spawned.
+ * It is responsible for performing initialization tasks such as hiding the mouse cursor
+ * and setting the input mode to game only.
+ *
+ * @param None
+ *
+ * @return None
+ */
 void AGameModePlayerController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -16,6 +27,13 @@ void AGameModePlayerController::BeginPlay()
 	this->SetInputMode(FInputModeGameOnly());
 }
 
+/**
+ * Triggers the travel to the next level.
+ *
+ * @param None.
+ *
+ * @return None.
+ */
 void AGameModePlayerController::TravelToLevel_Implementation()
 {
 	USideScrollerGameInstance* GameInstance = dynamic_cast<USideScrollerGameInstance*>(GetGameInstance());
@@ -42,11 +60,23 @@ void AGameModePlayerController::TravelToLevel_Implementation()
 	}
 }
 
+/**
+ * @brief Validate if the player can travel to the level.
+ *
+ * @return true if the validation is successful, false otherwise.
+ */
 bool AGameModePlayerController::TravelToLevel_Validate()
 {
 	return true;  // This will allow the RPC to be called
 }
 
+/**
+ * Spawns a player character with the given PlayerBP, PlayerColorStr, and PlayerController.
+ *
+ * @param PlayerBP The blueprint class of the player character to spawn.
+ * @param PlayerColorStr The color string used for logging.
+ * @param PlayerController The player controller associated with the player character.
+ */
 void AGameModePlayerController::SpawnPlayer_Implementation(
 	TSubclassOf<APC_PlayerFox> PlayerBP,
 	const FString& PlayerColorStr,
@@ -141,6 +171,17 @@ void AGameModePlayerController::SpawnPlayer_Implementation(
 	}
 }
 
+/**
+ * @brief Validates the parameters for spawning a player.
+ *
+ * This method is invoked to validate the parameters before spawning a player in the game mode of a player controller.
+ *
+ * @param PlayerBP The subclass of APC_PlayerFox representing the player blueprint.
+ * @param PlayerColorStr The string representing the player color.
+ * @param PlayerController The pointer to the player controller instance.
+ *
+ * @return True if the parameters are valid; false otherwise.
+ */
 bool AGameModePlayerController::SpawnPlayer_Validate(
 	TSubclassOf<APC_PlayerFox> PlayerBP,
 	const FString& PlayerColorStr,
@@ -149,6 +190,17 @@ bool AGameModePlayerController::SpawnPlayer_Validate(
 	return true;  // This will allow the RPC to be called
 }
 
+/**
+ * Checks if the game can start based on certain requirements.
+ * If the game mode is not LobbyGameMode, then a warning is logged and the method returns.
+ * If the number of players requirement is not fulfilled, then a message is displayed and the method returns.
+ * If the game instance cannot be found, then an error is logged and the method returns.
+ * If not all players have chosen their characters, then a message is displayed and the method returns.
+ * If all prerequisites are met, a message is displayed and the game instance is set to ready to start the game.
+ *
+ * @param None
+ * @return None
+ */
 void AGameModePlayerController::CheckGameStartReqs_Implementation()
 {
 	ALobbyGameMode* LobbyGameMode = Cast<ALobbyGameMode>(GetWorld()->GetAuthGameMode());
@@ -193,11 +245,37 @@ void AGameModePlayerController::CheckGameStartReqs_Implementation()
 	GameInstance->SetReadyToStartGame(true);
 }
 
+/**
+ * @brief Validates the game start requirements.
+ *
+ * This method verifies if the game start requirements are met. It should
+ * be called before starting the game to ensure that all necessary conditions
+ * are satisfied.
+ *
+ * @return Returns a boolean value indicating whether the game start
+ *         requirements are valid or not. True if the requirements are valid,
+ *         false otherwise.
+ *
+ * @see AGameModePlayerController
+ */
 bool AGameModePlayerController::CheckGameStartReqs_Validate()
 {
 	return true;  // This will allow the RPC to be called
 }
 
+/**
+ * @brief Starts the level in the game.
+ *
+ * This method is the implementation of starting the level in the game for the current player controller. It checks if
+ * the game mode is a LobbyGameMode and if not, it logs a warning message and returns without starting the game.
+ * If the game mode is a LobbyGameMode, it calls the StartGame() method of the LobbyGameMode to start the game.
+ *
+ * @param None.
+ *
+ * @return None.
+ *
+ * @note This method assumes that the current player controller has a valid reference to the game mode.
+ */
 void AGameModePlayerController::StartLevel_Implementation()
 {
 	ALobbyGameMode* LobbyGameMode = Cast<ALobbyGameMode>(GetWorld()->GetAuthGameMode());
@@ -212,11 +290,26 @@ void AGameModePlayerController::StartLevel_Implementation()
 	LobbyGameMode->StartGame();
 }
 
+/**
+ * @brief Validates if the start level operation can be performed.
+ *
+ * @return True if start level operation can be performed, false otherwise.
+ */
 bool AGameModePlayerController::StartLevel_Validate()
 {
 	return true;  // This will allow the RPC to be called
 }
 
+/**
+ * @brief Starts the next level in the game.
+ *
+ * This method is an implementation of the StartNextLevel_Implementation function in the AGameModePlayerController
+ * class. It gets the instance of the LevelGameMode and calls the StartNextLevel method on it to start the next
+ * level in the game. If the game mode is not a LevelGameMode, a warning log is printed and the method returns.
+ *
+ * @param None
+ * @return None
+ */
 void AGameModePlayerController::StartNextLevel_Implementation()
 {
 	ALevelGameMode* LevelGameMode = Cast<ALevelGameMode>(GetWorld()->GetAuthGameMode());
@@ -231,6 +324,14 @@ void AGameModePlayerController::StartNextLevel_Implementation()
 	LevelGameMode->StartNextLevel();
 }
 
+/**
+ * @brief Validates whether the method can be called to start the next level.
+ *
+ * This method is used to determine if the RPC can be called to initiate the
+ * start of the next level. It always returns true, allowing the RPC to be called.
+ *
+ * @return true if the method can be called to start the next level.
+ */
 bool AGameModePlayerController::StartNextLevel_Validate()
 {
 	return true;  // This will allow the RPC to be called

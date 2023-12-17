@@ -9,6 +9,20 @@
 #include "SideScroller/SideScrollerGameInstance.h"
 #include "SideScroller/Controllers/GameModePlayerController.h"
 
+/**
+ * @brief Begins play for the game mode.
+ *
+ * This method is called when the game mode starts or when a level is loaded. It initializes
+ * necessary variables and sets up any initial tasks or actions required for the game mode
+ * to function properly.
+ *
+ * Within this method, the superclass's "BeginPlay()" method is called first to ensure proper
+ * initialization of the game mode.
+ *
+ * After calling the superclass method, a timer is set to delay the spawning of player chosen
+ * characters. The "SpawnPlayerChosenCharacters()" method is bound to this timer and will be
+ * called after a specified delay. The timer will not repeat.
+ */
 void ALevelGameMode::BeginPlay()
 {
 	Super::BeginPlay();
@@ -20,10 +34,14 @@ void ALevelGameMode::BeginPlay()
 		SpawnPlayerChosenCharDelayTimer,
 		false
 	);
-
-	// TODO: show level number begin banner
 }
 
+/**
+ * Locates the chosen character for the given player controller and spawns it in the game.
+ *
+ * @param Iter The iterator for the player controller.
+ * @return True if the chosen character is successfully located and spawned, false otherwise.
+ */
 bool ALevelGameMode::LocateChosenCharacter(FConstPlayerControllerIterator Iter)
 {
 	APlayerController* PlayerController = Cast<APlayerController>(*Iter);
@@ -85,6 +103,9 @@ bool ALevelGameMode::LocateChosenCharacter(FConstPlayerControllerIterator Iter)
 	return true;
 }
 
+/**
+ * Spawns the player's chosen characters in the game world.
+ */
 void ALevelGameMode::SpawnPlayerChosenCharacters()
 {
 	const UWorld* World = GetWorld();
@@ -102,6 +123,11 @@ void ALevelGameMode::SpawnPlayerChosenCharacters()
 	}
 }
 
+/**
+ * Start the next level in the game.
+ * Retrieves the current game instance, increments the current level, and initiates a server travel to the next
+ * level map.
+ */
 void ALevelGameMode::StartNextLevel()
 {
 	USideScrollerGameInstance* GameInstance = Cast<USideScrollerGameInstance>(GetWorld()->GetGameInstance());
