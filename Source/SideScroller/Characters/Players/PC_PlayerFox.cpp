@@ -1823,7 +1823,7 @@ void APC_PlayerFox::LogLocation()
  */
 void APC_PlayerFox::OpenMenu()
 {
-	ALevelGameState* LevelGameState = dynamic_cast<ALevelGameState*>(GetWorld()->GetAuthGameMode());
+	ALevelGameState* LevelGameState = dynamic_cast<ALevelGameState*>(GetWorld()->GetGameState());
 	if (LevelGameState != nullptr)
 	{
 		LevelGameState->OpenInGameMenu();
