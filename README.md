@@ -7,17 +7,6 @@ Just messing around with Unreal Engine and C++ to create a Mario-like game.
 
 ## Contributing / Collaborating
 
-```mermaid
-flowchart TD;
-    A[Start] --> B[Make change in your non-main branch]
-    B --> Z[Test the change]
-    Z --> C{Does it work?}
-    C -->|No| B
-    C -->|Yes| D[Check it in]
-    D --> E[Create Pull Request]
-    E --> F[End]
-```
-
 ### Installing Unreal Editor (Pre-req)
 
 1. Download Epic Games Launcher for the inter-webs
@@ -127,6 +116,19 @@ If unreal crashes and it isn't apparent as to why, the quickest way to troublesh
 2. sort by date
 3. look for the folder with a date nearest the crash time
 4. read the last entries in the `*.log` file
+
+### Flowchart for collaborating
+
+```mermaid
+flowchart TD;
+    A[Start] --> B[Make change in your non-main branch]
+    B --> Z[Test the change]
+    Z --> C{Does it work?}
+    C -->|No| B
+    C -->|Yes| D[Check it in]
+    D --> E[Create Pull Request]
+    E --> F[End]
+```
 
 ## Asset Pack used
 
