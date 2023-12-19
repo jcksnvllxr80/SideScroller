@@ -1516,20 +1516,6 @@ private:
 	void OpenMenu();
 
 	/**
-	 * \brief Opens the in-game menu.
-	 *
-	 * This method is responsible for opening the in-game menu. It sets the game pause state to true and calls the
-	 * InGameLoadMenu() method of the game instance. If the game instance is null, a warning message is logged.
-	 *
-	 * \param None.
-	 * \return None.
-	 *
-	 * \sa APC_PlayerFox::InGameLoadMenu
-	 */
-	UFUNCTION(BlueprintCallable)
-	void OpenInGameMenu();
-
-	/**
 	 * @brief Sets the value of bCanShoot to true, indicating that the player can shoot again.
 	 *
 	 * @param None

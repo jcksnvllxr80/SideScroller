@@ -1823,42 +1823,17 @@ void APC_PlayerFox::LogLocation()
  */
 void APC_PlayerFox::OpenMenu()
 {
-	// TODO: call this in a separate function on from the server to the client
-	const ALevelGameMode* LevelGameMode = dynamic_cast<ALevelGameMode*>(GetWorld()->GetAuthGameMode());
-	if (LevelGameMode != nullptr)
+	ALevelGameState* LevelGameState = dynamic_cast<ALevelGameState*>(GetWorld()->GetAuthGameMode());
+	if (LevelGameState != nullptr)
 	{
-		OpenInGameMenu();
+		LevelGameState->OpenInGameMenu();
 		return;
 	}
 	
-	ALobbyGameState* GameState = Cast<ALobbyGameState>(GetWorld()->GetGameState());
-	if (GameState != nullptr)
+	ALobbyGameState* LobbyGameState = Cast<ALobbyGameState>(GetWorld()->GetGameState());
+	if (LobbyGameState != nullptr)
 	{
-		GameState->OpenSelectCharacterMenu();
-	}
-}
-
-/**
- * Opens the in-game menu.
- *
- * This method is responsible for opening the in-game menu. It pauses the game
- * and calls the `InGameLoadMenu` method of the game instance.
- *
- * @param None
- *
- * @return None
- */
-void APC_PlayerFox::OpenInGameMenu()
-{
-	if (GameInstance != nullptr) {
-		// TODO: remove pause and make this function call on server
-		GetWorld()->GetFirstPlayerController()->SetPause(true);
-		GameInstance->InGameLoadMenu();
-	}
-	else {
-		UE_LOG(LogTemp, Warning,
-			TEXT("APC_PlayerFox::OpenInGameMenu - Can't open InGameMenu. GameInstance is null!")
-		);
+		LobbyGameState->OpenSelectCharacterMenu();
 	}
 }
 

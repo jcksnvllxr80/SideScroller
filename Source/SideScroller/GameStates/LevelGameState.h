@@ -25,4 +25,14 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable)
 	void OpenRespawnMenu();
+
+	/**
+	 * @brief Opens the in-game menu.
+	 *
+	 * This method is responsible for opening the in-game menu. It is a blueprint callable function.
+	 * If the `GameInstance` is found, it calls the `InGameLoadMenu` method of the `USideScrollerGameInstance` class.
+	 * If the `GameInstance` is not found, it logs a warning message.
+	 */
+	UFUNCTION(BlueprintCallable) 
+	void OpenInGameMenu();
 };
