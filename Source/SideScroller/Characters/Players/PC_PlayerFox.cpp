@@ -11,7 +11,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "SideScroller/SideScrollerGameInstance.h"
-#include "SideScroller/GameModes/LevelGameMode.h"
 #include "SideScroller/GameModes/SideScrollerGameModeBase.h"
 #include "SideScroller/GameStates/LevelGameState.h"
 #include "SideScroller/GameStates/LobbyGameState.h"
@@ -228,7 +227,7 @@ void APC_PlayerFox::LoadProfilePlayerName()
 		return;  // no game instance - early return
 	}
 
-	UWorld* World = GetWorld();
+	const UWorld* World = GetWorld();
 	if (World == nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("APC_PlayerFox::LoadProfilePlayerName - Not getting name. Cant find World."))
@@ -1823,42 +1822,17 @@ void APC_PlayerFox::LogLocation()
  */
 void APC_PlayerFox::OpenMenu()
 {
-	// TODO: call this in a separate function on from the server to the client
-	const ALevelGameMode* LevelGameMode = dynamic_cast<ALevelGameMode*>(GetWorld()->GetAuthGameMode());
-	if (LevelGameMode != nullptr)
+	ALevelGameState* LevelGameState = dynamic_cast<ALevelGameState*>(GetWorld()->GetGameState());
+	if (LevelGameState != nullptr)
 	{
-		OpenInGameMenu();
+		LevelGameState->OpenInGameMenu();
 		return;
 	}
 	
-	ALobbyGameState* GameState = Cast<ALobbyGameState>(GetWorld()->GetGameState());
-	if (GameState != nullptr)
+	ALobbyGameState* LobbyGameState = Cast<ALobbyGameState>(GetWorld()->GetGameState());
+	if (LobbyGameState != nullptr)
 	{
-		GameState->OpenSelectCharacterMenu();
-	}
-}
-
-/**
- * Opens the in-game menu.
- *
- * This method is responsible for opening the in-game menu. It pauses the game
- * and calls the `InGameLoadMenu` method of the game instance.
- *
- * @param None
- *
- * @return None
- */
-void APC_PlayerFox::OpenInGameMenu()
-{
-	if (GameInstance != nullptr) {
-		// TODO: remove pause and make this function call on server
-		GetWorld()->GetFirstPlayerController()->SetPause(true);
-		GameInstance->InGameLoadMenu();
-	}
-	else {
-		UE_LOG(LogTemp, Warning,
-			TEXT("APC_PlayerFox::OpenInGameMenu - Can't open InGameMenu. GameInstance is null!")
-		);
+		LobbyGameState->OpenSelectCharacterMenu();
 	}
 }
 

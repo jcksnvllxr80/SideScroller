@@ -368,7 +368,6 @@ void USelectCharacterMenu::BackToMainMenu()
 void USelectCharacterMenu::BackToGame()
 {
 	OnLevelRemovedFromWorld();
-	GetWorld()->GetFirstPlayerController()->SetPause(false);
 }
 
 /**
