@@ -11,7 +11,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "SideScroller/SideScrollerGameInstance.h"
-#include "SideScroller/GameModes/LevelGameMode.h"
 #include "SideScroller/GameModes/SideScrollerGameModeBase.h"
 #include "SideScroller/GameStates/LevelGameState.h"
 #include "SideScroller/GameStates/LobbyGameState.h"
@@ -228,7 +227,7 @@ void APC_PlayerFox::LoadProfilePlayerName()
 		return;  // no game instance - early return
 	}
 
-	UWorld* World = GetWorld();
+	const UWorld* World = GetWorld();
 	if (World == nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("APC_PlayerFox::LoadProfilePlayerName - Not getting name. Cant find World."))
