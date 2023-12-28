@@ -485,7 +485,7 @@ public:
 	 *
 	 * @return None.
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void SpectateNextPlayer();
 
 	/**
@@ -521,7 +521,7 @@ public:
 	 * @return None.
 	 
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void SpectatePrevPlayer();
 
 	/**

@@ -513,7 +513,7 @@ void APC_PlayerFox::SpectateOtherPlayer()
  * @note This method assumes that the current player is already dead and will only proceed to spectate the next player
  * if there is one available.
  */
-void APC_PlayerFox::SpectateNextPlayer()
+void APC_PlayerFox::SpectateNextPlayer_Implementation()
 {
 	const ASideScrollerGameModeBase* GameMode = dynamic_cast<ASideScrollerGameModeBase*>(
 		GetWorld()->GetAuthGameMode()
@@ -628,7 +628,7 @@ void APC_PlayerFox::Spectate() const
  * @param None.
  * @return None.
  */
-void APC_PlayerFox::SpectatePrevPlayer()
+void APC_PlayerFox::SpectatePrevPlayer_Implementation()
 {
 	if (const ASideScrollerGameModeBase* GameMode = dynamic_cast<ASideScrollerGameModeBase*>(
 		GetWorld()->GetAuthGameMode()
