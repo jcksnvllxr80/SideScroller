@@ -815,34 +815,6 @@ void USideScrollerGameInstance::CreateSession()
 }
 
 /**
- * @brief Get the current level of the game.
- *
- * This method returns the current level of the game instance.
- *
- * @return The current level of the game instance.
- */
-int USideScrollerGameInstance::GetCurrentLevel() const
-{
-	return CurrentLevel;
-}
-
-/**
- * Increments the current level by 1 and logs the new value.
- *
- * @param None
- * @return None
- */
-void USideScrollerGameInstance::IncrementCurrentLevel()
-{
-	UE_LOG(LogTemp, Warning,
-		TEXT("USideScrollerGameInstance::IncrementCurrentLevel - Incrementing CurrentLevel from %i to %i!"),
-		this->GetCurrentLevel(),
-		1 + this->GetCurrentLevel()
-	);
-	this->CurrentLevel += 1;
-}
-
-/**
  * Loads a saved game for the player profile.
  * If a saved game file exists, the method will load it.
  * If not, it will create a new instance of the player profile and save it.

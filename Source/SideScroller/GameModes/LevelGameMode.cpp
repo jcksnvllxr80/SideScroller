@@ -8,6 +8,7 @@
 #include "GameFramework/GameStateBase.h"
 #include "SideScroller/SideScrollerGameInstance.h"
 #include "SideScroller/Controllers/GameModePlayerController.h"
+#include "SideScroller/GameStates/LevelGameState.h"
 
 /**
  * @brief Begins play for the game mode.
@@ -139,27 +140,40 @@ void ALevelGameMode::StartNextLevel()
 		return;
 	}
 
+	const ALevelGameState* CurrentGameState = Cast<ALevelGameState>(GetWorld()->GetGameState());
+	if (CurrentGameState == nullptr)
+	{
+		UE_LOG(LogTemp, Warning,
+			TEXT("ALevelGameMode::StartNextLevel - Can't StartNextLevel. GameState is null!")
+		);
+		return;
+	}
+	
 	UE_LOG(LogTemp, Display,
 		TEXT("ALevelGameMode::StartNextLevel - Finished Level %i."),
-		GameInstance->GetCurrentLevel()
+		CurrentGameState->GetCurrentLevel()
 	);
 
-	GameInstance->IncrementCurrentLevel();
-	
-	if (FPaths::FileExists(FString("/Game/Maps/Map_Level%i", GameInstance->GetCurrentLevel())))
-	{
+	const FString GameDirectory = FString(FPaths::ProjectContentDir());
+	const int NextLevel = CurrentGameState->GetCurrentLevel() + 1;
+	const FString NextLevelFile = GameDirectory + FString::Printf(TEXT("Maps/Map_Level%i.umap"), NextLevel);
+	if (
+		FPaths::FileExists(NextLevelFile)
+	) {
 		UWorld* World = GetWorld();
 		if (!World) return;
 		bUseSeamlessTravel = true;
 		const FString TravelURL = FString::Printf(
-			TEXT("/Game/Maps/Map_Level%i?listen"), GameInstance->GetCurrentLevel()
+			TEXT("/Game/Maps/Map_Level%i?listen"), NextLevel
 		);
 		World->ServerTravel(TravelURL);
 	}
 	else
 	{
+		UE_LOG(LogTemp, Warning,
+			TEXT("ALevelGameMode::StartNextLevel - %s does not exist. Going to Game complete credits!"),
+			*NextLevelFile
+		);
 		GameInstance->LoadGameCompleteCredits();
 	}
-	
-	
 }

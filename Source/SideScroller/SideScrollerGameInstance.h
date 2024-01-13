@@ -366,23 +366,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SaveGame();
 
-	/**
-	 * @brief Retrieves the current level.
-	 *
-	 * @return The current level.
-	 */
-	UFUNCTION(BlueprintCallable)
-	int GetCurrentLevel() const;
-
-	/**
-	 * @brief Increments the current level by 1.
-	 *
-	 * This method is used to increment the current level of the game instance by 1. It updates the
-	 * `CurrentLevel` variable and logs a warning message with the old and new values of `CurrentLevel`.
-	 */
-	UFUNCTION(BlueprintCallable)
-	void IncrementCurrentLevel();
-
 private:
 	/**
 	 * @brief The MainMenuClass variable.
