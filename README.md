@@ -9,9 +9,9 @@ Just messing around with Unreal Engine and C++ to create a Mario-like game.
 
 ### Installing Unreal Editor (Pre-req)
 
-1. Download Epic Games Launcher for the inter-webs
-2. Will have to sign up for an account
-3. download and install Unreal Engine (for this project, we use 5.2.1)
+1. Download Epic Games Launcher from the inter-webs
+2. Will have to sign up for an Epic Games account
+3. download and install Unreal Engine via the Epic Games Launcher (for this project, UE 5.2.1 was used)
 
 ### Getting Started
 
