@@ -36,9 +36,7 @@ void ALobbyGameMode::StartGame()
 	UWorld* World = GetWorld();
 	if (!World) return;
 	bUseSeamlessTravel = true;
-	const FString TravelURL = FString::Printf(
-		TEXT("/Game/Maps/Map_Level%i?listen"), GameInstance->GetCurrentLevel()
-	);
+	const FString TravelURL = FString::Printf(TEXT("/Game/Maps/Map_Level1?listen"));
 	World->ServerTravel(TravelURL);
 }
 

@@ -77,9 +77,10 @@ void ASideScrollerGameModeBase::Tick(float DeltaTime)
 	if (const AGameModeBase* CurrentGameMode = Cast<AGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 		CurrentGameMode != nullptr && (
 			CurrentGameMode->GetName().Contains("MainMenu") ||
-			CurrentGameMode->GetName().Contains("GameOver")
+			CurrentGameMode->GetName().Contains("GameOver") ||
+			CurrentGameMode->GetName().Contains("GameComplete")
 		)
-	) return;  // early return if in mainmenu or gameover menu, we dont want to quit in these cases
+	) return;  // early return if in mainmenu, GameComplete, or gameover menu, we dont want to quit in these cases
 
 	// PrintPlayersList();
 	
@@ -211,6 +212,22 @@ void ASideScrollerGameModeBase::TravelToGameOverMenu()
 {
 	bUseSeamlessTravel = true;
 	GetWorld()->ServerTravel("/Game/Maps/Map_GameOverMenu?listen");
+}
+
+/**
+ * \fn void ASideScrollerGameModeBase::TravelToGameCompleteCredits()
+ * \brief Method to travel to the game complete credits map.
+ *
+ * This method sets the "bUseSeamlessTravel" flag to true and performs a server travel to the game
+ * complete credits map.
+ *
+ * \note This method assumes that the game complete credits map is located
+ * at "/Game/Maps/Map_GameCompleteCredits?listen".
+ */
+void ASideScrollerGameModeBase::TravelToGameCompleteCredits()
+{
+	bUseSeamlessTravel = true;
+	GetWorld()->ServerTravel("/Game/Maps/Map_GameCompleteCredits?listen");
 }
 
 /**

@@ -146,11 +146,20 @@ void ALevelGameMode::StartNextLevel()
 
 	GameInstance->IncrementCurrentLevel();
 	
-	UWorld* World = GetWorld();
-	if (!World) return;
-	bUseSeamlessTravel = true;
-	const FString TravelURL = FString::Printf(
-		TEXT("/Game/Maps/Map_Level%i?listen"), GameInstance->GetCurrentLevel()
-	);
-	World->ServerTravel(TravelURL);
+	if (FPaths::FileExists(FString("/Game/Maps/Map_Level%i", GameInstance->GetCurrentLevel())))
+	{
+		UWorld* World = GetWorld();
+		if (!World) return;
+		bUseSeamlessTravel = true;
+		const FString TravelURL = FString::Printf(
+			TEXT("/Game/Maps/Map_Level%i?listen"), GameInstance->GetCurrentLevel()
+		);
+		World->ServerTravel(TravelURL);
+	}
+	else
+	{
+		GameInstance->LoadGameCompleteCredits();
+	}
+	
+	
 }

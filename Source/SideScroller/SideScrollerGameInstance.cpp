@@ -62,6 +62,12 @@ USideScrollerGameInstance::USideScrollerGameInstance(const FObjectInitializer & 
 	if (!GameOverMenuBPClass.Class) return;
 	GameOverMenuClass = GameOverMenuBPClass.Class;
 
+	ConstructorHelpers::FClassFinder<UUserWidget> GameCompleteCreditsBPClass(
+		TEXT("/Game/MenuSystem/WBP_GameCompleteCredits")
+	);
+	if (!GameCompleteCreditsBPClass.Class) return;
+	GameCompleteCreditsClass = GameCompleteCreditsBPClass.Class;
+
 	ConstructorHelpers::FClassFinder<UUserWidget> SelectCharacterMenuBPClass(
 		TEXT("/Game/MenuSystem/WBP_SelectCharacterMenu")
 	);
@@ -144,6 +150,41 @@ void USideScrollerGameInstance::LoadGameOverMenu()
 		} else
 		{
 			UE_LOG(LogTemp, Warning, TEXT("USideScrollerGameInstance::LoadGameOverMenu - GameMode is not a level."));
+		}
+	}
+}
+
+/**
+ * @brief Loads the GameCompleteCredits map and travels to it.
+ *
+ * This method is called to load the GameCompleteCredits map and travel to it.
+ * It retrieves the current game mode from the world using `UGameplayStatics::GetGameMode()`
+ * and checks if it is not null. Then, it casts it to an `ALevelGameMode` and checks if it is not null.
+ * If it is not null, it logs the message "USideScrollerGameInstance::LoadGameCompleteCredits - Loading
+ * GameCompleteCredits map." * using `UE_LOG()` with the `LogTemp` and `Display` categories. Finally,
+ * it calls the `TravelToGameCompleteCredits()` * method of the `LevelGameMode`.
+ * If the game mode is null or if it cannot be cast to `ALevelGameMode`, it logs the warning message
+ * "USideScrollerGameInstance::LoadGameCompleteCredits - GameMode is not a level." using `UE_LOG()` with
+ * the `LogTemp` and `Warning` categories.
+ */
+void USideScrollerGameInstance::LoadGameCompleteCredits()
+{
+	AGameModeBase* CurrentGameMode = Cast<AGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+	if (CurrentGameMode != nullptr)
+	{
+		ALevelGameMode* LevelGameMode = Cast<ALevelGameMode>(CurrentGameMode);
+		if (LevelGameMode != nullptr)
+		{
+			UE_LOG(LogTemp, Display,
+				TEXT("USideScrollerGameInstance::LoadGameCompleteCredits - Loading GameCompleteCredits map.")
+			);
+			LevelGameMode->TravelToGameCompleteCredits();
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning,
+				TEXT("USideScrollerGameInstance::LoadGameCompleteCredits - GameMode is not a level.")
+			);
 		}
 	}
 }
@@ -433,6 +474,32 @@ void USideScrollerGameInstance::GameOverLoadMenu()
 }
 
 /**
+ * Load the credits screen when the game is completed.
+ */
+void USideScrollerGameInstance::GameCompleteLoadCredits()
+{
+	if (GameCompleteCreditsClass)
+	{
+		UE_LOG(LogTemp, Display, TEXT("Found GameComplete Credits blueprint class %s."), *GameCompleteCreditsClass->GetName());
+		if (UMenuWidget* GameCompleteCredits = CreateWidget<UMenuWidget>(this, GameCompleteCreditsClass))
+		{
+			GameCompleteCredits->Setup();
+			GameCompleteCredits->SetMenuInterface(this);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Cant create UMenuWidget Menu from GameComplete Credits blueprint class."));
+			return;
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Cant find the GameComplete Credits blueprint class."));
+		return;
+	}
+}
+
+/**
  * @brief Returns the number of players required to start the game.
  *
  * @return The number of players required to start the game.
@@ -652,13 +719,13 @@ void USideScrollerGameInstance::OnFindSessionsComplete(bool Success)
 			//Data1.ServerName = "Test Server 1";
 			//Data1.MaxPlayers = 3;
 			//Data1.CurrentPlayers = Data1.MaxPlayers - 3;
-			//Data1.HostUserName = "Grabbir Bubi";
+			//Data1.HostUserName = "rando_name_1";
 			//ServerData.Add(Data1);
 
 			//Data2.ServerName = "Test Server 2";
 			//Data2.MaxPlayers = 3;
 			//Data2.CurrentPlayers = Data2.MaxPlayers - 3;
-			//Data2.HostUserName = "Haida Salami";
+			//Data2.HostUserName = "some_other_player_name";
 			//ServerData.Add(Data2);
 
 			//Data3.ServerName = "Test Server 3";

@@ -124,6 +124,19 @@ public:
 	void TravelToGameOverMenu();
 
 	/**
+	 * Triggers a seamless travel to the GameCompleteCredits map.
+	 *
+	 * This method enables seamless travel and initiates the server travel to the GameCompleteCredits map.
+	 * It should be called when the game has been completed and the player should be redirected to the credits screen.
+	 *
+	 * @see bUseSeamlessTravel
+	 * @see GetWorld()
+	 * @see ServerTravel()
+	 */
+	UFUNCTION(BlueprintCallable, Category = Travel)
+	void TravelToGameCompleteCredits();
+
+	/**
 	 * Logout method to handle player logout.
 	 *
 	 * @param Exiting The controller of the player who is logging out.

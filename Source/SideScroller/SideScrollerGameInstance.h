@@ -254,6 +254,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void GameOverLoadMenu();
 
+	UFUNCTION(BlueprintCallable)
+	void GameCompleteLoadCredits();
+	
 	/**
 	 * Loads the Game Over Menu.
 	 *
@@ -265,6 +268,23 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable)
 	void LoadGameOverMenu();
+
+	/**
+	 * @brief Loads the GameCompleteCredits map and travels to it.
+	 *
+	 * This method is called to load and travel to the GameCompleteCredits map.
+	 * It first checks if the current game mode is a level game mode.
+	 * If so, it logs a display message indicating the map is being loaded and
+	 * calls the TravelToGameCompleteCredits method of the level game mode.
+	 * If the current game mode is not a level game mode, a warning message is logged.
+	 *
+	 * @note This method assumes that there is a valid reference to the game mode
+	 * in the world and that the GameCompleteCredits map exists.
+	 *
+	 * @see AGameModeBase, UGameplayStatics, ALevelGameMode
+	 */
+	UFUNCTION(BlueprintCallable)
+	void LoadGameCompleteCredits();
 
 	/**
 	 * @brief Get the number of players required to start the game.
@@ -362,7 +382,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable)
 	void IncrementCurrentLevel();
-	
+
 private:
 	/**
 	 * @brief The MainMenuClass variable.
@@ -417,6 +437,15 @@ private:
 	 */
 	TSubclassOf<class UUserWidget> GameOverMenuClass = nullptr;
 
+	/**
+	 * @brief Represents the class of the user widget used for the game complete credits.
+	 *
+	 * This variable stores the TSubclassOf<class UUserWidget> representing the user widget class used for
+	 * the game complete credits. The user widget class defines the layout and functionality
+	 * of the credits screen displayed when the game is completed.
+	 */
+	TSubclassOf<class UUserWidget> GameCompleteCreditsClass = nullptr;
+	
 	/**
 	 * The RespawnMenuClass variable is a TSubclassOf<UUserWidget> type variable used to hold the class of the
 	 * respawn menu widget. It is assigned with nullptr by default.
@@ -629,7 +658,7 @@ private:
 	 * the current progress or to set a specific level.
 	 */
 	UPROPERTY()
-	int CurrentLevel = 1;
+	int CurrentLevel = 0;
 
 	/**
 	 * \brief Loads a saved game.
