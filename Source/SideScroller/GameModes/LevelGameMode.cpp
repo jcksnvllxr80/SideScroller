@@ -6,6 +6,7 @@
 #include <sstream>
 
 #include "GameFramework/GameStateBase.h"
+#include "Misc/AssetRegistryInterface.h"
 #include "SideScroller/SideScrollerGameInstance.h"
 #include "SideScroller/Controllers/GameModePlayerController.h"
 #include "SideScroller/GameStates/LevelGameState.h"
@@ -156,10 +157,9 @@ void ALevelGameMode::StartNextLevel()
 
 	const FString GameDirectory = FString(FPaths::ProjectContentDir());
 	const int NextLevel = CurrentGameState->GetCurrentLevel() + 1;
-	const FString NextLevelFile = GameDirectory + FString::Printf(TEXT("Maps/Map_Level%i.umap"), NextLevel);
-	if (
-		FPaths::FileExists(NextLevelFile)
-	) {
+	
+	if (NextLevel <= 3 && NextLevel > 0)
+	{
 		UWorld* World = GetWorld();
 		if (!World) return;
 		bUseSeamlessTravel = true;
@@ -171,8 +171,7 @@ void ALevelGameMode::StartNextLevel()
 	else
 	{
 		UE_LOG(LogTemp, Warning,
-			TEXT("ALevelGameMode::StartNextLevel - %s does not exist. Going to Game complete credits!"),
-			*NextLevelFile
+			TEXT("ALevelGameMode::StartNextLevel - All levels complete. Going to Game complete credits!")
 		);
 		GameInstance->LoadGameCompleteCredits();
 	}
